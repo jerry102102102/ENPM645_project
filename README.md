@@ -1,84 +1,35 @@
-# ENPM 645 Final Project — Collaborative Object Reorientation
+# ENPM 645 — Collaborative Object Reorientation
 
-**兩個機器人握持端與一個人手共同操作板材；未來從物理互動歷史學習物體層級的協助力矩，由 Model-Based Controller 負責力分配與執行。**
+兩支 Franka Panda 與單一虛擬人手共同操作板材；使用本機 MuJoCo 3.3.5、Python 3.12.11、uv，無 Docker。
 
-目前題名：**Intent-Aware Physical Human-Robot Collaboration Using Force and Tactile Sensing**
+**目前已完成：** 雙臂接觸支撐、Joint State Logging、旋轉／抬升／固定外力展示。動作由預設軌跡驅動；尚無意圖辨識、assistance tracking、Expert 或模型訓練。
 
-UMD ENPM 645 的兩人專題。應用動機是焊接、噴漆或表面處理前的工件重新定向；目前已完成 CPU MuJoCo 的 Phase 0 v1/v2 pilot、Phase 1A 資料管線，以及 Phase 1B 雙 Panda 物理整合與 Joint State Logging；尚未訓練模型。
+## 必要文件
 
-## 從這裡開始
+| 要做什麼 | 看這裡 |
+|---|---|
+| 了解硬體、給 ChatGPT 討論背景 | [目前硬體](docs/CURRENT_HARDWARE_HANDOFF.md) |
+| 看 A/B/C 動作與實測結果 | [動作展示](results/phase1b/motion_examples_v1/README.md) |
+| 寫 Controller | [控制介面](docs/CONTROL_HANDOFF_ARMS.md) |
+| 使用感測與關節資料 | [資料格式](docs/DATA_SCHEMA_V2.md) |
+| 跑驗證、開 MuJoCo viewer | [執行方式](phase1b/README.md) |
 
-目前握持配置已修正為 **Robot L/R 同側長邊、人手對側長邊**，固定 panel-local 名義握點。先看 [新版位置圖與幾何定義](docs/SCENARIO_V2.md)、[實際 MuJoCo 驗證](results/phase1a/edge_v2/report.md)。人手／夾爪硬體亦已[固化為 hardware v1](docs/HARDWARE_V1.md)。原 scenario v1 與結果保留。
-
-**目前新版：兩支 Franka Panda + 自訂 tactile 夾爪，Scenario 3.0.0 / Hardware 2.0.0。** [使用與重現](phase1b/README.md)、[四項驗收報告](docs/DUAL_PANDA_INTEGRATION_REPORT.md)、[雙臂 Controller Handoff](docs/CONTROL_HANDOFF_ARMS.md)、[資料格式](docs/DATA_SCHEMA_V2.md)。基本接觸支撐與 Joint State Logging 已驗證；目前使用 position-hold baseline，尚未實作 assistance tracking 或 Expert。Joint States 預設只記錄，未加入學習輸入。上述 Scenario v2 / Hardware v1 保留為舊 free-root 夾爪實驗。
-
-**看實際動作：** [A 旋轉 20°、B 抬升 8 cm 後停留、C 承受固定向下 20 N](results/phase1b/motion_examples_v1/README.md)。含雙臂、板材、人手與外力方向、同步 tactile；這是 scripted motion 展示，尚未依人類意圖自動產生動作。
-
-0. 先看 [Phase 1A 使用方式](phase1a/README.md)、[結果報告](results/phase1a/report.md) 與 [組員 Controller Handoff](docs/CONTROL_HANDOFF.md)：**Data Pipeline GO；Controller Integration Ready**。資料管線可獨立使用 support-only baseline；下一步由 Track B 開發力分配與追蹤，再建立 expert labels。
-   [原 v2 架構](docs/system-architecture-v2.md)、[v2 報告](phase0_v2/report.md) 與 [v1 報告](phase0_tactile/report.md) 完整保留。先前 Learning-Data NO-GO 指教師標籤尚未驗證，不妨礙目前 Track A 資料管線與 Track B 控制器分工。
-1. 看 [初版專題概念](docs/project-concept.md)：初期三模態探索；目前分工與範圍以 Phase 1A 規格為準。
-2. 依 [優先閱讀清單](01_literature/README.md) 先讀 P01 → P02 → P03。
-3. 看 [跨論文快速結論](01_literature/synthesis.md)：哪些概念能直接進入我們的設計。
-4. 使用 [閱讀筆記模板](01_literature/templates/paper-note.md) 補上自己的結論，再依 [協作方式](CONTRIBUTING.md) 更新 repo。
-
-## 環境與執行（uv）
-
-在 repository 根目錄執行；Python 固定為 3.12.11，專案依賴由 `pyproject.toml` 與 `uv.lock` 管理。uv 使用本機 `.venv`，無須 Docker 或手動 activate。
+## 執行動作展示
 
 ```bash
 uv sync --locked
-uv run --locked python -m phase1b.scripts.run_suite --output results/phase1b/reproduction --render
-
-# 原 Phase 1A 重現入口
-uv run --locked python -m unittest phase1a.tests.test_contracts phase1a.tests.test_edge_geometry -v
-uv run --locked python -m phase1a.scripts.run_edge_scene --output results/phase1a/reproduction-edge
+uv run --locked python -m phase1b.demos.motion_examples --output results/phase1b/reproduction-motion
+uv run --locked python -m phase1b.demos.render_examples --input results/phase1b/reproduction-motion --output results/phase1b/reproduction-motion/visuals
 ```
 
-輸出目錄請選尚未使用的名稱。新增依賴使用 `uv add <package>`，並一起提交 `pyproject.toml` 與 `uv.lock`。日常同步使用 `uv sync --locked`，避免意外重新解析依賴。舊版 requirements 與實驗文件保留作為歷史紀錄；目前環境以根目錄 uv 設定為準。
+渲染需本機 `ffmpeg`；輸出路徑須尚未存在。程式在 `phase1b/`，模型與固定設定在其 `models/`、`config/`，驗證資料在 `results/phase1b/`。
 
-已用全新 uv 環境完成 Phase 1A 全流程：10 項測試與 v2 回歸通過，四個 episodes 的 372 個 NPZ arrays 與已提交的 reference 完全一致。
+<details>
+<summary>文獻與歷史版本</summary>
 
-## 目前決策
+[文獻與閱讀筆記](01_literature/README.md) · [團隊協作](CONTRIBUTING.md) · [初版概念](docs/project-concept.md)
 
-| 項目 | 狀態 |
-| --- | --- |
-| 第一階段 | **模擬環境**（使用者已確認） |
-| 感知來源 | 左右獨立 F/T、tactile、object state；S1/S2/S3 分開評估，VLM 不在目前 MVP |
-| 本次最小任務 | 單一虛擬人手 + 兩支完整 Panda + 相隔 40 cm 的雙 pad 自訂夾爪 + 剛性板材 |
-| 未來學習目標 | 物體 COM 上 world +y 軸額外協助力矩（Nm），不是關節動作或 A/B/C 分類 |
-| 本次角度範圍 | 小角度主動旋轉、保持、保持＋外部擾動；不宣稱已完成 90° 翻轉 |
-| 模擬器 | 本機 Python + MuJoCo 3.3.5，CPU、headless、無 Docker |
-| 已完成 | 文獻卡、v1/v2 pilot、Phase 1A；Phase 1B 雙 Panda、14 joints、接觸支撐、1,600 transitions、24 項新舊測試與 424 arrays exact replay |
-| 下一步 | Track B 實作 object-wrench allocation / tracking；Track A 後續建立驗證過的 expert 與正式示範；目前不訓練或做 CG-DAgger |
+[Phase 0 v1](phase0_tactile/README.md) · [Phase 0 v2](phase0_v2/README.md) · [Phase 1A](phase1a/README.md) · [雙 Panda 整合驗收](docs/DUAL_PANDA_INTEGRATION_REPORT.md)
 
-## Repo 結構
-
-```text
-phase1b/               # 目前：雙 Panda、joint-position hold、Joint State Logger、vendor/model/config
-results/phase1b/       # 新版驗收、A/B/C/reference recordings、同步影片
-phase1a/               # 保留：固定 v2 場景、desired torque interface、因果 transition pipeline
-results/phase1a/       # 4 個 smoke episodes、validation、圖表、Q1–Q9 report
-phase0_v2/              # 保留：雙握持端、分層力矩學習架構與可重現驗證
-  README.md / report.md
-  simulation/ / sensing/ / control/ / data/ / scripts/
-  results/pilot/        # v2 原始資料、分析與驗證
-phase0_tactile/
-  README.md / report.md  # 實作、結果、NO-GO 原因
-  models/ / scripts/    # MuJoCo 場景與重現流程
-  results/pilot/        # 完整 pilot 資料、CSV、圖表與物理檢查
-01_literature/
-  README.md              # 優先順序、來源連結、閱讀追蹤
-  papers/                # 每篇論文的核心概念與初步筆記
-  synthesis.md           # 跨論文設計啟示與尚待驗證的假設
-  search-log.md          # 檢索／核對方法與更正紀錄
-  references.bib         # 9 篇引用；區分正式出版與公開版本
-  templates/paper-note.md
-docs/
-  CONTROL_HANDOFF.md / SCENARIO_V1.md / DATA_SCHEMA.md
-  system-architecture-v2.md
-  project-concept.md
-CONTRIBUTING.md
-```
-
-筆記以繁體中文為主，保留英文術語與原始題名。來源查核日：**2026-10-10**。
-初步筆記由 Codex 輔助整理；查核範圍逐篇標示，**不代表任何組員已讀完論文**。實驗結果另見 v1/v2 報告，與文獻閱讀狀態分開紀錄。
+歷史程式、規格與結果保留；Phase 1B 仍共用其中的 sensing、geometry 與資料契約，不能整批移除。
+</details>
