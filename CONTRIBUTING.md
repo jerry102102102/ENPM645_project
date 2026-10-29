@@ -22,3 +22,5 @@ repo 收錄閱讀入口與我們的筆記；論文全文以作者／出版社／
 兩人可用各自的分支提交更新，再透過 PR 互看。commit message 寫明內容，例如 `docs: add P01 team reading conclusions`。更改專題範圍時，同步更新 root README 與 docs/project-concept.md。
 
 目前使用本機 MuJoCo；新實驗應建立版本化目錄並保留原始結果。Phase 1A 的場景、控制介面與資料格式請依 [Controller Handoff](docs/CONTROL_HANDOFF.md)、[Frozen Scenario](docs/SCENARIO_V1.md) 及 [Data Schema](docs/DATA_SCHEMA.md)。提交前依對應版本 README 執行驗證；不要以 scripted reference 或 baseline measured wrench 代替 expert labels。
+
+環境統一使用根目錄的 uv project：先 `uv sync --locked`，再以 `uv run --locked python ...` 執行。變更依賴使用 `uv add` / `uv remove`，並提交 `pyproject.toml` 與 `uv.lock`；Python 版本固定於 `.python-version`。

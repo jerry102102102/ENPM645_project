@@ -172,7 +172,7 @@ def report(root, result):
 - config_hash: `{config_hash(cfg)}`
 - 完整驗證：`validation.json`；各 episode：`smoke/{{A,B,C,reference_test}}/`；欄位字典：`smoke/schema.json`。
 - 圖表：`figures/reference_and_total_contact.png`、`figures/transition_timing.png`、`figures/sensor_smoke.png`。
-- 重現：在 repository root 執行 `.venv/bin/python -m phase1a.scripts.run_all --output results/phase1a/reproduction`，選未存在的輸出位置。
+- 重現：在 repository root 執行 `uv run --locked python -m phase1a.scripts.run_all --output results/phase1a/reproduction`，選未存在的輸出位置。
 
 這是 UMI-style 的 observation/action/transition 分離設計，並非 UMI 原始格式。現有 root-drive commands 是 MuJoCo-specific actuator adapter；policy features / desired object torque 不依賴特定機械臂關節配置。
 """

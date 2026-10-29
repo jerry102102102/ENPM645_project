@@ -6,20 +6,22 @@
 
 ## 執行
 
-從 repository root，使用既有本機 `.venv`，無須 Docker。已驗證 Python 3.12.11 / MuJoCo 3.3.5 / NumPy 2.2.6；繪圖使用 matplotlib 3.10.6，沿用 v2 環境。若要在另一台機器建立環境，依 [v2 README](../phase0_v2/README.md) 的安裝方式與 pinned requirements。
+從 repository root 使用 uv，無須 Docker。`.python-version` 固定 Python 3.12.11；`pyproject.toml` 固定 MuJoCo 3.3.5 / NumPy 2.2.6 / matplotlib 3.10.6，`uv.lock` 鎖定完整依賴。首次使用或拉取依賴更新後執行 `uv sync --locked`，uv 管理本機 `.venv`。
 
 ```bash
+uv sync --locked
+
 # 一鍵：A/B/C + reference test → unit tests → read-back → replay → v2 regression → figures/report
-.venv/bin/python -m phase1a.scripts.run_all --output results/phase1a/reproduction
+uv run --locked python -m phase1a.scripts.run_all --output results/phase1a/reproduction
 
 # 只收集四個 smoke episodes，選新的輸出位置
-.venv/bin/python -m phase1a.scripts.run_pipeline_smoke --output results/phase1a/dev-smoke
+uv run --locked python -m phase1a.scripts.run_pipeline_smoke --output results/phase1a/dev-smoke
 
 # 已存資料讀回、含完整回歸；不更改原資料
-.venv/bin/python -m phase1a.scripts.validate_dataset --input results/phase1a/smoke --regression
+uv run --locked python -m phase1a.scripts.validate_dataset --input results/phase1a/smoke --regression
 
 # 只驗證邊界、因果隔離、錯誤拒絕與 controller injection
-.venv/bin/python -m unittest phase1a.tests.test_contracts -v
+uv run --locked python -m unittest phase1a.tests.test_contracts -v
 ```
 
 輸出不能覆寫；重跑請選新目錄。`dev*`、`reproduction*` 忽略 Git；正式 `smoke/`、validation、圖表和 report 版本控管。

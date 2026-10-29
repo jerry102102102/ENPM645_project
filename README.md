@@ -15,6 +15,20 @@ UMD ENPM 645 的兩人專題。應用動機是焊接、噴漆或表面處理前�
 3. 看 [跨論文快速結論](01_literature/synthesis.md)：哪些概念能直接進入我們的設計。
 4. 使用 [閱讀筆記模板](01_literature/templates/paper-note.md) 補上自己的結論，再依 [協作方式](CONTRIBUTING.md) 更新 repo。
 
+## 環境與執行（uv）
+
+在 repository 根目錄執行；Python 固定為 3.12.11，專案依賴由 `pyproject.toml` 與 `uv.lock` 管理。uv 使用本機 `.venv`，無須 Docker 或手動 activate。
+
+```bash
+uv sync --locked
+uv run --locked python -m unittest phase1a.tests.test_contracts -v
+uv run --locked python -m phase1a.scripts.run_all --output results/phase1a/reproduction
+```
+
+輸出目錄請選尚未使用的名稱。新增依賴使用 `uv add <package>`，並一起提交 `pyproject.toml` 與 `uv.lock`。日常同步使用 `uv sync --locked`，避免意外重新解析依賴。舊版 requirements 與實驗文件保留作為歷史紀錄；目前環境以根目錄 uv 設定為準。
+
+已用全新 uv 環境完成 Phase 1A 全流程：10 項測試與 v2 回歸通過，四個 episodes 的 372 個 NPZ arrays 與已提交的 reference 完全一致。
+
 ## 目前決策
 
 | 項目 | 狀態 |

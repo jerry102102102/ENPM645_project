@@ -22,7 +22,7 @@ class MyController:
 把 class 放在例如 `my_control/controller.py`（自行建立），從 repository root 執行：
 
 ```bash
-.venv/bin/python -m phase1a.scripts.run_pipeline_smoke \
+uv run --locked python -m phase1a.scripts.run_pipeline_smoke \
   --controller my_control.controller:MyController \
   --output results/phase1a/dev-my-controller
 ```
