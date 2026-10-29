@@ -1,0 +1,47 @@
+{
+  "equivalent_resultant_control_max_abs": {
+    "wrist_ft": 1.865174681370263e-13,
+    "object_pose": 1.1102230246251565e-15,
+    "object_velocity": 5.958976733821779e-15,
+    "tactile_map": 1.1546319456101628e-13,
+    "planar_contact_map": 1.1546319456101628e-13
+  },
+  "no_contact_control": {
+    "pad_contacts": 0,
+    "plugin_max_N": 0.0,
+    "map_max_N": 0.0,
+    "panel_z_m": 0.6031635117365134
+  },
+  "timestep_halving_rmse": {
+    "angle_rad": 0.00010711494900244475,
+    "force_N": [
+      0.0032035085676999746,
+      4.421320864006806e-06,
+      0.008011788786681304
+    ],
+    "torque_Nm": [
+      1.1947012028641698e-06,
+      0.0024222090927168397,
+      5.352056950982541e-06
+    ]
+  },
+  "plugin_available": true,
+  "mujoco_version": "3.3.5",
+  "model_sha256": "8afaf913e45aa99585d2b793e1a9aeae0f77df1be6f449c11d6bcdab14e36099",
+  "dataset_validation": {
+    "checked": true,
+    "episodes": 30,
+    "samples": 12000,
+    "finite_signals_force_limits_model_binding_contact_balance": true
+  },
+  "deterministic_replay": {
+    "checked": true,
+    "episode": "A_000",
+    "max_abs_difference": {
+      "observations.npz": 0.0,
+      "privileged.npz": 0.0,
+      "diagnostics.npz": 0.0
+    }
+  },
+  "passed": true
+}

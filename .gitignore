@@ -3,3 +3,7 @@ __pycache__/
 *.py[cod]
 .venv/
 .env
+
+# Local development / fresh replay outputs; the reference pilot is versioned.
+phase0_tactile/results/dev*/
+phase0_tactile/results/reproduction*/

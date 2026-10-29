@@ -1,0 +1,191 @@
+{
+  "episodes": 30,
+  "samples": 12000,
+  "scenarios": {
+    "A": {
+      "pitch_excursion_deg": [
+        14.66389863400434,
+        21.92223145674625
+      ],
+      "final_pitch_change_deg": [
+        -19.746897056614657,
+        21.799803983992145
+      ],
+      "force_delta_max_N": [
+        1.445424928251583,
+        2.191981706308985
+      ],
+      "torque_delta_max_Nm": [
+        0.4051174470491688,
+        0.7445094628242745
+      ],
+      "cop_shift_max_mm": [
+        5.879464293680579,
+        11.40686908717132
+      ],
+      "slip_max_mm_s": [
+        0.1989140177770335,
+        0.640857789860202
+      ],
+      "min_load_N": [
+        32.2636497376368,
+        33.59416975646051
+      ],
+      "max_load_N": [
+        39.04684786049907,
+        39.094170207584355
+      ],
+      "min_contacts": [
+        4,
+        4
+      ],
+      "max_contacts": [
+        4,
+        4
+      ]
+    },
+    "B": {
+      "pitch_excursion_deg": [
+        0.00034475191189192576,
+        0.0013415026072848713
+      ],
+      "final_pitch_change_deg": [
+        -0.0013415026072848713,
+        -0.00034475191189192576
+      ],
+      "force_delta_max_N": [
+        0.0017658417443016854,
+        0.005697007879854896
+      ],
+      "torque_delta_max_Nm": [
+        6.9611882848596984e-06,
+        9.286396248622928e-05
+      ],
+      "cop_shift_max_mm": [
+        9.332100766278051e-05,
+        0.0003989980227226027
+      ],
+      "slip_max_mm_s": [
+        0.006146227695397025,
+        0.01915417341176478
+      ],
+      "min_load_N": [
+        33.57551692187218,
+        33.6219535137232
+      ],
+      "max_load_N": [
+        39.01905347822934,
+        39.019503005109726
+      ],
+      "min_contacts": [
+        4,
+        4
+      ],
+      "max_contacts": [
+        4,
+        4
+      ]
+    },
+    "C": {
+      "pitch_excursion_deg": [
+        4.9026412046841275,
+        12.861551485497763
+      ],
+      "final_pitch_change_deg": [
+        0.001330094058085273,
+        0.015568454685636229
+      ],
+      "force_delta_max_N": [
+        3.6482654686582414,
+        10.031056938871336
+      ],
+      "torque_delta_max_Nm": [
+        0.40145511342272,
+        1.2758017147820468
+      ],
+      "cop_shift_max_mm": [
+        6.976485853395581,
+        24.45010453727991
+      ],
+      "slip_max_mm_s": [
+        0.3984861646037588,
+        3.2637297679136608
+      ],
+      "min_load_N": [
+        25.51328783172698,
+        32.78760142160649
+      ],
+      "max_load_N": [
+        39.12659105075653,
+        42.83251494065997
+      ],
+      "min_contacts": [
+        4,
+        4
+      ],
+      "max_contacts": [
+        4,
+        4
+      ]
+    }
+  },
+  "matching": {
+    "window_samples": 15,
+    "window_duration_s": 0.15,
+    "candidate_start_s": [
+      0.85,
+      2.35
+    ],
+    "stride_s": 0.05,
+    "tolerances": {
+      "Fx": 0.5,
+      "Fy": 0.5,
+      "Fz": 0.5,
+      "Tx": 0.05,
+      "Ty": 0.05,
+      "Tz": 0.05,
+      "pitch": 0.017453292519943295,
+      "omega_y": 0.03
+    },
+    "blocks": 10,
+    "strict_matched_blocks": 0,
+    "blocks_at_half_tolerance": 0,
+    "blocks_at_quarter_tolerance": 0
+  },
+  "validation": {
+    "max_acceleration_m_s2": 4.197404911658241,
+    "max_penetration_mm": 0.2972057149460474,
+    "contact_loss_steps": 0,
+    "floor_contact_steps": 0,
+    "warnings": 0,
+    "max_balance_residual_N": 6.765352450719113e-14
+  },
+  "best_pair": {
+    "A": "A_006",
+    "C": "C_006",
+    "A_start_s": 0.9,
+    "C_start_s": 0.85,
+    "qualifying_candidate_pairs": 0,
+    "score": 3.3446352746396375,
+    "strict_match": false,
+    "Fx_rmse": 0.3861969289369483,
+    "Fy_rmse": 0.0007328878846018592,
+    "Fz_rmse": 3.7089493609648736,
+    "Tx_rmse": 0.13006489011988795,
+    "Ty_rmse": 0.11471081722687447,
+    "Tz_rmse": 0.005531009189830942,
+    "pitch_rmse": 0.007107681947396834,
+    "omega_y_rmse": 0.13962931043587093,
+    "planar_normal_rmse_N": 0.3819594738536212,
+    "normalized_normal_L1": 0.03880615920979903,
+    "planar_shear_rmse_N": 0.02255825647058615,
+    "plugin_rmse_N": 0.22130361354361563,
+    "cop_rmse_mm": 1.83456747641133,
+    "normal_load_rmse_N": 2.6074072428444497,
+    "max_contact_count_difference": 0,
+    "position_rmse_mm": 1.3573561343093261,
+    "roll_yaw_angular_velocity_rmse": 0.00020430613489765947,
+    "candidate_pairs_at_0.5_tolerance": 0,
+    "candidate_pairs_at_0.25_tolerance": 0
+  }
+}
