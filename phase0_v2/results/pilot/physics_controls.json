@@ -1,0 +1,127 @@
+{
+  "passed": true,
+  "equivalent_resultant_max_abs": {
+    "wrist_ft_left": 2.9665159217984183e-13,
+    "wrist_ft_right": 1.829647544582258e-13,
+    "tactile_left": 8.881784197001252e-14,
+    "tactile_right": 8.881784197001252e-14,
+    "object_pose": 8.881784197001252e-16,
+    "object_velocity": 1.3442805896213272e-14
+  },
+  "causal_controls": {
+    "left_removed": {
+      "initial_z": 0.7945670525807617,
+      "final_z": 0.6936948367649695,
+      "contact_counts": [
+        [
+          0,
+          0
+        ],
+        [
+          4,
+          4
+        ]
+      ],
+      "plugin_max_abs": [
+        0.0,
+        11.095432048708734
+      ],
+      "wrench_norm": [
+        0.0,
+        7.755887713545018
+      ]
+    },
+    "right_removed": {
+      "initial_z": 0.7945670525807617,
+      "final_z": 0.6946990117780095,
+      "contact_counts": [
+        [
+          4,
+          4
+        ],
+        [
+          0,
+          0
+        ]
+      ],
+      "plugin_max_abs": [
+        11.104963152659641,
+        0.0
+      ],
+      "wrench_norm": [
+        7.769083396319063,
+        0.0
+      ]
+    },
+    "both_removed": {
+      "initial_z": 0.7945670525807617,
+      "final_z": 0.5964168421776717,
+      "contact_counts": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ]
+      ],
+      "plugin_max_abs": [
+        0.0,
+        0.0
+      ],
+      "wrench_norm": [
+        0.0,
+        0.0
+      ]
+    },
+    "drives_disabled": {
+      "initial_z": 0.7945670525807617,
+      "final_z": 0.5967839856185989,
+      "contact_counts": [
+        [
+          4,
+          4
+        ],
+        [
+          4,
+          4
+        ]
+      ],
+      "plugin_max_abs": [
+        9.99781558998161,
+        9.997832179154917
+      ],
+      "wrench_norm": [
+        0.001293752288144623,
+        0.0012554496446237026
+      ]
+    }
+  },
+  "timestep_halving_rmse": {
+    "pitch_rad": 0.0001917124915924929,
+    "left_wrist": [
+      0.0032985243917043093,
+      0.00040902646947017345,
+      0.0014876480685275938,
+      0.0002708009284601463,
+      7.529813201518644e-05,
+      7.1407384412655e-05
+    ],
+    "right_wrist": [
+      0.0032097824510532373,
+      0.000528151396213617,
+      0.00204851630198066,
+      0.0001458002486901263,
+      7.416034553080542e-05,
+      6.0705562986442915e-05
+    ]
+  },
+  "structure": {
+    "equality_constraints": 0,
+    "free_roots": 2,
+    "fixed_world_fixture": false,
+    "gripper_nominal_separation_m": 0.4
+  },
+  "model_sha256": "ee400eee401d0748a6fc1556aac84168fbe22ba4fffbbe0792ac3f94ee9a93b9"
+}

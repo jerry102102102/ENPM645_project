@@ -1,0 +1,20 @@
+[
+  {
+    "episode": "A_000",
+    "scenario": "A",
+    "seed": 64500,
+    "model_sha256": "8afaf913e45aa99585d2b793e1a9aeae0f77df1be6f449c11d6bcdab14e36099"
+  },
+  {
+    "episode": "B_000",
+    "scenario": "B",
+    "seed": 64500,
+    "model_sha256": "8afaf913e45aa99585d2b793e1a9aeae0f77df1be6f449c11d6bcdab14e36099"
+  },
+  {
+    "episode": "C_000",
+    "scenario": "C",
+    "seed": 64500,
+    "model_sha256": "8afaf913e45aa99585d2b793e1a9aeae0f77df1be6f449c11d6bcdab14e36099"
+  }
+]

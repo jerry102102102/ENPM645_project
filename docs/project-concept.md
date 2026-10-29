@@ -1,6 +1,6 @@
 # 專題概念：無語音的人機協作翻轉
 
-> 這是 2026-10-10 的初版三模態構想。後續範圍已收斂為 F/T + tactile；目前先做 CPU MuJoCo 小角度可觀測性驗證，不含 VLM。請以 [Phase 0 規格](../phase0_tactile/specification.md) 與 [已執行報告](../phase0_tactile/report.md) 為目前依據。以下保留作為設計背景。
+> 這是 2026-10-10 的初版三模態構想。後續範圍已收斂為 F/T + tactile；目前先做 CPU MuJoCo 小角度可觀測性驗證，不含 VLM。目前進一步採用雙握持端與分層力矩學習架構，請以 [v2 系統架構](system-architecture-v2.md)、[Phase 0 v2 規格](../phase0_v2/specification.md) 與 [已執行報告](../phase0_v2/report.md) 為依據。以下保留作為設計背景。
 
 ## 場景與問題
 

@@ -1,0 +1,105 @@
+{
+  "seed": 64605,
+  "block": 5,
+  "kh": 100.58059575647415,
+  "dh": 5.812575637957137,
+  "friction": 1.022914506929392,
+  "preload": 40.0,
+  "initial_angle": 0.008424208197179924,
+  "direction": -1,
+  "target_angle": 0.3476332551366101,
+  "ramp_duration": 0.8,
+  "disturbance_magnitude": 7.517395977345175,
+  "disturbance_point": [
+    0.12298280957953185,
+    -0.024638539055155742,
+    0.0
+  ],
+  "disturbance_start": 0.7,
+  "disturbance_end": 2.7,
+  "human_force_limit": 50.0,
+  "human_target_speed_limit": 0.35,
+  "settle_seconds": 2.0,
+  "duration": 4.0,
+  "timestep": 0.002,
+  "sample_hz": 100,
+  "human_offset": [
+    0.0,
+    0.0,
+    0.0
+  ],
+  "gripper_separation_m": 0.4,
+  "scenario": "C",
+  "human_intent": "HOLD",
+  "mujoco_version": "3.3.5",
+  "python_version": "3.12.11",
+  "numpy_version": "2.2.6",
+  "platform": "macOS-26.5.2-arm64-arm-64bit",
+  "model_sha256": "ee400eee401d0748a6fc1556aac84168fbe22ba4fffbbe0792ac3f94ee9a93b9",
+  "validation": {
+    "contact_loss_steps": [
+      0,
+      0
+    ],
+    "floor_contact_steps": 0,
+    "max_acceleration_m_s2": 1.7200281282302463,
+    "max_penetration_m": 0.00028565457980312385,
+    "max_linear_balance_residual_N": 2.8449610566399904e-14,
+    "max_angular_balance_residual_Nm": 5.759160357781552e-15,
+    "max_contact_generalized_error": 2.6645352591003757e-14,
+    "max_wrench_transform_error": 2.842170943040401e-14,
+    "max_gripper_balance_force_N": 2.7810219405122183e-14,
+    "max_gripper_balance_torque_Nm": 1.8507602134870682e-15,
+    "warning_counts": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "baseline": {
+    "kpos": [
+      100.0,
+      100.0,
+      35.0
+    ],
+    "dpos": [
+      8.0,
+      8.0,
+      5.0
+    ],
+    "krot": [
+      6.0,
+      0.08,
+      6.0
+    ],
+    "drot": [
+      0.5,
+      0.08,
+      0.5
+    ],
+    "force_norm_limit_N": 35.0,
+    "torque_norm_limit_Nm": 3.0
+  },
+  "raw_columns": [
+    "sample",
+    "gripper",
+    "pad",
+    "local_x",
+    "local_y",
+    "local_z",
+    "world_x",
+    "world_y",
+    "world_z",
+    "pad_fx",
+    "pad_fy",
+    "pad_fz",
+    "normal_N",
+    "slip_m_s",
+    "distance_m"
+  ]
+}

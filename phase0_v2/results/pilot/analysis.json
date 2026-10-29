@@ -1,0 +1,325 @@
+{
+  "episodes": 30,
+  "samples": 12000,
+  "scenario_ranges": {
+    "A": {
+      "pitch_excursion_deg": [
+        7.133106095754161,
+        12.366405514398902
+      ],
+      "final_pitch_change_deg": [
+        -12.29126113657408,
+        11.740714370415082
+      ],
+      "human_force_peak_N": [
+        1.2709887790236036,
+        2.7907812747014185
+      ],
+      "left_support_Fz_min_N": [
+        4.567562198379015,
+        4.925285227931633
+      ],
+      "left_support_Fz_max_N": [
+        4.922813385960055,
+        5.286146750622153
+      ],
+      "right_support_Fz_min_N": [
+        2.0826859657411507,
+        4.739741272143558
+      ],
+      "right_support_Fz_max_N": [
+        4.727979197407761,
+        7.253783505687114
+      ],
+      "load_difference_Fz_peak_N": [
+        1.5384421452678065,
+        3.1640175124131513
+      ],
+      "drive_force_peak_N": [
+        10.054566788448028,
+        12.430291203696786
+      ],
+      "drive_torque_peak_Nm": [
+        0.2846190936375578,
+        0.38668812987656226
+      ],
+      "panel_z_min_m": [
+        0.7608815417355019,
+        0.7946259161069931
+      ],
+      "panel_z_max_m": [
+        0.794485900182323,
+        0.8305836859216676
+      ],
+      "left_cop_shift_max_mm": [
+        0.8128073346820828,
+        1.5146433717459582
+      ],
+      "left_slip_max_mm_s": [
+        0.09094860703906386,
+        0.2564629553416179
+      ],
+      "right_cop_shift_max_mm": [
+        0.9043914219468272,
+        1.523393078888528
+      ],
+      "right_slip_max_mm_s": [
+        0.07109463146929065,
+        0.3566687237370426
+      ]
+    },
+    "B": {
+      "pitch_excursion_deg": [
+        0.0011646830238844946,
+        0.00881077077520261
+      ],
+      "final_pitch_change_deg": [
+        -0.00881077077520261,
+        -0.0009693527234339438
+      ],
+      "human_force_peak_N": [
+        0.142837085373723,
+        0.15830394613054144
+      ],
+      "left_support_Fz_min_N": [
+        4.921389981297807,
+        4.925285227931633
+      ],
+      "left_support_Fz_max_N": [
+        4.9225207078664575,
+        4.925900959584817
+      ],
+      "right_support_Fz_min_N": [
+        4.727830181601263,
+        4.745469478487598
+      ],
+      "right_support_Fz_max_N": [
+        4.727979197407761,
+        4.745653939474838
+      ],
+      "load_difference_Fz_peak_N": [
+        0.17705122937885953,
+        0.19740793058788597
+      ],
+      "drive_force_peak_N": [
+        9.827523458755119,
+        9.830901016279851
+      ],
+      "drive_torque_peak_Nm": [
+        0.2846190936375578,
+        0.28684471777687603
+      ],
+      "panel_z_min_m": [
+        0.7943979027983268,
+        0.7946129489175359
+      ],
+      "panel_z_max_m": [
+        0.794414160326738,
+        0.7946343627799152
+      ],
+      "left_cop_shift_max_mm": [
+        0.0002750944861749898,
+        0.0010747291592986758
+      ],
+      "left_slip_max_mm_s": [
+        0.0035746681800116966,
+        0.03165745017262069
+      ],
+      "right_cop_shift_max_mm": [
+        0.000298832893174246,
+        0.0007547858154877543
+      ],
+      "right_slip_max_mm_s": [
+        0.005099132372901959,
+        0.025692706791671092
+      ]
+    },
+    "C": {
+      "pitch_excursion_deg": [
+        4.3729152805544205,
+        30.751038386831
+      ],
+      "final_pitch_change_deg": [
+        -0.8770786309466436,
+        0.9935933615105798
+      ],
+      "human_force_peak_N": [
+        2.5856686561761375,
+        12.850374208921526
+      ],
+      "left_support_Fz_min_N": [
+        -5.779270608918123,
+        4.616457864267371
+      ],
+      "left_support_Fz_max_N": [
+        5.207620324588715,
+        13.104053514154481
+      ],
+      "right_support_Fz_min_N": [
+        0.29483957688168516,
+        4.577043087325276
+      ],
+      "right_support_Fz_max_N": [
+        4.882435778956392,
+        10.843952152016787
+      ],
+      "load_difference_Fz_peak_N": [
+        1.4963615639112664,
+        6.8163323057110325
+      ],
+      "drive_force_peak_N": [
+        10.530160885291096,
+        19.53463096945835
+      ],
+      "drive_torque_peak_Nm": [
+        0.35294262919030034,
+        0.7627206691000727
+      ],
+      "panel_z_min_m": [
+        0.6132371857626482,
+        0.787162660373177
+      ],
+      "panel_z_max_m": [
+        0.8024439272483085,
+        1.016160075632909
+      ],
+      "left_cop_shift_max_mm": [
+        1.3912395396046748,
+        7.782307240549181
+      ],
+      "left_slip_max_mm_s": [
+        0.17167469951250067,
+        2.9673953553248347
+      ],
+      "right_cop_shift_max_mm": [
+        1.220867427066701,
+        6.436280749724813
+      ],
+      "right_slip_max_mm_s": [
+        0.16675670462009481,
+        3.6875334446724954
+      ]
+    }
+  },
+  "matching": {
+    "window_samples": 15,
+    "duration_s": 0.15,
+    "start_range_s": [
+      0.85,
+      2.35
+    ],
+    "stride_s": 0.05,
+    "candidates_per_block": 961,
+    "S1_tolerances": {
+      "Fx": 0.5,
+      "Fy": 0.5,
+      "Fz": 0.5,
+      "Tx": 0.05,
+      "Ty": 0.05,
+      "Tz": 0.05,
+      "px": 0.003,
+      "py": 0.003,
+      "pz": 0.003,
+      "rotvec_x": 0.017453292519943295,
+      "rotvec_y": 0.017453292519943295,
+      "rotvec_z": 0.017453292519943295,
+      "omega_x": 0.03,
+      "omega_y": 0.03,
+      "omega_z": 0.03,
+      "vx": 0.02,
+      "vy": 0.02,
+      "vz": 0.02
+    },
+    "S2_tolerances": {
+      "L_Fx": 0.5,
+      "L_Fy": 0.5,
+      "L_Fz": 0.5,
+      "L_Tx": 0.05,
+      "L_Ty": 0.05,
+      "L_Tz": 0.05,
+      "R_Fx": 0.5,
+      "R_Fy": 0.5,
+      "R_Fz": 0.5,
+      "R_Tx": 0.05,
+      "R_Ty": 0.05,
+      "R_Tz": 0.05,
+      "px": 0.003,
+      "py": 0.003,
+      "pz": 0.003,
+      "rotvec_x": 0.017453292519943295,
+      "rotvec_y": 0.017453292519943295,
+      "rotvec_z": 0.017453292519943295,
+      "omega_x": 0.03,
+      "omega_y": 0.03,
+      "omega_z": 0.03,
+      "vx": 0.02,
+      "vy": 0.02,
+      "vz": 0.02
+    },
+    "S1": {
+      "qualified_blocks": 0,
+      "blocks": 10,
+      "qualified_candidates": 0,
+      "half_tolerance_blocks": 0,
+      "quarter_tolerance_blocks": 0
+    },
+    "S2": {
+      "qualified_blocks": 0,
+      "blocks": 10,
+      "qualified_candidates": 0,
+      "half_tolerance_blocks": 0,
+      "quarter_tolerance_blocks": 0
+    }
+  },
+  "best_pairs": {
+    "S1": {
+      "A": "A_005",
+      "C": "C_005",
+      "matching_level": "S1",
+      "A_start_s": 0.85,
+      "C_start_s": 0.85,
+      "score": 4.081176956280437,
+      "qualified": false,
+      "qualified_candidate_pairs": 0,
+      "S1_max_tolerance_ratio": 9.591064518614294,
+      "S2_max_tolerance_ratio": 9.591064518614294,
+      "independent_force_rmse_N": 0.875730421409968,
+      "independent_torque_rmse_Nm": 0.19328460606083195,
+      "gripper_pose_xyz_rmse_mm": 10.913153358355279,
+      "normal_rmse_N": 0.16718684396936137,
+      "shear_rmse_N": 0.006156681091109924,
+      "normalized_normal_L1": 0.02014274533599542,
+      "cop_coordinate_rmse_mm": 1.0969784669241962,
+      "qualified_at_0.5": 0,
+      "qualified_at_0.25": 0
+    },
+    "S2": {
+      "A": "A_005",
+      "C": "C_005",
+      "matching_level": "S2",
+      "A_start_s": 1.35,
+      "C_start_s": 0.85,
+      "score": 3.5116231544114314,
+      "qualified": false,
+      "qualified_candidate_pairs": 0,
+      "S1_max_tolerance_ratio": 11.679831916467524,
+      "S2_max_tolerance_ratio": 8.401760208046122,
+      "independent_force_rmse_N": 0.912510065525686,
+      "independent_torque_rmse_Nm": 0.20197248617227148,
+      "gripper_pose_xyz_rmse_mm": 16.08697931225008,
+      "normal_rmse_N": 0.1801706644475145,
+      "shear_rmse_N": 0.04242587708054578,
+      "normalized_normal_L1": 0.02663855519812742,
+      "cop_coordinate_rmse_mm": 1.3758647341684287,
+      "qualified_at_0.5": 0,
+      "qualified_at_0.25": 0
+    }
+  },
+  "expert_feasibility": {
+    "status": "not_completed",
+    "valid_expert_labels": 0,
+    "conflicting_action_history_test": "unavailable without expert"
+  },
+  "S1_to_S2_scope": "independent load distribution retained; not a matched proof of intent or force-target gain",
+  "S2_to_S3_scope": "spatial contact features present; conditional additional information not established"
+}

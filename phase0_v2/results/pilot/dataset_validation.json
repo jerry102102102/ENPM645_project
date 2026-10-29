@@ -1,0 +1,24 @@
+{
+  "passed": true,
+  "episodes": 30,
+  "samples": 12000,
+  "maxima": {
+    "max_acceleration_m_s2": 5.3739212657669535,
+    "max_penetration_m": 0.0003590565986011458,
+    "max_linear_balance_residual_N": 5.586142005874572e-14,
+    "max_angular_balance_residual_Nm": 7.960615648022559e-15,
+    "max_contact_generalized_error": 3.197442310920451e-14,
+    "max_wrench_transform_error": 6.039613253960852e-14,
+    "max_gripper_balance_force_N": 5.487277299209836e-14,
+    "max_gripper_balance_torque_Nm": 2.907779742946158e-15
+  },
+  "replay": {
+    "observations.npz": "exact equality including missing-value masks",
+    "privileged.npz": "exact equality including missing-value masks",
+    "diagnostics.npz": "exact equality including missing-value masks",
+    "expert.npz": "exact equality including missing-value masks",
+    "controller.npz": "exact equality including missing-value masks"
+  },
+  "expert_valid_samples": 0,
+  "student_allowlist_verified": true
+}

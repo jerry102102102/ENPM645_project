@@ -7,3 +7,7 @@ __pycache__/
 # Local development / fresh replay outputs; the reference pilot is versioned.
 phase0_tactile/results/dev*/
 phase0_tactile/results/reproduction*/
+
+# v2 reference pilot is versioned; development and replay output is local.
+phase0_v2/results/dev*/
+phase0_v2/results/reproduction*/
