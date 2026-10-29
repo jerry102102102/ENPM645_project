@@ -1,6 +1,6 @@
 # 專題概念：無語音的人機協作翻轉
 
-> 這是 2026-10-10 的初版三模態構想。後續範圍已收斂為 F/T + tactile；目前先做 CPU MuJoCo 小角度可觀測性驗證，不含 VLM。目前進一步採用雙握持端與分層力矩學習架構，請以 [v2 系統架構](system-architecture-v2.md)、[Phase 0 v2 規格](../phase0_v2/specification.md) 與 [已執行報告](../phase0_v2/report.md) 為依據。以下保留作為設計背景。
+> 這是 2026-10-10 的初版三模態構想，以下保留作為設計背景。後續已收斂為 CPU MuJoCo、F/T + tactile、雙握持端與分層力矩介面，VLM 不在目前 MVP。最新 [Phase 1A 規格](../phase1a/specification.md) 將工作拆為 Track A（固定場景與資料管線）及 Track B（model-based allocation/control）；Track A 已通過 [Data Pipeline GO / Controller Integration Ready](../results/phase1a/report.md)，Track B 接口見 [CONTROL_HANDOFF](CONTROL_HANDOFF.md)。原 [v2 系統架構](system-architecture-v2.md) 與 [v2 物理報告](../phase0_v2/report.md) 保留作為基礎。
 
 ## 場景與問題
 

@@ -1,0 +1,776 @@
+{
+  "schema_version": "enpm645-transition/1.0",
+  "observation_shapes": {
+    "wrist_ft_left": [
+      6
+    ],
+    "wrist_ft_right": [
+      6
+    ],
+    "tactile_left": [
+      2,
+      3,
+      4,
+      4
+    ],
+    "tactile_right": [
+      2,
+      3,
+      4,
+      4
+    ],
+    "object_position": [
+      3
+    ],
+    "object_orientation": [
+      4
+    ],
+    "object_linear_velocity": [
+      3
+    ],
+    "object_angular_velocity": [
+      3
+    ],
+    "contact_state_left": [
+      2
+    ],
+    "contact_state_right": [
+      2
+    ],
+    "wrist_ft_left_world_at_panel_com": [
+      6
+    ],
+    "wrist_ft_right_world_at_panel_com": [
+      6
+    ],
+    "object_contact_wrench": [
+      6
+    ],
+    "gripper_pose": [
+      2,
+      7
+    ],
+    "gripper_velocity": [
+      2,
+      6
+    ]
+  },
+  "policy_feature_allowlist": [
+    "wrist_ft_left",
+    "wrist_ft_right",
+    "tactile_left",
+    "tactile_right",
+    "object_position",
+    "object_orientation",
+    "object_linear_velocity",
+    "object_angular_velocity",
+    "contact_state_left",
+    "contact_state_right"
+  ],
+  "files": {
+    "observations.npz": "o_t only",
+    "next_observations.npz": "o_(t+1), never policy input for transition t",
+    "supervision.npz": "all expert labels invalid in Phase 1A",
+    "controller.npz": "requested reference, five executed command steps, post-step realized contact wrench",
+    "privileged.npz": "human goal, applied human/environment wrench, scenario and seed"
+  },
+  "time": {
+    "unit": "simulated seconds",
+    "origin": "after 2-second settle",
+    "observation": "pre-decision, previous command held",
+    "decision": "same simulation time as o_t, later event",
+    "next_observation": "post physics, before next decision",
+    "reference_hz": 100,
+    "controller_hz": 500,
+    "physics_hz": 500,
+    "steps_per_transition": 5,
+    "a_t": "ordered five-step command sequence; not one command held for all 10 ms"
+  },
+  "frames": {
+    "wrist_ft": "panel-on-gripper, each local root, about root origin",
+    "world_wrench": "gripper-on-panel, world, about instantaneous panel COM",
+    "executed_virtual_drive": "world, force/torque applied at each gripper root origin",
+    "allocated_gripper_wrenches": "gripper-on-panel target, world, about each gripper root origin",
+    "tactile": "each pad sensor frame z/x/y angular bins; force N/bin",
+    "quaternion_order": "wxyz",
+    "object_velocity": "world",
+    "desired_assistance": "world +Y about panel COM, Nm, excludes baseline gravity/stabilization"
+  },
+  "availability": "unavailable numeric fields use NaN and false masks; runtime controller uses None",
+  "tracking": "unavailable: support_only does not execute references; total realized contact torque is not additional assistance",
+  "array_layout": {
+    "observations": {
+      "timestamp": {
+        "shape": [
+          "N"
+        ],
+        "dtype": "float64"
+      },
+      "engine_timestamp": {
+        "shape": [
+          "N"
+        ],
+        "dtype": "float64"
+      },
+      "physics_tick": {
+        "shape": [
+          "N"
+        ],
+        "dtype": "int64"
+      },
+      "wrist_ft_left": {
+        "shape": [
+          "N",
+          6
+        ],
+        "dtype": "float64"
+      },
+      "wrist_ft_right": {
+        "shape": [
+          "N",
+          6
+        ],
+        "dtype": "float64"
+      },
+      "tactile_left": {
+        "shape": [
+          "N",
+          2,
+          3,
+          4,
+          4
+        ],
+        "dtype": "float64"
+      },
+      "tactile_right": {
+        "shape": [
+          "N",
+          2,
+          3,
+          4,
+          4
+        ],
+        "dtype": "float64"
+      },
+      "contact_state_left": {
+        "shape": [
+          "N",
+          2
+        ],
+        "dtype": "int64"
+      },
+      "contact_state_right": {
+        "shape": [
+          "N",
+          2
+        ],
+        "dtype": "int64"
+      },
+      "object_position": {
+        "shape": [
+          "N",
+          3
+        ],
+        "dtype": "float64"
+      },
+      "object_orientation": {
+        "shape": [
+          "N",
+          4
+        ],
+        "dtype": "float64"
+      },
+      "object_angular_velocity": {
+        "shape": [
+          "N",
+          3
+        ],
+        "dtype": "float64"
+      },
+      "object_linear_velocity": {
+        "shape": [
+          "N",
+          3
+        ],
+        "dtype": "float64"
+      },
+      "wrist_ft_left_world_at_panel_com": {
+        "shape": [
+          "N",
+          6
+        ],
+        "dtype": "float64"
+      },
+      "wrist_ft_right_world_at_panel_com": {
+        "shape": [
+          "N",
+          6
+        ],
+        "dtype": "float64"
+      },
+      "object_contact_wrench": {
+        "shape": [
+          "N",
+          6
+        ],
+        "dtype": "float64"
+      },
+      "gripper_pose": {
+        "shape": [
+          "N",
+          2,
+          7
+        ],
+        "dtype": "float64"
+      },
+      "gripper_velocity": {
+        "shape": [
+          "N",
+          2,
+          6
+        ],
+        "dtype": "float64"
+      }
+    },
+    "next_observations": {
+      "timestamp": {
+        "shape": [
+          "N"
+        ],
+        "dtype": "float64"
+      },
+      "engine_timestamp": {
+        "shape": [
+          "N"
+        ],
+        "dtype": "float64"
+      },
+      "physics_tick": {
+        "shape": [
+          "N"
+        ],
+        "dtype": "int64"
+      },
+      "wrist_ft_left": {
+        "shape": [
+          "N",
+          6
+        ],
+        "dtype": "float64"
+      },
+      "wrist_ft_right": {
+        "shape": [
+          "N",
+          6
+        ],
+        "dtype": "float64"
+      },
+      "tactile_left": {
+        "shape": [
+          "N",
+          2,
+          3,
+          4,
+          4
+        ],
+        "dtype": "float64"
+      },
+      "tactile_right": {
+        "shape": [
+          "N",
+          2,
+          3,
+          4,
+          4
+        ],
+        "dtype": "float64"
+      },
+      "contact_state_left": {
+        "shape": [
+          "N",
+          2
+        ],
+        "dtype": "int64"
+      },
+      "contact_state_right": {
+        "shape": [
+          "N",
+          2
+        ],
+        "dtype": "int64"
+      },
+      "object_position": {
+        "shape": [
+          "N",
+          3
+        ],
+        "dtype": "float64"
+      },
+      "object_orientation": {
+        "shape": [
+          "N",
+          4
+        ],
+        "dtype": "float64"
+      },
+      "object_angular_velocity": {
+        "shape": [
+          "N",
+          3
+        ],
+        "dtype": "float64"
+      },
+      "object_linear_velocity": {
+        "shape": [
+          "N",
+          3
+        ],
+        "dtype": "float64"
+      },
+      "wrist_ft_left_world_at_panel_com": {
+        "shape": [
+          "N",
+          6
+        ],
+        "dtype": "float64"
+      },
+      "wrist_ft_right_world_at_panel_com": {
+        "shape": [
+          "N",
+          6
+        ],
+        "dtype": "float64"
+      },
+      "object_contact_wrench": {
+        "shape": [
+          "N",
+          6
+        ],
+        "dtype": "float64"
+      },
+      "gripper_pose": {
+        "shape": [
+          "N",
+          2,
+          7
+        ],
+        "dtype": "float64"
+      },
+      "gripper_velocity": {
+        "shape": [
+          "N",
+          2,
+          6
+        ],
+        "dtype": "float64"
+      }
+    },
+    "supervision": {
+      "timestamp": {
+        "shape": [
+          "N"
+        ],
+        "dtype": "float64"
+      },
+      "expert_assist_torque_ref": {
+        "shape": [
+          "N"
+        ],
+        "dtype": "float64"
+      },
+      "expert_label_valid": {
+        "shape": [
+          "N"
+        ],
+        "dtype": "bool"
+      },
+      "expert_source": {
+        "shape": [
+          "N"
+        ],
+        "dtype": "<U11"
+      }
+    },
+    "controller": {
+      "requested_total_object_wrench": {
+        "shape": [
+          "N",
+          5,
+          6
+        ],
+        "dtype": "float64"
+      },
+      "requested_total_object_wrench_valid": {
+        "shape": [
+          "N",
+          5
+        ],
+        "dtype": "bool"
+      },
+      "allocated_gripper_wrenches": {
+        "shape": [
+          "N",
+          5,
+          2,
+          6
+        ],
+        "dtype": "float64"
+      },
+      "allocated_gripper_wrenches_valid": {
+        "shape": [
+          "N",
+          5
+        ],
+        "dtype": "bool"
+      },
+      "executed_actuator_commands": {
+        "shape": [
+          "N",
+          5,
+          4
+        ],
+        "dtype": "float64"
+      },
+      "executed_virtual_drive_wrenches": {
+        "shape": [
+          "N",
+          5,
+          2,
+          6
+        ],
+        "dtype": "float64"
+      },
+      "baseline_virtual_drive_proposal": {
+        "shape": [
+          "N",
+          5,
+          2,
+          6
+        ],
+        "dtype": "float64"
+      },
+      "baseline_nominal_support": {
+        "shape": [
+          "N",
+          5,
+          2,
+          6
+        ],
+        "dtype": "float64"
+      },
+      "baseline_feedback": {
+        "shape": [
+          "N",
+          5,
+          2,
+          6
+        ],
+        "dtype": "float64"
+      },
+      "realized_contact_wrench_substep": {
+        "shape": [
+          "N",
+          5,
+          6
+        ],
+        "dtype": "float64"
+      },
+      "controller_mode": {
+        "shape": [
+          "N",
+          5
+        ],
+        "dtype": "<U12"
+      },
+      "assist_reference_executed": {
+        "shape": [
+          "N",
+          5
+        ],
+        "dtype": "bool"
+      },
+      "saturation_status": {
+        "shape": [
+          "N",
+          5,
+          2,
+          2
+        ],
+        "dtype": "bool"
+      },
+      "pad_saturation_status": {
+        "shape": [
+          "N",
+          5,
+          4
+        ],
+        "dtype": "bool"
+      },
+      "contact_status": {
+        "shape": [
+          "N",
+          5,
+          2,
+          2
+        ],
+        "dtype": "int64"
+      },
+      "contact_wrench_at_actuation": {
+        "shape": [
+          "N",
+          5,
+          6
+        ],
+        "dtype": "float64"
+      },
+      "actual_pad_actuator_force": {
+        "shape": [
+          "N",
+          5,
+          4
+        ],
+        "dtype": "float64"
+      },
+      "panel_acceleration": {
+        "shape": [
+          "N",
+          5,
+          3
+        ],
+        "dtype": "float64"
+      },
+      "linear_balance_residual_N": {
+        "shape": [
+          "N",
+          5
+        ],
+        "dtype": "float64"
+      },
+      "contact_generalized_error": {
+        "shape": [
+          "N",
+          5
+        ],
+        "dtype": "float64"
+      },
+      "penetration_m": {
+        "shape": [
+          "N",
+          5
+        ],
+        "dtype": "float64"
+      },
+      "controller_call_timestamps": {
+        "shape": [
+          "N",
+          5
+        ],
+        "dtype": "float64"
+      },
+      "physics_step_ticks": {
+        "shape": [
+          "N",
+          5
+        ],
+        "dtype": "int64"
+      },
+      "realized_substep_timestamps": {
+        "shape": [
+          "N",
+          5
+        ],
+        "dtype": "float64"
+      },
+      "timestamp": {
+        "shape": [
+          "N"
+        ],
+        "dtype": "float64"
+      },
+      "decision_timestamp": {
+        "shape": [
+          "N"
+        ],
+        "dtype": "float64"
+      },
+      "reference_timestamp": {
+        "shape": [
+          "N"
+        ],
+        "dtype": "float64"
+      },
+      "desired_assist_torque_ref": {
+        "shape": [
+          "N"
+        ],
+        "dtype": "float64"
+      },
+      "reference_source": {
+        "shape": [
+          "N"
+        ],
+        "dtype": "<U13"
+      },
+      "reference_valid": {
+        "shape": [
+          "N"
+        ],
+        "dtype": "bool"
+      },
+      "reference_frame_id": {
+        "shape": [
+          "N"
+        ],
+        "dtype": "<U5"
+      },
+      "reference_point": {
+        "shape": [
+          "N"
+        ],
+        "dtype": "<U9"
+      },
+      "requested_assistance_wrench": {
+        "shape": [
+          "N",
+          6
+        ],
+        "dtype": "float64"
+      },
+      "history_latest_timestamp": {
+        "shape": [
+          "N"
+        ],
+        "dtype": "float64"
+      },
+      "history_length": {
+        "shape": [
+          "N"
+        ],
+        "dtype": "int64"
+      },
+      "realized_object_contact_wrench": {
+        "shape": [
+          "N",
+          6
+        ],
+        "dtype": "float64"
+      },
+      "tracking_error_Nm": {
+        "shape": [
+          "N"
+        ],
+        "dtype": "float64"
+      },
+      "tracking_error_Nm_valid": {
+        "shape": [
+          "N"
+        ],
+        "dtype": "bool"
+      }
+    },
+    "privileged": {
+      "timestamp": {
+        "shape": [
+          "N"
+        ],
+        "dtype": "float64"
+      },
+      "human_goal": {
+        "shape": [
+          "N"
+        ],
+        "dtype": "float64"
+      },
+      "human_target_trajectory": {
+        "shape": [
+          "N",
+          3
+        ],
+        "dtype": "float64"
+      },
+      "human_applied_force": {
+        "shape": [
+          "N",
+          3
+        ],
+        "dtype": "float64"
+      },
+      "human_applied_torque": {
+        "shape": [
+          "N",
+          3
+        ],
+        "dtype": "float64"
+      },
+      "external_disturbance_force": {
+        "shape": [
+          "N",
+          3
+        ],
+        "dtype": "float64"
+      },
+      "external_disturbance_torque": {
+        "shape": [
+          "N",
+          3
+        ],
+        "dtype": "float64"
+      },
+      "human_application_point": {
+        "shape": [
+          "N",
+          3
+        ],
+        "dtype": "float64"
+      },
+      "external_application_point": {
+        "shape": [
+          "N",
+          3
+        ],
+        "dtype": "float64"
+      },
+      "applied_wrench_timestamps": {
+        "shape": [
+          "N",
+          5
+        ],
+        "dtype": "float64"
+      },
+      "applied_human_wrench_substeps": {
+        "shape": [
+          "N",
+          5,
+          6
+        ],
+        "dtype": "float64"
+      },
+      "applied_external_wrench_substeps": {
+        "shape": [
+          "N",
+          5,
+          6
+        ],
+        "dtype": "float64"
+      },
+      "scenario_label": {
+        "shape": [
+          "N"
+        ],
+        "dtype": "<U1"
+      },
+      "human_goal_type": {
+        "shape": [
+          "N"
+        ],
+        "dtype": "<U6"
+      },
+      "random_seed": {
+        "shape": [
+          "N"
+        ],
+        "dtype": "int64"
+      }
+    }
+  }
+}
