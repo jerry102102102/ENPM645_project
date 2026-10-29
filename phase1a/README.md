@@ -21,6 +21,12 @@ uv run --locked python -m phase1a.scripts.run_edge_scene --output results/phase1
 uv run --locked python -m phase1a.scripts.plot_tactile_distribution --output results/phase1a/dev-tactile-distribution
 ```
 
+[MuJoCo 場景與 tactile 同步影片](../results/phase1a/edge_v2/synchronized_tactile/README.md) 將 A 人手旋轉目標與 C 外力擾動並排，顯示作用點、力箭頭、目標與實際板材角度。每幀使用同時間戳的原始 tactile；以已記錄命令精確回放並核對全部觀測。需本機 `ffmpeg`：
+
+```bash
+uv run --locked python -m phase1a.scripts.render_tactile_sync --output results/phase1a/dev-sync
+```
+
 從 repository root 使用 uv，無須 Docker。`.python-version` 固定 Python 3.12.11；`pyproject.toml` 固定 MuJoCo 3.3.5 / NumPy 2.2.6 / matplotlib 3.10.6，`uv.lock` 鎖定完整依賴。首次使用或拉取依賴更新後執行 `uv sync --locked`，uv 管理本機 `.venv`。
 
 ```bash
