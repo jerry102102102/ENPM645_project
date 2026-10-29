@@ -1,0 +1,42 @@
+{
+  "A": {
+    "passed": true,
+    "transitions": 400,
+    "physics_steps": 2000,
+    "expert_valid_count": 0,
+    "assist_executed_count": 0,
+    "tracking_evaluation": "unavailable",
+    "max_balance_residual_N": 5.116972698382807e-13,
+    "max_penetration_m": 0.0005863072547054254
+  },
+  "B": {
+    "passed": true,
+    "transitions": 400,
+    "physics_steps": 2000,
+    "expert_valid_count": 0,
+    "assist_executed_count": 0,
+    "tracking_evaluation": "unavailable",
+    "max_balance_residual_N": 4.369914136279957e-13,
+    "max_penetration_m": 0.0005446906434044961
+  },
+  "C": {
+    "passed": true,
+    "transitions": 400,
+    "physics_steps": 2000,
+    "expert_valid_count": 0,
+    "assist_executed_count": 0,
+    "tracking_evaluation": "unavailable",
+    "max_balance_residual_N": 5.684632347090734e-13,
+    "max_penetration_m": 0.0005970341020085868
+  },
+  "reference_test": {
+    "passed": true,
+    "transitions": 500,
+    "physics_steps": 2500,
+    "expert_valid_count": 0,
+    "assist_executed_count": 0,
+    "tracking_evaluation": "unavailable",
+    "max_balance_residual_N": 4.902810675571804e-13,
+    "max_penetration_m": 0.0005446906434044961
+  }
+}

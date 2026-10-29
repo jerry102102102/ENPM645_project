@@ -5,16 +5,17 @@ import numpy as np
 
 from phase0_v2.control.baseline import support_commands
 from phase0_v2.sensing.contacts import observe
-from phase0_v2.simulation.dual_gripper import DualPilot
 from phase1a.data.observation_builder import POLICY_SHAPES, SensorObservation
 from phase1a.interfaces.controller_contract import ControllerInput, immutable
+from phase1a.simulation.scenario_loader import hardware_binding, make_sim
 
 
 class TransitionWorld:
     def __init__(self, config, scenario):
         self.config = config
         self.scenario = scenario
-        self.sim = DualPilot(dict(config["parameters"]))
+        self.sim = make_sim(config)
+        self.hardware_binding = hardware_binding(config, self.sim)
         self.dt = self.sim.m.opt.timestep
         self.tick = 0
         for _ in range(round(config["parameters"]["settle_seconds"] / self.dt)):
@@ -35,6 +36,15 @@ class TransitionWorld:
                 "gravity_world_m_s2",
             )
         }
+        if self.hardware_binding:
+            from phase1a.simulation.hardware_contract import hardware_snapshot
+            from phase1a.simulation.scenario_loader import REPO
+
+            self.calibration["robot_hardware"] = hardware_snapshot(
+                self.sim, config, REPO / config["model_path"]
+            )["robot_grippers"]
+        if "grasp_semantics" in config:
+            self.calibration["grasp_semantics"] = config["grasp_semantics"]
         self.current, self.truth = self._refresh(self.last_drive, self.last_pad)
 
     def _set_forces(self, drive, pad):

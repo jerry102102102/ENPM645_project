@@ -1,6 +1,6 @@
 # Phase 1A data schema
 
-Version：`enpm645-transition/1.0`。NPZ 以 `allow_pickle=False` 讀取；JSON 保存 metadata、frames、time semantics。完整 array 欄位、shape 和 dtype 列於每個 `metadata.json` 的 `array_layout` 及輸出根目錄的 `schema.json`。N 是 transition 數；K=5 是每筆 transition 內的物理步數。
+Version：`enpm645-transition/1.0`。新 edge v2 episodes 額外保存並驗證 `hardware_id`、`hardware_version`、`hardware_hash`，詳見 [HARDWARE_V1.md](HARDWARE_V1.md)。Schema 相容於 geometry v1/v2；reader 使用 episode 的 scenario_id / scenario_version / config_hash 從 registry 解析配置，不能混用兩個版本的 grasp coordinates。NPZ 以 `allow_pickle=False` 讀取；JSON 保存 metadata、frames、time semantics。完整 array 欄位、shape 和 dtype 列於每個 `metadata.json` 的 `array_layout` 及輸出根目錄的 `schema.json`。N 是 transition 數；K=5 是每筆 transition 內的物理步數。
 
 ## 一筆資料的事件與時鐘
 

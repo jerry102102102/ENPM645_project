@@ -2,6 +2,10 @@
 
 Track A 已完成固定場景、typed interface、reference generator、同步記錄與讀回驗證。**Track B 要做的是把額外物體力矩變成可實現的左右夾爪施力**。目前可執行的 `SupportOnlyAdapter` 只保持原 v2 的基本支撐；沒有 allocation，也沒有 assistance tracking。
 
+目前新 controller 開發採用 **scenario v2 邊緣握持配置**，詳見 [SCENARIO_V2.md](SCENARIO_V2.md)。Robot L/R 的 nominal between-jaw frames 為 panel-local [-0.20,+0.10,0] / [+0.20,+0.10,0] m；human point=[+0.27,-0.10,0] m。這些 anchor 不等於實際 contact point；使用當下 gripper pose / COM 做 wrench transport，不要把名義座標當作動態量測。實際 pads 夾住上下表面的 Y=[0.03,0.10] 區域。
+
+硬體以 [HARDWARE_V1.md](HARDWARE_V1.md) 為準。Controller 可改命令與控制律，不能靜默改 mass/inertia、pads、joints、接觸、sensor frames 或人手參數；`calibration["robot_hardware"]` 提供 robot bodies/joints/geometry 的固定數值。
+
 ## 接入位置與最短執行路徑
 
 介面定義：[controller_contract.py](../phase1a/interfaces/controller_contract.py)。實作任意可 import、無必要建構參數的 class：
@@ -24,6 +28,7 @@ class MyController:
 ```bash
 uv run --locked python -m phase1a.scripts.run_pipeline_smoke \
   --controller my_control.controller:MyController \
+  --scenario-config phase1a/config/scenario_v2.json \
   --output results/phase1a/dev-my-controller
 ```
 
@@ -50,7 +55,7 @@ uv run --locked python -m phase1a.scripts.run_pipeline_smoke \
 | `baseline_drive_proposal` | (2,6) 既有 v2 clipped support root-drive proposal；world about root |
 | `baseline_pad_proposal` | (4,) N，left upper/lower、right upper/lower |
 | `baseline_nominal_support / baseline_feedback` | (2,6) clipping 前兩部分；不是已實現的 panel contact wrench |
-| `calibration` | 固定 panel、gripper geometry、sensor frames、gravity、command limits |
+| `calibration` | 固定 panel、gripper geometry、sensor frames、gravity、command limits；v2 另提供 `grasp_semantics` |
 
 `sensor` 是 dict，例如 `observation.sensor['object_position']`。數值 sensor arrays 為唯讀副本。Controller 不會收到 simulator handle、human goal、scenario label、未來觀測或 expert state。禁止修改輸入 calibration；它是公開物理設定，不是可變的控制輸出。
 
@@ -76,7 +81,7 @@ uv run --locked python -m phase1a.scripts.run_pipeline_smoke \
 ## 座標、正負號與 wrench transport
 
 - World：MuJoCo world，Z 向上；gravity = [0,0,-9.81] m/s²。
-- Panel：剛體 local frame，原點等於本場景 COM；名義三個握持點與 pad frames 見 [SCENARIO_V1.md](SCENARIO_V1.md)。所有 quaternion 為 wxyz。
+- Panel：剛體 local frame，原點等於本場景 COM；名義三個握持點與 pad frames 見 [SCENARIO_V2.md](SCENARIO_V2.md)。所有 quaternion 為 wxyz。
 - Left/right gripper frame：各自 free root body frame；F/T 的作用方向是 panel-on-gripper。
 - Desired torque 正 Y 使用右手定則：+X 側向 -Z 轉動是正 pitch。既有 `rotate_y` 與此一致。
 - 所有 wrench vector 為 `[force xyz, torque xyz]`。不要與 `gripper_velocity` 的 angular/linear 順序混淆。

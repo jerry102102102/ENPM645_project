@@ -1,5 +1,7 @@
 # Frozen Scenario v1
 
+> 歷史配置，保留供舊結果重現。新版「機器人同側、人手對側的邊緣握持」見 [SCENARIO_V2.md](SCENARIO_V2.md)。本檔的 robot grasp point 指 between-jaw frame origin，並非實體 pad 接觸點；舊 pads 在板材上下表面較內側，舊 human site 是內部虛擬施力點。
+
 唯一設定：[scenario_v1.json](../phase1a/config/scenario_v1.json)；鎖定索引：[scenario_registry.json](../phase1a/config/scenario_registry.json)。設定由 `DualPilot(parameters(0,64600))` 的 **有效 compiled model / initialized state** 擷取，並核對既有 v2 A_000 metadata，不猜測座標。
 
 `scenario_id=enpm645-dual-gripper`，`scenario_version=1.0.0`。model_hash 是原 v2 MJCF 的 SHA-256；config_hash 是 sorted-key、compact JSON 的 SHA-256。每個 episode 都保存四者。載入時檢查 registry、MJCF、依賴實作、來源 metadata 及重新建立的 scene snapshot。修改 geometry、friction 或名義參數時應建立新版本與新 registry entry；不要覆寫 v1。snapshot 顯示值四捨五入至 12 位，實際 parameters 與 dependency hashes 保存完整可重現設定。

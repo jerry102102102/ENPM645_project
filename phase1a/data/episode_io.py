@@ -122,12 +122,18 @@ class DatasetReader:
 def validate_dataset(path, require_support_only=True):
     if not __debug__:
         raise RuntimeError("Validation requires Python without -O")
-    from phase1a.simulation.scenario_loader import config_hash, load_scenario
+    from phase1a.simulation.scenario_loader import (
+        config_hash,
+        hardware_binding,
+        load_episode_scenario,
+    )
 
-    config = load_scenario()
     reader = DatasetReader(path)
     s = reader.sections
     m = reader.metadata
+    config = load_episode_scenario(m)
+    for key, value in hardware_binding(config).items():
+        assert m.get(key) == value, "Episode hardware binding mismatch: " + key
     o = s["observations"]
     nxt = s["next_observations"]
     c = s["controller"]

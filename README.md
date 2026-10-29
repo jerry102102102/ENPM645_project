@@ -8,6 +8,8 @@ UMD ENPM 645 的兩人專題。應用動機是焊接、噴漆或表面處理前�
 
 ## 從這裡開始
 
+目前握持配置已修正為 **Robot L/R 同側長邊、人手對側長邊**，固定 panel-local 名義握點。先看 [新版位置圖與幾何定義](docs/SCENARIO_V2.md)、[實際 MuJoCo 驗證](results/phase1a/edge_v2/report.md)。人手／夾爪硬體亦已[固化為 hardware v1](docs/HARDWARE_V1.md)。原 scenario v1 與結果保留。
+
 0. 先看 [Phase 1A 使用方式](phase1a/README.md)、[結果報告](results/phase1a/report.md) 與 [組員 Controller Handoff](docs/CONTROL_HANDOFF.md)：**Data Pipeline GO；Controller Integration Ready**。資料管線可獨立使用 support-only baseline；下一步由 Track B 開發力分配與追蹤，再建立 expert labels。
    [原 v2 架構](docs/system-architecture-v2.md)、[v2 報告](phase0_v2/report.md) 與 [v1 報告](phase0_tactile/report.md) 完整保留。先前 Learning-Data NO-GO 指教師標籤尚未驗證，不妨礙目前 Track A 資料管線與 Track B 控制器分工。
 1. 看 [初版專題概念](docs/project-concept.md)：初期三模態探索；目前分工與範圍以 Phase 1A 規格為準。
@@ -21,8 +23,8 @@ UMD ENPM 645 的兩人專題。應用動機是焊接、噴漆或表面處理前�
 
 ```bash
 uv sync --locked
-uv run --locked python -m unittest phase1a.tests.test_contracts -v
-uv run --locked python -m phase1a.scripts.run_all --output results/phase1a/reproduction
+uv run --locked python -m unittest phase1a.tests.test_contracts phase1a.tests.test_edge_geometry -v
+uv run --locked python -m phase1a.scripts.run_edge_scene --output results/phase1a/reproduction-edge
 ```
 
 輸出目錄請選尚未使用的名稱。新增依賴使用 `uv add <package>`，並一起提交 `pyproject.toml` 與 `uv.lock`。日常同步使用 `uv sync --locked`，避免意外重新解析依賴。舊版 requirements 與實驗文件保留作為歷史紀錄；目前環境以根目錄 uv 設定為準。

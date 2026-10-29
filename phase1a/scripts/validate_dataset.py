@@ -9,7 +9,7 @@ import numpy as np
 
 from phase1a.data.episode_io import DatasetReader, validate_dataset
 from phase1a.scripts.run_pipeline_smoke import run_episode
-from phase1a.simulation.scenario_loader import REPO, load_scenario
+from phase1a.simulation.scenario_loader import REPO, load_episode_scenario
 
 EPISODES = [
     ("A", "A", 4.0, False),
@@ -38,7 +38,7 @@ def regression(smoke):
     from phase0_v2.scripts.run_pilot import run_episode as original_episode
     from phase0_v2.scripts.validate_pilot import controls
 
-    config = load_scenario()
+    config = load_episode_scenario(DatasetReader(smoke / "A").metadata)
     result = {"deterministic_replay": {}, "original_v2_comparison": {}}
     with tempfile.TemporaryDirectory() as temp:
         temp = Path(temp)
@@ -82,7 +82,7 @@ def regression(smoke):
             "duration_s": 5,
             "meaning": "+/- scripted reference leaves baseline commands and all sensor trajectories unchanged",
         }
-        for scenario in "ABC":
+        for scenario in "ABC" if config["scenario_version"] == "1.0.0" else "":
             dest = temp / ("v2_" + scenario)
             original_episode(dict(config["parameters"]), scenario, dest)
             new = DatasetReader(smoke / scenario)
@@ -124,6 +124,10 @@ def regression(smoke):
                 "max_absolute_errors": errors,
                 "absolute_tolerance": 1e-9,
             }
+    if config["scenario_version"] != "1.0.0":
+        result["original_v2_comparison_status"] = (
+            "not applicable: deliberate geometry change; historical controls below do not validate the new geometry"
+        )
     result["v2_physical_controls"] = controls()
     assert result["v2_physical_controls"]["passed"]
     result["passed"] = True

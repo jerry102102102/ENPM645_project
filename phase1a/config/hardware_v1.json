@@ -1,0 +1,1072 @@
+{
+  "hardware_id": "enpm645-edge-dual-gripper-virtual-human",
+  "hardware_version": "1.0.0",
+  "scope": "simulation-only hardware contract; no commercial hardware selected",
+  "scenario_id": "enpm645-dual-gripper",
+  "scenario_version": "2.0.0",
+  "config_hash": "c1b5bb05810538b9ec9348bf9c06390133c18926f4461bd27c5bdf56e3aa52e7",
+  "model_hash": "d0c70a9a473264f50feca7731952537667dbd4dc4b1c09b687916d09ab615623",
+  "hardware": {
+    "robot_grippers": {
+      "left": {
+        "kind": "simplified free-root two-pad gripper; not a complete arm",
+        "total_mass_kg": 0.5,
+        "nominal_frame_panel_local_m": [
+          -0.2,
+          0.1,
+          -0.0
+        ],
+        "nominal_frame_quaternion_panel_local_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "bodies": {
+          "left": {
+            "mass_kg": 0.3,
+            "principal_inertia_kg_m2": [
+              0.0002725,
+              0.0005,
+              0.0002725
+            ],
+            "inertial_position_body_local_m": [
+              0.0,
+              0.095,
+              0.0
+            ],
+            "inertial_quaternion_wxyz": [
+              1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "joint": {
+              "name": "left_free",
+              "type": 0,
+              "axis": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "limited": false,
+              "range_m": [
+                0.0,
+                0.0
+              ],
+              "damping": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "armature": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "frictionloss": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "stiffness": 0.0
+            },
+            "geometries": {
+              "left_flange": {
+                "type": 6,
+                "half_size_m": [
+                  0.05,
+                  0.015,
+                  0.05
+                ],
+                "body_local_position_m": [
+                  0.0,
+                  0.095,
+                  0.0
+                ],
+                "body_local_quaternion_wxyz": [
+                  1.0,
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "friction": [
+                  1.048296067234,
+                  0.005,
+                  0.0001
+                ],
+                "condim": 3,
+                "contype": 0,
+                "conaffinity": 0,
+                "solref": [
+                  0.01,
+                  1.0
+                ],
+                "solimp": [
+                  0.95,
+                  0.99,
+                  0.001,
+                  0.5,
+                  2.0
+                ]
+              }
+            }
+          },
+          "left_upper": {
+            "mass_kg": 0.1,
+            "principal_inertia_kg_m2": [
+              0.000166666667,
+              7.0833333e-05,
+              0.000230833333
+            ],
+            "inertial_position_body_local_m": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "inertial_quaternion_wxyz": [
+              1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "joint": {
+              "name": "left_upper_slide",
+              "type": 2,
+              "axis": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "limited": true,
+              "range_m": [
+                -0.006,
+                0.015
+              ],
+              "damping": [
+                20.0
+              ],
+              "armature": [
+                0.02
+              ],
+              "frictionloss": [
+                0.0
+              ],
+              "stiffness": 0.0
+            },
+            "geometries": {
+              "left_upper_pad": {
+                "type": 6,
+                "half_size_m": [
+                  0.045,
+                  0.07,
+                  0.01
+                ],
+                "body_local_position_m": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "body_local_quaternion_wxyz": [
+                  1.0,
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "friction": [
+                  1.048296067234,
+                  0.005,
+                  0.0001
+                ],
+                "condim": 3,
+                "contype": 1,
+                "conaffinity": 2,
+                "solref": [
+                  0.01,
+                  1.0
+                ],
+                "solimp": [
+                  0.95,
+                  0.99,
+                  0.001,
+                  0.5,
+                  2.0
+                ]
+              }
+            }
+          },
+          "left_lower": {
+            "mass_kg": 0.1,
+            "principal_inertia_kg_m2": [
+              0.000166666667,
+              7.0833333e-05,
+              0.000230833333
+            ],
+            "inertial_position_body_local_m": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "inertial_quaternion_wxyz": [
+              1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "joint": {
+              "name": "left_lower_slide",
+              "type": 2,
+              "axis": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "limited": true,
+              "range_m": [
+                -0.015,
+                0.006
+              ],
+              "damping": [
+                20.0
+              ],
+              "armature": [
+                0.02
+              ],
+              "frictionloss": [
+                0.0
+              ],
+              "stiffness": 0.0
+            },
+            "geometries": {
+              "left_lower_pad": {
+                "type": 6,
+                "half_size_m": [
+                  0.045,
+                  0.07,
+                  0.01
+                ],
+                "body_local_position_m": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "body_local_quaternion_wxyz": [
+                  1.0,
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "friction": [
+                  1.048296067234,
+                  0.005,
+                  0.0001
+                ],
+                "condim": 3,
+                "contype": 1,
+                "conaffinity": 2,
+                "solref": [
+                  0.01,
+                  1.0
+                ],
+                "solimp": [
+                  0.95,
+                  0.99,
+                  0.001,
+                  0.5,
+                  2.0
+                ]
+              }
+            }
+          }
+        }
+      },
+      "right": {
+        "kind": "simplified free-root two-pad gripper; not a complete arm",
+        "total_mass_kg": 0.5,
+        "nominal_frame_panel_local_m": [
+          0.2,
+          0.1,
+          0.0
+        ],
+        "nominal_frame_quaternion_panel_local_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "bodies": {
+          "right": {
+            "mass_kg": 0.3,
+            "principal_inertia_kg_m2": [
+              0.0002725,
+              0.0005,
+              0.0002725
+            ],
+            "inertial_position_body_local_m": [
+              0.0,
+              0.095,
+              0.0
+            ],
+            "inertial_quaternion_wxyz": [
+              1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "joint": {
+              "name": "right_free",
+              "type": 0,
+              "axis": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "limited": false,
+              "range_m": [
+                0.0,
+                0.0
+              ],
+              "damping": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "armature": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "frictionloss": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "stiffness": 0.0
+            },
+            "geometries": {
+              "right_flange": {
+                "type": 6,
+                "half_size_m": [
+                  0.05,
+                  0.015,
+                  0.05
+                ],
+                "body_local_position_m": [
+                  0.0,
+                  0.095,
+                  0.0
+                ],
+                "body_local_quaternion_wxyz": [
+                  1.0,
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "friction": [
+                  1.048296067234,
+                  0.005,
+                  0.0001
+                ],
+                "condim": 3,
+                "contype": 0,
+                "conaffinity": 0,
+                "solref": [
+                  0.01,
+                  1.0
+                ],
+                "solimp": [
+                  0.95,
+                  0.99,
+                  0.001,
+                  0.5,
+                  2.0
+                ]
+              }
+            }
+          },
+          "right_upper": {
+            "mass_kg": 0.1,
+            "principal_inertia_kg_m2": [
+              0.000166666667,
+              7.0833333e-05,
+              0.000230833333
+            ],
+            "inertial_position_body_local_m": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "inertial_quaternion_wxyz": [
+              1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "joint": {
+              "name": "right_upper_slide",
+              "type": 2,
+              "axis": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "limited": true,
+              "range_m": [
+                -0.006,
+                0.015
+              ],
+              "damping": [
+                20.0
+              ],
+              "armature": [
+                0.02
+              ],
+              "frictionloss": [
+                0.0
+              ],
+              "stiffness": 0.0
+            },
+            "geometries": {
+              "right_upper_pad": {
+                "type": 6,
+                "half_size_m": [
+                  0.045,
+                  0.07,
+                  0.01
+                ],
+                "body_local_position_m": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "body_local_quaternion_wxyz": [
+                  1.0,
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "friction": [
+                  1.048296067234,
+                  0.005,
+                  0.0001
+                ],
+                "condim": 3,
+                "contype": 8,
+                "conaffinity": 2,
+                "solref": [
+                  0.01,
+                  1.0
+                ],
+                "solimp": [
+                  0.95,
+                  0.99,
+                  0.001,
+                  0.5,
+                  2.0
+                ]
+              }
+            }
+          },
+          "right_lower": {
+            "mass_kg": 0.1,
+            "principal_inertia_kg_m2": [
+              0.000166666667,
+              7.0833333e-05,
+              0.000230833333
+            ],
+            "inertial_position_body_local_m": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "inertial_quaternion_wxyz": [
+              1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "joint": {
+              "name": "right_lower_slide",
+              "type": 2,
+              "axis": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "limited": true,
+              "range_m": [
+                -0.015,
+                0.006
+              ],
+              "damping": [
+                20.0
+              ],
+              "armature": [
+                0.02
+              ],
+              "frictionloss": [
+                0.0
+              ],
+              "stiffness": 0.0
+            },
+            "geometries": {
+              "right_lower_pad": {
+                "type": 6,
+                "half_size_m": [
+                  0.045,
+                  0.07,
+                  0.01
+                ],
+                "body_local_position_m": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "body_local_quaternion_wxyz": [
+                  1.0,
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "friction": [
+                  1.048296067234,
+                  0.005,
+                  0.0001
+                ],
+                "condim": 3,
+                "contype": 8,
+                "conaffinity": 2,
+                "solref": [
+                  0.01,
+                  1.0
+                ],
+                "solimp": [
+                  0.95,
+                  0.99,
+                  0.001,
+                  0.5,
+                  2.0
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "pad_motors": {
+      "left_upper_preload": {
+        "joint": "left_upper_slide",
+        "transmission_type": 0,
+        "gear": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "ctrl_limited": true,
+        "ctrl_range_N": [
+          -80.0,
+          0.0
+        ],
+        "force_limited": false,
+        "force_range_if_limited": [
+          0.0,
+          0.0
+        ],
+        "gain_parameters": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "bias_parameters": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "left_lower_preload": {
+        "joint": "left_lower_slide",
+        "transmission_type": 0,
+        "gear": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "ctrl_limited": true,
+        "ctrl_range_N": [
+          0.0,
+          80.0
+        ],
+        "force_limited": false,
+        "force_range_if_limited": [
+          0.0,
+          0.0
+        ],
+        "gain_parameters": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "bias_parameters": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "right_upper_preload": {
+        "joint": "right_upper_slide",
+        "transmission_type": 0,
+        "gear": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "ctrl_limited": true,
+        "ctrl_range_N": [
+          -80.0,
+          0.0
+        ],
+        "force_limited": false,
+        "force_range_if_limited": [
+          0.0,
+          0.0
+        ],
+        "gain_parameters": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "bias_parameters": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "right_lower_preload": {
+        "joint": "right_lower_slide",
+        "transmission_type": 0,
+        "gear": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "ctrl_limited": true,
+        "ctrl_range_N": [
+          0.0,
+          80.0
+        ],
+        "force_limited": false,
+        "force_range_if_limited": [
+          0.0,
+          0.0
+        ],
+        "gain_parameters": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "bias_parameters": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    "nominal_preload_commands_N": [
+      -40.0,
+      40.0,
+      -40.0,
+      40.0
+    ],
+    "root_drive_limits": {
+      "force_norm_N": 35.0,
+      "torque_norm_Nm": 3.0,
+      "kind": "simulation virtual wrench drive, not a commercial motor rating"
+    },
+    "tactile": {
+      "left_upper_grid": {
+        "implementation": "mujoco.sensor.touch_grid",
+        "source_plugin_config": {
+          "nchannel": "3",
+          "size": "4 4",
+          "fov": "110 85",
+          "gamma": "0"
+        },
+        "compiled_dimension": 48,
+        "site_name": "left_upper_touch",
+        "site_position_pad_local_m": [
+          0.0,
+          0.0,
+          0.08
+        ],
+        "site_quaternion_pad_local_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "left_lower_grid": {
+        "implementation": "mujoco.sensor.touch_grid",
+        "source_plugin_config": {
+          "nchannel": "3",
+          "size": "4 4",
+          "fov": "110 85",
+          "gamma": "0"
+        },
+        "compiled_dimension": 48,
+        "site_name": "left_lower_touch",
+        "site_position_pad_local_m": [
+          0.0,
+          0.0,
+          -0.08
+        ],
+        "site_quaternion_pad_local_wxyz": [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ]
+      },
+      "right_upper_grid": {
+        "implementation": "mujoco.sensor.touch_grid",
+        "source_plugin_config": {
+          "nchannel": "3",
+          "size": "4 4",
+          "fov": "110 85",
+          "gamma": "0"
+        },
+        "compiled_dimension": 48,
+        "site_name": "right_upper_touch",
+        "site_position_pad_local_m": [
+          0.0,
+          0.0,
+          0.08
+        ],
+        "site_quaternion_pad_local_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "right_lower_grid": {
+        "implementation": "mujoco.sensor.touch_grid",
+        "source_plugin_config": {
+          "nchannel": "3",
+          "size": "4 4",
+          "fov": "110 85",
+          "gamma": "0"
+        },
+        "compiled_dimension": 48,
+        "site_name": "right_lower_touch",
+        "site_position_pad_local_m": [
+          0.0,
+          0.0,
+          -0.08
+        ],
+        "site_quaternion_pad_local_wxyz": [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    "wrist_ft": {
+      "kind": "independent simulated contact-wrench reconstruction per gripper",
+      "order": "force xyz then torque xyz",
+      "frame": "root-local, about root; panel-on-gripper"
+    },
+    "human": {
+      "kind": "single virtual spring-damper interaction point; no hand collision geometry",
+      "count": 1,
+      "attachment_body": "panel",
+      "attachment_panel_local_m": [
+        0.27,
+        -0.1,
+        0.0
+      ],
+      "marker_radius_m": 0.012,
+      "marker_is_collision_geometry": false,
+      "rigid_hand_mass_kg": null,
+      "stiffness_N_m": 98.21089225920257,
+      "damping_N_s_m": 7.3012286492091985,
+      "force_norm_limit_N": 50.0,
+      "target_speed_limit_m_s": 0.35
+    },
+    "fixed_geometry_semantics": {
+      "frame": "panel_local",
+      "units": "m",
+      "fixed_meaning": "nominal material-relative anchors; no weld, qpos overwrite during stepping, or fixed world fixture",
+      "panel_bounds_min_m": [
+        -0.3,
+        -0.1,
+        -0.01
+      ],
+      "panel_bounds_max_m": [
+        0.3,
+        0.1,
+        0.01
+      ],
+      "robot": {
+        "left": {
+          "edge": "+Y long edge",
+          "edge_grasp_center_panel_local_m": [
+            -0.2,
+            0.1,
+            -0.0
+          ],
+          "anchor_meaning": "between-jaw grasp frame at board edge; not a material contact point",
+          "jaw_axis_panel_local": [
+            0,
+            0,
+            1
+          ],
+          "pads": {
+            "left_upper": {
+              "nominal_geom_center_panel_local_m": [
+                -0.2,
+                0.1,
+                0.02
+              ],
+              "nominal_pad_bounds_panel_local_m": [
+                [
+                  -0.245,
+                  0.03,
+                  0.01
+                ],
+                [
+                  -0.15500000000000003,
+                  0.17,
+                  0.03
+                ]
+              ],
+              "nominal_panel_contact_patch_bounds_m": [
+                [
+                  -0.245,
+                  0.03,
+                  0.01
+                ],
+                [
+                  -0.15500000000000003,
+                  0.1,
+                  0.01
+                ]
+              ],
+              "meaning": "nominal geometric overlap with top/bottom face; actual contact manifold is solved by MuJoCo"
+            },
+            "left_lower": {
+              "nominal_geom_center_panel_local_m": [
+                -0.2,
+                0.1,
+                -0.02
+              ],
+              "nominal_pad_bounds_panel_local_m": [
+                [
+                  -0.245,
+                  0.03,
+                  -0.03
+                ],
+                [
+                  -0.15500000000000003,
+                  0.17,
+                  -0.01
+                ]
+              ],
+              "nominal_panel_contact_patch_bounds_m": [
+                [
+                  -0.245,
+                  0.03,
+                  -0.01
+                ],
+                [
+                  -0.15500000000000003,
+                  0.1,
+                  -0.01
+                ]
+              ],
+              "meaning": "nominal geometric overlap with top/bottom face; actual contact manifold is solved by MuJoCo"
+            }
+          }
+        },
+        "right": {
+          "edge": "+Y long edge",
+          "edge_grasp_center_panel_local_m": [
+            0.2,
+            0.1,
+            0.0
+          ],
+          "anchor_meaning": "between-jaw grasp frame at board edge; not a material contact point",
+          "jaw_axis_panel_local": [
+            0,
+            0,
+            1
+          ],
+          "pads": {
+            "right_upper": {
+              "nominal_geom_center_panel_local_m": [
+                0.2,
+                0.1,
+                0.02
+              ],
+              "nominal_pad_bounds_panel_local_m": [
+                [
+                  0.15500000000000003,
+                  0.03,
+                  0.01
+                ],
+                [
+                  0.245,
+                  0.17,
+                  0.03
+                ]
+              ],
+              "nominal_panel_contact_patch_bounds_m": [
+                [
+                  0.15500000000000003,
+                  0.03,
+                  0.01
+                ],
+                [
+                  0.245,
+                  0.1,
+                  0.01
+                ]
+              ],
+              "meaning": "nominal geometric overlap with top/bottom face; actual contact manifold is solved by MuJoCo"
+            },
+            "right_lower": {
+              "nominal_geom_center_panel_local_m": [
+                0.2,
+                0.1,
+                -0.02
+              ],
+              "nominal_pad_bounds_panel_local_m": [
+                [
+                  0.15500000000000003,
+                  0.03,
+                  -0.03
+                ],
+                [
+                  0.245,
+                  0.17,
+                  -0.01
+                ]
+              ],
+              "nominal_panel_contact_patch_bounds_m": [
+                [
+                  0.15500000000000003,
+                  0.03,
+                  -0.01
+                ],
+                [
+                  0.245,
+                  0.1,
+                  -0.01
+                ]
+              ],
+              "meaning": "nominal geometric overlap with top/bottom face; actual contact manifold is solved by MuJoCo"
+            }
+          }
+        }
+      },
+      "human": {
+        "edge": "-Y long edge",
+        "interaction_point_panel_local_m": [
+          0.27,
+          -0.1,
+          0.0
+        ],
+        "model": "single virtual point spring-damper on panel side surface; no human finger collision geometry",
+        "why_off_center_x": "retains nonzero moment arm for world +Y rotation"
+      }
+    },
+    "equality_constraints": 0
+  }
+}

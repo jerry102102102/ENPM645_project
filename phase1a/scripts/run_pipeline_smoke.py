@@ -22,7 +22,7 @@ from phase1a.interfaces.controller_contract import (
     validate_input,
     validate_output,
 )
-from phase1a.simulation.scenario_loader import REPO, config_hash, load_scenario
+from phase1a.simulation.scenario_loader import CONFIG, REPO, config_hash, load_scenario
 from phase1a.simulation.transition_world import TransitionWorld
 
 
@@ -215,6 +215,7 @@ def run_episode(
         platform=platform.platform(),
         warning_counts=world.sim.d.warning.number.tolist(),
     )
+    meta.update(world.hardware_binding)
     save_episode(path, sections, meta)
     return meta
 
@@ -222,6 +223,7 @@ def run_episode(
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--output", type=Path, default=REPO / "results/phase1a/smoke")
+    ap.add_argument("--scenario-config", type=Path, default=CONFIG)
     ap.add_argument(
         "--controller",
         default="phase1a.interfaces.controller_contract:SupportOnlyAdapter",
@@ -229,7 +231,7 @@ def main():
     a = ap.parse_args()
     if a.output.exists():
         ap.error("choose a fresh output directory; previous results are immutable")
-    config = load_scenario()
+    config = load_scenario(a.scenario_config)
     module, cls = a.controller.split(":")
     factory = getattr(importlib.import_module(module), cls)
     a.output.mkdir(parents=True)

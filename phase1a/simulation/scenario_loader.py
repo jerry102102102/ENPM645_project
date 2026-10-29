@@ -12,6 +12,7 @@ from phase0_v2.simulation.dual_gripper import CENTER, HAND, MODEL, DualPilot
 
 REPO = Path(__file__).resolve().parents[2]
 CONFIG = REPO / "phase1a/config/scenario_v1.json"
+EDGE_CONFIG = REPO / "phase1a/config/scenario_v2.json"
 REGISTRY = CONFIG.parent / "scenario_registry.json"
 DEPENDENCIES = [
     "phase0_v2/simulation/dual_gripper.py",
@@ -181,6 +182,47 @@ def freeze():
     )
 
 
+def make_sim(config):
+    variant = config.get("simulation_variant", "legacy_v2")
+    if variant == "legacy_v2":
+        return DualPilot(dict(config["parameters"]))
+    if variant == "edge_grasp_v2":
+        from phase1a.simulation.edge_gripper import EdgeGraspPilot
+
+        return EdgeGraspPilot(config["parameters"], REPO / config["model_path"])
+    raise ValueError("Unknown simulation variant: " + variant)
+
+
+def load_episode_scenario(metadata):
+    key = metadata["scenario_id"] + "@" + metadata["scenario_version"]
+    registry = json.loads(REGISTRY.read_text())
+    if key not in registry:
+        raise ValueError("Unknown episode scenario: " + key)
+    path = registry[key].get("config_path", str(CONFIG.relative_to(REPO)))
+    config = load_scenario(REPO / path)
+    if config_hash(config) != metadata["config_hash"]:
+        raise ValueError("Episode config hash mismatch")
+    return config
+
+
+def hardware_binding(config, sim=None):
+    key = config["scenario_id"] + "@" + config["scenario_version"]
+    lock = json.loads(REGISTRY.read_text())[key]
+    if "hardware_path" not in lock:
+        return {}
+    if config_hash(config) != lock["config_hash"]:
+        raise ValueError("Hardware scenario binding mismatch")
+    from phase1a.simulation.hardware_contract import validate_hardware
+
+    return validate_hardware(
+        make_sim(config) if sim is None else sim,
+        config,
+        REPO / config["model_path"],
+        REPO / lock["hardware_path"],
+        lock["hardware_hash"],
+    )
+
+
 def load_scenario(path=CONFIG):
     config = json.loads(Path(path).read_text())
     key = config["scenario_id"] + "@" + config["scenario_version"]
@@ -200,13 +242,15 @@ def load_scenario(path=CONFIG):
         != config["nominal_parameter_source_hash"]
     ):
         raise ValueError("Nominal v2 evidence changed")
-    sim = DualPilot(dict(config["parameters"]))
+    sim = make_sim(config)
     if extract_scene(sim) != config["scene"]:
         raise ValueError("Effective simulation differs from frozen scene")
-    if not np.array_equal(HAND, sim.m.site_pos[sim.hsite]) or not np.array_equal(
+    human_local = getattr(sim, "human_local", HAND)
+    if not np.array_equal(human_local, sim.m.site_pos[sim.hsite]) or not np.array_equal(
         CENTER, sim.m.body_pos[sim.panel]
     ):
         raise ValueError("v2 geometry constants disagree with MJCF")
+    hardware_binding(config, sim)
     return config
 
 
