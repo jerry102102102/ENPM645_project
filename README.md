@@ -10,6 +10,8 @@ UMD ENPM 645 的兩人專題。應用動機是焊接、噴漆或表面處理前�
 
 目前握持配置已修正為 **Robot L/R 同側長邊、人手對側長邊**，固定 panel-local 名義握點。先看 [新版位置圖與幾何定義](docs/SCENARIO_V2.md)、[實際 MuJoCo 驗證](results/phase1a/edge_v2/report.md)。人手／夾爪硬體亦已[固化為 hardware v1](docs/HARDWARE_V1.md)。原 scenario v1 與結果保留。
 
+新增方向：[雙臂整合與關節資料草案](docs/ARM_INTEGRATION_DRAFT.md)。使用者要求加入手臂與 q/dq，將協助目標、關節控制及實現接觸力分開。手臂型號待確認；目前已完成的場景仍是 free-root 夾爪，尚無完整手臂。
+
 0. 先看 [Phase 1A 使用方式](phase1a/README.md)、[結果報告](results/phase1a/report.md) 與 [組員 Controller Handoff](docs/CONTROL_HANDOFF.md)：**Data Pipeline GO；Controller Integration Ready**。資料管線可獨立使用 support-only baseline；下一步由 Track B 開發力分配與追蹤，再建立 expert labels。
    [原 v2 架構](docs/system-architecture-v2.md)、[v2 報告](phase0_v2/report.md) 與 [v1 報告](phase0_tactile/report.md) 完整保留。先前 Learning-Data NO-GO 指教師標籤尚未驗證，不妨礙目前 Track A 資料管線與 Track B 控制器分工。
 1. 看 [初版專題概念](docs/project-concept.md)：初期三模態探索；目前分工與範圍以 Phase 1A 規格為準。
