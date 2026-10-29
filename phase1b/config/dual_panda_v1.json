@@ -1,0 +1,101 @@
+{
+  "scenario_version": "3.0.0",
+  "hardware_version": "2.0.0",
+  "model": "phase1b/models/dual_panda_v1.xml",
+  "model_sha256": "e05d03dc53f43e83357fe854ffc03f8dbae21762a71287c2976f111e1b77ae8f",
+  "qpos": [
+    0.0,
+    0.0,
+    0.8,
+    0.9999956918006859,
+    0.0,
+    0.0029353671095039328,
+    0.0,
+    -0.004289012063226818,
+    -0.3468632796463834,
+    0.4399943823222378,
+    -2.2124372422175806,
+    -2.111212258295806,
+    2.660659400876073,
+    0.7474900744615438,
+    0.0,
+    0.0,
+    0.9432829406238785,
+    -0.7266550277619329,
+    -1.3604113565295095,
+    -2.3741766095274297,
+    -0.6192792894973108,
+    3.606228661699104,
+    -1.747405739277037,
+    0.0,
+    0.0
+  ],
+  "ik": {
+    "left": {
+      "position_error_m": 2.5035406037836763e-07,
+      "orientation_error_rad": 5.592868258330442e-07,
+      "iterations": 19
+    },
+    "right": {
+      "position_error_m": 5.760107163327676e-10,
+      "orientation_error_rad": 1.2893041259836037e-10,
+      "iterations": 25
+    }
+  },
+  "initial_penetrations": [],
+  "arm_joint_names": {
+    "left": [
+      "left_joint1",
+      "left_joint2",
+      "left_joint3",
+      "left_joint4",
+      "left_joint5",
+      "left_joint6",
+      "left_joint7"
+    ],
+    "right": [
+      "right_joint1",
+      "right_joint2",
+      "right_joint3",
+      "right_joint4",
+      "right_joint5",
+      "right_joint6",
+      "right_joint7"
+    ]
+  },
+  "parameters": {
+    "seed": 64600,
+    "block": 0,
+    "kh": 98.21089225920257,
+    "dh": 7.3012286492091985,
+    "friction": 1.0482960672343025,
+    "preload": 40.0,
+    "initial_angle": 0.005870742649786773,
+    "direction": 1,
+    "target_angle": 0.36680278277879985,
+    "ramp_duration": 0.8,
+    "disturbance_magnitude": 18.83430489381801,
+    "disturbance_point": [
+      0.06369127617716655,
+      -0.015330968965703077,
+      0.0
+    ],
+    "disturbance_start": 0.7,
+    "disturbance_end": 2.7,
+    "human_force_limit": 50.0,
+    "human_target_speed_limit": 0.35,
+    "settle_seconds": 2.0,
+    "duration": 4.0,
+    "timestep": 0.002,
+    "sample_hz": 100,
+    "human_offset": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "gripper_separation_m": 0.4
+  },
+  "source_scenario": "phase1a/config/scenario_v2.json",
+  "source_scenario_hash": "3b62da1deced1309477b49c7175d8968bef3dff6ec0a05b7976fadb346780689",
+  "vendor_manifest_hash": "669399d3cf239c1b7be05272c47682c7695a803d27b70341b96638a845b03a85"
+}

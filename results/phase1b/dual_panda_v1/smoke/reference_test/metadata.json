@@ -1,0 +1,825 @@
+{
+  "schema_version": "enpm645-articulated-transition/1.0",
+  "scenario_version": "3.0.0",
+  "hardware_version": "2.0.0",
+  "scenario": "B",
+  "physics_dt": 0.002,
+  "logging_hz": 100,
+  "steps_per_transition": 5,
+  "engine_time_origin": 2.0000000000000013,
+  "duration_seconds": 4.0,
+  "model_hash": "e05d03dc53f43e83357fe854ffc03f8dbae21762a71287c2976f111e1b77ae8f",
+  "config_hash": "c651031489f89f5cffca7c74020c7f9fe71abdd18f06ca4f0b61c3e9517dcad7",
+  "hardware_hash": "aa9486a4e2fa77ba5ac95b31305524b334d9ce70c14070d4b1ea9f3836b11c00",
+  "source_hashes": {
+    "phase0_tactile/scripts/run_experiment.py": "7c469fb09673e8301c4c2845caff8db9dceb4bf61a9b211f12f736dbaacc6d41",
+    "phase0_v2/sensing/contacts.py": "33f2bd4ebedefa42ac5ad395537cb2cfbde71f3061f9373f860699ca7e2fa43f",
+    "phase0_v2/simulation/dual_gripper.py": "0e33ea53a5b670a166da013a0294f2fd0726c6f5556cb66c0b29ab447ac512fb",
+    "phase1b/hardware.py": "9b7d208b0e4757e2c09500d033fa717709b4875a629ab50ef7b5414e2297be96",
+    "phase1b/interfaces.py": "bc018a9042a6e417573a49433426ba2f4950a41ca8b5103df16515d3f03b55ed",
+    "phase1b/pipeline.py": "57a506392ce5197e42ce3ae0ce48dddfe91e6640c704a588f3fefd694f5aaca8",
+    "phase1b/simulation.py": "9cbd97da680717a66c05a9094d436497804ffbb2cf722da2766bb454a680d7ad"
+  },
+  "joint_names": {
+    "left": [
+      "left_joint1",
+      "left_joint2",
+      "left_joint3",
+      "left_joint4",
+      "left_joint5",
+      "left_joint6",
+      "left_joint7"
+    ],
+    "right": [
+      "right_joint1",
+      "right_joint2",
+      "right_joint3",
+      "right_joint4",
+      "right_joint5",
+      "right_joint6",
+      "right_joint7"
+    ]
+  },
+  "controller_factory": "phase1b.interfaces:PositionHoldBaseline",
+  "reference_test": true,
+  "policy_profile_default": "baseline",
+  "joint_states_logged": true,
+  "joint_states_used_by_default_policy": false,
+  "expert_labels": "unavailable",
+  "control_status": "position_actuator_pipeline; assistance tracking not certified",
+  "array_layout": {
+    "observations": {
+      "object_pose": {
+        "shape": [
+          400,
+          7
+        ],
+        "dtype": "float64"
+      },
+      "object_velocity": {
+        "shape": [
+          400,
+          6
+        ],
+        "dtype": "float64"
+      },
+      "gripper_pose": {
+        "shape": [
+          400,
+          2,
+          7
+        ],
+        "dtype": "float64"
+      },
+      "wrist_ft_left": {
+        "shape": [
+          400,
+          6
+        ],
+        "dtype": "float64"
+      },
+      "tactile_left": {
+        "shape": [
+          400,
+          2,
+          3,
+          4,
+          4
+        ],
+        "dtype": "float64"
+      },
+      "contact_state_left": {
+        "shape": [
+          400,
+          2
+        ],
+        "dtype": "int64"
+      },
+      "wrist_sensor_left": {
+        "shape": [
+          400,
+          6
+        ],
+        "dtype": "float64"
+      },
+      "wrist_ft_right": {
+        "shape": [
+          400,
+          6
+        ],
+        "dtype": "float64"
+      },
+      "tactile_right": {
+        "shape": [
+          400,
+          2,
+          3,
+          4,
+          4
+        ],
+        "dtype": "float64"
+      },
+      "contact_state_right": {
+        "shape": [
+          400,
+          2
+        ],
+        "dtype": "int64"
+      },
+      "wrist_sensor_right": {
+        "shape": [
+          400,
+          6
+        ],
+        "dtype": "float64"
+      },
+      "timestamp": {
+        "shape": [
+          400
+        ],
+        "dtype": "float64"
+      },
+      "engine_timestamp": {
+        "shape": [
+          400
+        ],
+        "dtype": "float64"
+      },
+      "physics_tick": {
+        "shape": [
+          400
+        ],
+        "dtype": "int64"
+      },
+      "arm_joint_position": {
+        "shape": [
+          400,
+          2,
+          7
+        ],
+        "dtype": "float64"
+      },
+      "arm_joint_velocity": {
+        "shape": [
+          400,
+          2,
+          7
+        ],
+        "dtype": "float64"
+      },
+      "arm_actuator_torque": {
+        "shape": [
+          400,
+          2,
+          7
+        ],
+        "dtype": "float64"
+      },
+      "arm_actuator_force": {
+        "shape": [
+          400,
+          2,
+          7
+        ],
+        "dtype": "float64"
+      },
+      "gripper_joint_position": {
+        "shape": [
+          400,
+          2,
+          2
+        ],
+        "dtype": "float64"
+      },
+      "gripper_joint_velocity": {
+        "shape": [
+          400,
+          2,
+          2
+        ],
+        "dtype": "float64"
+      },
+      "gripper_actuator_force": {
+        "shape": [
+          400,
+          4
+        ],
+        "dtype": "float64"
+      },
+      "end_effector_pose": {
+        "shape": [
+          400,
+          2,
+          7
+        ],
+        "dtype": "float64"
+      },
+      "object_position": {
+        "shape": [
+          400,
+          3
+        ],
+        "dtype": "float64"
+      },
+      "object_orientation": {
+        "shape": [
+          400,
+          4
+        ],
+        "dtype": "float64"
+      },
+      "object_angular_velocity": {
+        "shape": [
+          400,
+          3
+        ],
+        "dtype": "float64"
+      },
+      "object_linear_velocity": {
+        "shape": [
+          400,
+          3
+        ],
+        "dtype": "float64"
+      },
+      "object_contact_wrench": {
+        "shape": [
+          400,
+          6
+        ],
+        "dtype": "float64"
+      },
+      "gripper_velocity": {
+        "shape": [
+          400,
+          2,
+          6
+        ],
+        "dtype": "float64"
+      },
+      "end_effector_velocity": {
+        "shape": [
+          400,
+          2,
+          6
+        ],
+        "dtype": "float64"
+      },
+      "wrist_ft_left_world_at_panel_com": {
+        "shape": [
+          400,
+          6
+        ],
+        "dtype": "float64"
+      },
+      "wrist_ft_right_world_at_panel_com": {
+        "shape": [
+          400,
+          6
+        ],
+        "dtype": "float64"
+      }
+    },
+    "next_observations": {
+      "object_pose": {
+        "shape": [
+          400,
+          7
+        ],
+        "dtype": "float64"
+      },
+      "object_velocity": {
+        "shape": [
+          400,
+          6
+        ],
+        "dtype": "float64"
+      },
+      "gripper_pose": {
+        "shape": [
+          400,
+          2,
+          7
+        ],
+        "dtype": "float64"
+      },
+      "wrist_ft_left": {
+        "shape": [
+          400,
+          6
+        ],
+        "dtype": "float64"
+      },
+      "tactile_left": {
+        "shape": [
+          400,
+          2,
+          3,
+          4,
+          4
+        ],
+        "dtype": "float64"
+      },
+      "contact_state_left": {
+        "shape": [
+          400,
+          2
+        ],
+        "dtype": "int64"
+      },
+      "wrist_sensor_left": {
+        "shape": [
+          400,
+          6
+        ],
+        "dtype": "float64"
+      },
+      "wrist_ft_right": {
+        "shape": [
+          400,
+          6
+        ],
+        "dtype": "float64"
+      },
+      "tactile_right": {
+        "shape": [
+          400,
+          2,
+          3,
+          4,
+          4
+        ],
+        "dtype": "float64"
+      },
+      "contact_state_right": {
+        "shape": [
+          400,
+          2
+        ],
+        "dtype": "int64"
+      },
+      "wrist_sensor_right": {
+        "shape": [
+          400,
+          6
+        ],
+        "dtype": "float64"
+      },
+      "timestamp": {
+        "shape": [
+          400
+        ],
+        "dtype": "float64"
+      },
+      "engine_timestamp": {
+        "shape": [
+          400
+        ],
+        "dtype": "float64"
+      },
+      "physics_tick": {
+        "shape": [
+          400
+        ],
+        "dtype": "int64"
+      },
+      "arm_joint_position": {
+        "shape": [
+          400,
+          2,
+          7
+        ],
+        "dtype": "float64"
+      },
+      "arm_joint_velocity": {
+        "shape": [
+          400,
+          2,
+          7
+        ],
+        "dtype": "float64"
+      },
+      "arm_actuator_torque": {
+        "shape": [
+          400,
+          2,
+          7
+        ],
+        "dtype": "float64"
+      },
+      "arm_actuator_force": {
+        "shape": [
+          400,
+          2,
+          7
+        ],
+        "dtype": "float64"
+      },
+      "gripper_joint_position": {
+        "shape": [
+          400,
+          2,
+          2
+        ],
+        "dtype": "float64"
+      },
+      "gripper_joint_velocity": {
+        "shape": [
+          400,
+          2,
+          2
+        ],
+        "dtype": "float64"
+      },
+      "gripper_actuator_force": {
+        "shape": [
+          400,
+          4
+        ],
+        "dtype": "float64"
+      },
+      "end_effector_pose": {
+        "shape": [
+          400,
+          2,
+          7
+        ],
+        "dtype": "float64"
+      },
+      "object_position": {
+        "shape": [
+          400,
+          3
+        ],
+        "dtype": "float64"
+      },
+      "object_orientation": {
+        "shape": [
+          400,
+          4
+        ],
+        "dtype": "float64"
+      },
+      "object_angular_velocity": {
+        "shape": [
+          400,
+          3
+        ],
+        "dtype": "float64"
+      },
+      "object_linear_velocity": {
+        "shape": [
+          400,
+          3
+        ],
+        "dtype": "float64"
+      },
+      "object_contact_wrench": {
+        "shape": [
+          400,
+          6
+        ],
+        "dtype": "float64"
+      },
+      "gripper_velocity": {
+        "shape": [
+          400,
+          2,
+          6
+        ],
+        "dtype": "float64"
+      },
+      "end_effector_velocity": {
+        "shape": [
+          400,
+          2,
+          6
+        ],
+        "dtype": "float64"
+      },
+      "wrist_ft_left_world_at_panel_com": {
+        "shape": [
+          400,
+          6
+        ],
+        "dtype": "float64"
+      },
+      "wrist_ft_right_world_at_panel_com": {
+        "shape": [
+          400,
+          6
+        ],
+        "dtype": "float64"
+      }
+    },
+    "controller": {
+      "command_timestamp": {
+        "shape": [
+          400,
+          5
+        ],
+        "dtype": "float64"
+      },
+      "arm_position_target": {
+        "shape": [
+          400,
+          5,
+          2,
+          7
+        ],
+        "dtype": "float64"
+      },
+      "pad_force_command": {
+        "shape": [
+          400,
+          5,
+          4
+        ],
+        "dtype": "float64"
+      },
+      "arm_requested_servo_torque": {
+        "shape": [
+          400,
+          5,
+          2,
+          7
+        ],
+        "dtype": "float64"
+      },
+      "arm_actuator_torque_at_actuation": {
+        "shape": [
+          400,
+          5,
+          2,
+          7
+        ],
+        "dtype": "float64"
+      },
+      "arm_actuator_force_at_actuation": {
+        "shape": [
+          400,
+          5,
+          2,
+          7
+        ],
+        "dtype": "float64"
+      },
+      "arm_force_saturated": {
+        "shape": [
+          400,
+          5,
+          2,
+          7
+        ],
+        "dtype": "bool"
+      },
+      "controller_mode": {
+        "shape": [
+          400,
+          5
+        ],
+        "dtype": "<U22"
+      },
+      "assist_reference_executed": {
+        "shape": [
+          400,
+          5
+        ],
+        "dtype": "bool"
+      },
+      "realized_timestamp": {
+        "shape": [
+          400,
+          5
+        ],
+        "dtype": "float64"
+      },
+      "arm_actuator_torque_after_step": {
+        "shape": [
+          400,
+          5,
+          2,
+          7
+        ],
+        "dtype": "float64"
+      },
+      "realized_object_contact_wrench": {
+        "shape": [
+          400,
+          5,
+          6
+        ],
+        "dtype": "float64"
+      },
+      "timestamp": {
+        "shape": [
+          400
+        ],
+        "dtype": "float64"
+      },
+      "reference_timestamp": {
+        "shape": [
+          400
+        ],
+        "dtype": "float64"
+      },
+      "desired_assist_torque": {
+        "shape": [
+          400
+        ],
+        "dtype": "float64"
+      },
+      "reference_valid": {
+        "shape": [
+          400
+        ],
+        "dtype": "bool"
+      },
+      "reference_source": {
+        "shape": [
+          400
+        ],
+        "dtype": "<U13"
+      },
+      "tracking_error_Nm": {
+        "shape": [
+          400
+        ],
+        "dtype": "float64"
+      },
+      "tracking_error_valid": {
+        "shape": [
+          400
+        ],
+        "dtype": "bool"
+      }
+    },
+    "privileged": {
+      "timestamp": {
+        "shape": [
+          400
+        ],
+        "dtype": "float64"
+      },
+      "scenario_label": {
+        "shape": [
+          400
+        ],
+        "dtype": "<U1"
+      },
+      "human_goal": {
+        "shape": [
+          400
+        ],
+        "dtype": "float64"
+      },
+      "human_target_trajectory": {
+        "shape": [
+          400,
+          3
+        ],
+        "dtype": "float64"
+      },
+      "human_application_point": {
+        "shape": [
+          400,
+          3
+        ],
+        "dtype": "float64"
+      },
+      "human_applied_force": {
+        "shape": [
+          400,
+          3
+        ],
+        "dtype": "float64"
+      },
+      "external_application_point": {
+        "shape": [
+          400,
+          3
+        ],
+        "dtype": "float64"
+      },
+      "external_disturbance_force": {
+        "shape": [
+          400,
+          3
+        ],
+        "dtype": "float64"
+      },
+      "human_applied_wrench": {
+        "shape": [
+          400,
+          6
+        ],
+        "dtype": "float64"
+      },
+      "external_disturbance_wrench": {
+        "shape": [
+          400,
+          6
+        ],
+        "dtype": "float64"
+      }
+    },
+    "supervision": {
+      "timestamp": {
+        "shape": [
+          400
+        ],
+        "dtype": "float64"
+      },
+      "expert_assist_torque_ref": {
+        "shape": [
+          400
+        ],
+        "dtype": "float64"
+      },
+      "expert_label_valid": {
+        "shape": [
+          400
+        ],
+        "dtype": "bool"
+      }
+    },
+    "diagnostics": {
+      "timestamp": {
+        "shape": [
+          400,
+          5
+        ],
+        "dtype": "float64"
+      },
+      "penetration_m": {
+        "shape": [
+          400,
+          5
+        ],
+        "dtype": "float64"
+      },
+      "unexpected_penetration_count": {
+        "shape": [
+          400,
+          5
+        ],
+        "dtype": "int64"
+      },
+      "unexpected_penetration_max_m": {
+        "shape": [
+          400,
+          5
+        ],
+        "dtype": "int64"
+      },
+      "arm_joint_limit_margin_rad": {
+        "shape": [
+          400,
+          5,
+          2,
+          7
+        ],
+        "dtype": "float64"
+      },
+      "contact_counts": {
+        "shape": [
+          400,
+          5,
+          4
+        ],
+        "dtype": "int64"
+      },
+      "panel_balance_residual_N": {
+        "shape": [
+          400,
+          5
+        ],
+        "dtype": "float64"
+      },
+      "arm_external_generalized_force": {
+        "shape": [
+          400,
+          5,
+          2,
+          7
+        ],
+        "dtype": "float64"
+      },
+      "xfrc_applied_norm": {
+        "shape": [
+          400,
+          5
+        ],
+        "dtype": "float64"
+      },
+      "warnings": {
+        "shape": [
+          400,
+          5,
+          8
+        ],
+        "dtype": "int32"
+      }
+    }
+  }
+}

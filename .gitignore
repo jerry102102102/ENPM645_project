@@ -15,3 +15,7 @@ phase0_v2/results/reproduction*/
 # Phase 1A reference smoke is versioned; development/replays remain local.
 results/phase1a/dev*/
 results/phase1a/reproduction*/
+
+# Articulated dual-Panda development and replay outputs.
+results/phase1b/dev*/
+results/phase1b/reproduction*/

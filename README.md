@@ -4,13 +4,13 @@
 
 目前題名：**Intent-Aware Physical Human-Robot Collaboration Using Force and Tactile Sensing**
 
-UMD ENPM 645 的兩人專題。應用動機是焊接、噴漆或表面處理前的工件重新定向；目前已完成 CPU MuJoCo 的 Phase 0 v1/v2 pilot，以及 Phase 1A 固定場景與資料管線；尚未訓練模型。
+UMD ENPM 645 的兩人專題。應用動機是焊接、噴漆或表面處理前的工件重新定向；目前已完成 CPU MuJoCo 的 Phase 0 v1/v2 pilot、Phase 1A 資料管線，以及 Phase 1B 雙 Panda 物理整合與 Joint State Logging；尚未訓練模型。
 
 ## 從這裡開始
 
 目前握持配置已修正為 **Robot L/R 同側長邊、人手對側長邊**，固定 panel-local 名義握點。先看 [新版位置圖與幾何定義](docs/SCENARIO_V2.md)、[實際 MuJoCo 驗證](results/phase1a/edge_v2/report.md)。人手／夾爪硬體亦已[固化為 hardware v1](docs/HARDWARE_V1.md)。原 scenario v1 與結果保留。
 
-新增方向：[雙臂整合與關節資料草案](docs/ARM_INTEGRATION_DRAFT.md)。使用者要求加入手臂與 q/dq，將協助目標、關節控制及實現接觸力分開。手臂型號待確認；目前已完成的場景仍是 free-root 夾爪，尚無完整手臂。
+**目前新版：兩支 Franka Panda + 自訂 tactile 夾爪，Scenario 3.0.0 / Hardware 2.0.0。** [使用與重現](phase1b/README.md)、[四項驗收報告](docs/DUAL_PANDA_INTEGRATION_REPORT.md)、[雙臂 Controller Handoff](docs/CONTROL_HANDOFF_ARMS.md)、[資料格式](docs/DATA_SCHEMA_V2.md)。基本接觸支撐與 Joint State Logging 已驗證；目前使用 position-hold baseline，尚未實作 assistance tracking 或 Expert。Joint States 預設只記錄，未加入學習輸入。上述 Scenario v2 / Hardware v1 保留為舊 free-root 夾爪實驗。
 
 0. 先看 [Phase 1A 使用方式](phase1a/README.md)、[結果報告](results/phase1a/report.md) 與 [組員 Controller Handoff](docs/CONTROL_HANDOFF.md)：**Data Pipeline GO；Controller Integration Ready**。資料管線可獨立使用 support-only baseline；下一步由 Track B 開發力分配與追蹤，再建立 expert labels。
    [原 v2 架構](docs/system-architecture-v2.md)、[v2 報告](phase0_v2/report.md) 與 [v1 報告](phase0_tactile/report.md) 完整保留。先前 Learning-Data NO-GO 指教師標籤尚未驗證，不妨礙目前 Track A 資料管線與 Track B 控制器分工。
@@ -25,6 +25,9 @@ UMD ENPM 645 的兩人專題。應用動機是焊接、噴漆或表面處理前�
 
 ```bash
 uv sync --locked
+uv run --locked python -m phase1b.scripts.run_suite --output results/phase1b/reproduction --render
+
+# 原 Phase 1A 重現入口
 uv run --locked python -m unittest phase1a.tests.test_contracts phase1a.tests.test_edge_geometry -v
 uv run --locked python -m phase1a.scripts.run_edge_scene --output results/phase1a/reproduction-edge
 ```
@@ -39,17 +42,19 @@ uv run --locked python -m phase1a.scripts.run_edge_scene --output results/phase1
 | --- | --- |
 | 第一階段 | **模擬環境**（使用者已確認） |
 | 感知來源 | 左右獨立 F/T、tactile、object state；S1/S2/S3 分開評估，VLM 不在目前 MVP |
-| 本次最小任務 | 單一虛擬人手 + 兩個相隔 40 cm、各自雙 pad 的夾爪 + 剛性板材 |
+| 本次最小任務 | 單一虛擬人手 + 兩支完整 Panda + 相隔 40 cm 的雙 pad 自訂夾爪 + 剛性板材 |
 | 未來學習目標 | 物體 COM 上 world +y 軸額外協助力矩（Nm），不是關節動作或 A/B/C 分類 |
 | 本次角度範圍 | 小角度主動旋轉、保持、保持＋外部擾動；不宣稱已完成 90° 翻轉 |
 | 模擬器 | 本機 Python + MuJoCo 3.3.5，CPU、headless、無 Docker |
-| 已完成 | 文獻卡、v1/v2 pilot；Phase 1A frozen scenario、typed controller interface、4 個 smoke episodes / 1,700 transitions、因果隔離與回歸驗證 |
+| 已完成 | 文獻卡、v1/v2 pilot、Phase 1A；Phase 1B 雙 Panda、14 joints、接觸支撐、1,600 transitions、24 項新舊測試與 424 arrays exact replay |
 | 下一步 | Track B 實作 object-wrench allocation / tracking；Track A 後續建立驗證過的 expert 與正式示範；目前不訓練或做 CG-DAgger |
 
 ## Repo 結構
 
 ```text
-phase1a/               # 目前：固定 v2 場景、desired torque interface、因果 transition pipeline
+phase1b/               # 目前：雙 Panda、joint-position hold、Joint State Logger、vendor/model/config
+results/phase1b/       # 新版驗收、A/B/C/reference recordings、同步影片
+phase1a/               # 保留：固定 v2 場景、desired torque interface、因果 transition pipeline
 results/phase1a/       # 4 個 smoke episodes、validation、圖表、Q1–Q9 report
 phase0_v2/              # 保留：雙握持端、分層力矩學習架構與可重現驗證
   README.md / report.md

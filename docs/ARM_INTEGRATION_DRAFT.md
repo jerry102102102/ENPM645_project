@@ -1,6 +1,6 @@
 # 雙臂整合與關節資料草案
 
-狀態：使用者已要求加入真正的手臂與關節資料。手臂型號待澄清：口述「Frame Capture」可能是 Franka Panda，也可能是影格擷取；尚未選定或安裝模型。本文為介面草案，不代表雙臂模擬、力追蹤或新資料集已完成。現有 scenario v2 / hardware v1 與結果保留。
+歷史草案：使用者已確認使用兩支 Franka Panda。整合現況以 [Phase 1B](../phase1b/README.md)、[驗收報告](DUAL_PANDA_INTEGRATION_REPORT.md) 與 [資料契約](DATA_SCHEMA_V2.md) 為準。現有 scenario v2 / hardware v1 與結果保留；以下設計脈絡保留，但尚未選型的敘述已被正式版本取代。
 
 ## 目前實作與必要改動
 

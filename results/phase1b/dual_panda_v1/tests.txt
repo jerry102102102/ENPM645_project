@@ -1,0 +1,29 @@
+test_frozen_geometry_and_no_world_fixture (phase1a.tests.test_contracts.Contracts.test_frozen_geometry_and_no_world_fixture) ... ok
+test_history_rejects_future_duplicate_and_hidden_fields (phase1a.tests.test_contracts.Contracts.test_history_rejects_future_duplicate_and_hidden_fields) ... ok
+test_input_blocks_privileged_and_future_values (phase1a.tests.test_contracts.Contracts.test_input_blocks_privileged_and_future_values) ... ok
+test_mutated_config_rejected (phase1a.tests.test_contracts.Contracts.test_mutated_config_rejected) ... ok
+test_new_controller_import_and_dataset_poisoning (phase1a.tests.test_contracts.Contracts.test_new_controller_import_and_dataset_poisoning) ... ok
+test_output_rejects_wrong_shape_nan_limits_and_fake_feedback (phase1a.tests.test_contracts.Contracts.test_output_rejects_wrong_shape_nan_limits_and_fake_feedback) ... ok
+test_reference_sign_and_invalid_values (phase1a.tests.test_contracts.Contracts.test_reference_sign_and_invalid_values) ... ok
+test_scripted_schedule (phase1a.tests.test_contracts.Contracts.test_scripted_schedule) ... ok
+test_support_ignores_positive_and_negative_reference (phase1a.tests.test_contracts.Contracts.test_support_ignores_positive_and_negative_reference) ... ok
+test_valid_expert_and_fake_zero_unavailable_rejected (phase1a.tests.test_contracts.Contracts.test_valid_expert_and_fake_zero_unavailable_rejected) ... ok
+test_frozen_hardware_file_cannot_be_silently_changed (phase1a.tests.test_edge_geometry.EdgeGeometry.test_frozen_hardware_file_cannot_be_silently_changed) ... ok
+test_frozen_hardware_rejects_mass_or_contact_parameter_changes (phase1a.tests.test_edge_geometry.EdgeGeometry.test_frozen_hardware_rejects_mass_or_contact_parameter_changes) ... ok
+test_human_target_uses_new_site_without_preload_geometry_error (phase1a.tests.test_edge_geometry.EdgeGeometry.test_human_target_uses_new_site_without_preload_geometry_error) ... ok
+test_nominal_edge_anchors_and_physical_pad_regions (phase1a.tests.test_edge_geometry.EdgeGeometry.test_nominal_edge_anchors_and_physical_pad_regions) ... ok
+test_old_geometry_with_new_adapter_matches_original_dynamics (phase1a.tests.test_edge_geometry.EdgeGeometry.test_old_geometry_with_new_adapter_matches_original_dynamics) ... ok
+test_only_intended_mjcf_attributes_change (phase1a.tests.test_edge_geometry.EdgeGeometry.test_only_intended_mjcf_attributes_change) ... ok
+test_settled_contacts_on_panel_surfaces (phase1a.tests.test_edge_geometry.EdgeGeometry.test_settled_contacts_on_panel_surfaces) ... ok
+test_arm_actuator_disable_loses_support (phase1b.tests.test_integration.IntegrationTests.test_arm_actuator_disable_loses_support) ... ok
+test_default_policy_logs_but_excludes_joint_states_and_truth (phase1b.tests.test_integration.IntegrationTests.test_default_policy_logs_but_excludes_joint_states_and_truth) ... ok
+test_logging_alignment_replay_and_corruption_rejection (phase1b.tests.test_integration.IntegrationTests.test_logging_alignment_replay_and_corruption_rejection) ... ok
+test_nominal_ik_and_limits (phase1b.tests.test_integration.IntegrationTests.test_nominal_ik_and_limits) ... ok
+test_only_panel_has_free_joint_and_bases_are_fixed (phase1b.tests.test_integration.IntegrationTests.test_only_panel_has_free_joint_and_bases_are_fixed) ... ok
+test_pad_removal_removes_sensing_and_support (phase1b.tests.test_integration.IntegrationTests.test_pad_removal_removes_sensing_and_support) ... ok
+test_reference_units_future_rejection_and_bounds (phase1b.tests.test_integration.IntegrationTests.test_reference_units_future_rejection_and_bounds) ... ok
+
+----------------------------------------------------------------------
+Ran 24 tests in 2.498s
+
+OK
