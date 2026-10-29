@@ -15,6 +15,12 @@ uv run --locked python -m phase1a.scripts.run_edge_scene --output results/phase1
 
 下方原 `run_all` 命令保留為歷史 v1 重現入口；新版收集/接入 controller 時，對 `run_pipeline_smoke` 加上 `--scenario-config phase1a/config/scenario_v2.json`。
 
+固定硬體的 [tactile 分布圖與動圖](../results/phase1a/edge_v2/tactile_distribution/README.md) 比較人手旋轉 A、外部擾動 C 和 HOLD B。圖中是各 sensor frame 的接觸力分箱（N/bin），不是壓力 Pa；靜態圖平均 0.20 s，動圖保留原始分箱跳動。從既有資料重現，無須重跑物理模擬：
+
+```bash
+uv run --locked python -m phase1a.scripts.plot_tactile_distribution --output results/phase1a/dev-tactile-distribution
+```
+
 從 repository root 使用 uv，無須 Docker。`.python-version` 固定 Python 3.12.11；`pyproject.toml` 固定 MuJoCo 3.3.5 / NumPy 2.2.6 / matplotlib 3.10.6，`uv.lock` 鎖定完整依賴。首次使用或拉取依賴更新後執行 `uv sync --locked`，uv 管理本機 `.venv`。
 
 ```bash
