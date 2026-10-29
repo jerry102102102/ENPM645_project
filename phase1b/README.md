@@ -8,6 +8,10 @@
 - [新版資料格式](../docs/DATA_SCHEMA_V2.md)
 - [組員 Controller Handoff](../docs/CONTROL_HANDOFF_ARMS.md)
 
+## 動作示範
+
+原 hold baseline 用來驗證支撐；另新增 [A/B/C 動作展示與實測結果](../results/phase1b/motion_examples_v1/README.md)：A 旋轉 +20°、B 抬升 8 cm 後停留、C 旋轉 −12° 後承受固定向下 20 N。兩臂由 scripted joint-position trajectories 驅動，維持物理接觸；未實作意圖推論或 assistance tracking。動作與人手施力時間事先設定，舊版 A/B/C 測試保留。
+
 ## 重現
 
 ```bash

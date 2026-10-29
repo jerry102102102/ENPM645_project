@@ -12,6 +12,8 @@ UMD ENPM 645 的兩人專題。應用動機是焊接、噴漆或表面處理前�
 
 **目前新版：兩支 Franka Panda + 自訂 tactile 夾爪，Scenario 3.0.0 / Hardware 2.0.0。** [使用與重現](phase1b/README.md)、[四項驗收報告](docs/DUAL_PANDA_INTEGRATION_REPORT.md)、[雙臂 Controller Handoff](docs/CONTROL_HANDOFF_ARMS.md)、[資料格式](docs/DATA_SCHEMA_V2.md)。基本接觸支撐與 Joint State Logging 已驗證；目前使用 position-hold baseline，尚未實作 assistance tracking 或 Expert。Joint States 預設只記錄，未加入學習輸入。上述 Scenario v2 / Hardware v1 保留為舊 free-root 夾爪實驗。
 
+**看實際動作：** [A 旋轉 20°、B 抬升 8 cm 後停留、C 承受固定向下 20 N](results/phase1b/motion_examples_v1/README.md)。含雙臂、板材、人手與外力方向、同步 tactile；這是 scripted motion 展示，尚未依人類意圖自動產生動作。
+
 0. 先看 [Phase 1A 使用方式](phase1a/README.md)、[結果報告](results/phase1a/report.md) 與 [組員 Controller Handoff](docs/CONTROL_HANDOFF.md)：**Data Pipeline GO；Controller Integration Ready**。資料管線可獨立使用 support-only baseline；下一步由 Track B 開發力分配與追蹤，再建立 expert labels。
    [原 v2 架構](docs/system-architecture-v2.md)、[v2 報告](phase0_v2/report.md) 與 [v1 報告](phase0_tactile/report.md) 完整保留。先前 Learning-Data NO-GO 指教師標籤尚未驗證，不妨礙目前 Track A 資料管線與 Track B 控制器分工。
 1. 看 [初版專題概念](docs/project-concept.md)：初期三模態探索；目前分工與範圍以 Phase 1A 規格為準。
