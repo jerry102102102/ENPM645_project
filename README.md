@@ -28,7 +28,7 @@ Public sensor history ──► Expert / future learned policy
 
 ## Where we are now
 
-Status checked against implementation revision `8fe6467`. This documentation update adds no controller or experiment result.
+Status checked against repository revision `e7799c4`; runtime implementation is unchanged from `8fe6467`. This documentation update adds no controller or experiment result.
 
 | Component | Available now | Still missing |
 |---|---|---|
@@ -46,7 +46,7 @@ Evidence: [physical tests and videos at 37b8c24](results/phase1b/current/README.
 | Order / owner | Work | Deliverable / completion condition |
 |---|---|---|
 | **Now — Track B (controller teammate)** | Implement object-level and dual-arm control using the existing interfaces; expose support/assistance decomposition | Runnable T0–T3, numerical plots/report, contact/limit diagnostics, exact commands and commit; calibrated torque envelope |
-| **In parallel — Track A (Jerry)** | Define benchmark fixtures/metrics, explicit teacher intent streams, and label-validity rules; prepare T4–T7 human/disturbance schedules | Task and acceptance definitions paired by task_id, development/held-out split, reproducible inputs; no label promotion |
+| **In parallel — Track A (Jerry)** | Prepare the shared T0–T3 scene/reset/reference fixtures and metrics, then explicit teacher intent and T4–T7 human/disturbance schedules | Task and acceptance definitions paired by task_id, development/held-out split, reproducible inputs; no label promotion |
 | **Then — both** | Connect E1/E2 upstream of the same controllers; compare support_only / E0 / E1 / E2 under matched conditions | T4–T7 closed-loop evidence and honest failure reports; optional T8 |
 | **Only after the gates — Track A** | Collect a small pilot (approximately 10–20 valid episodes), diagnose observation/label consistency | Learning-Data GO before offline learning and joint/tactile ablations |
 
@@ -54,7 +54,7 @@ Evidence: [physical tests and videos at 37b8c24](results/phase1b/current/README.
 
 ## Next acceptance benchmark — v1.0, planned
 
-Adapted from the team's Task & Test Benchmark v1.0. **All T-cases below are pending, not passed results.** Each needs both a task specification (initial state, human goal/schedule, disturbance, command, seed, permissions) and an acceptance test (measurements, baseline, locked tolerances, failure reasons, reproduction evidence).
+Adapted from the team's Task & Test Benchmark v1.0. The scope is **T0–T8 only; T9 is not defined**. **All T-cases below are pending, not passed results.** Each needs both a task specification (initial state, human goal/schedule, disturbance, command, seed, permissions) and an acceptance test (measurements, baseline, locked tolerances, failure reasons, reproduction evidence).
 
 T0–T3 bypass intent/Expert logic and inject deterministic test references. T4–T8 use actual spring-damper human forces and rule/Expert decisions. No prerecorded Panda joint trajectories or virtual root wrenches may stand in for control. Deterministic inputs support reproducibility, not exact realization of arbitrary torque.
 
@@ -71,6 +71,35 @@ T0–T3 bypass intent/Expert logic and inject deterministic test references. T4�
 | **T8 — optional** Pause / resume / reverse | Interrupt, reverse, and resume human guidance at varying times | Response delay, unwanted continued effort, overshoot, and contact stability |
 
 All amplitudes, rates, angles, durations, and acceptance tolerances require calibration. **±10° are candidate integration targets; ±0.02 Nm was only an interface-test bound, never a validated tracking envelope.** The prior world −Z 20 N demo force is off-COM and produces vertical load plus pitch/other torques. Scalar Y assistance cannot handle all of that; 20 N is a later stress test, not the starting requirement for T7.
+
+### Scene handoff for T0–T3
+
+**We provide one repeatable scene and a torque-request sequence; the controller teammate designs how the arms execute it.** These are planned fixtures, not four new robot models. Existing hardware and sensor code are reusable; the dedicated fixture/runner is still missing. Exact setup, timing examples, and outputs are in the [T0–T3 Scene Recipe](docs/REFERENCE.md#t0t3-scene-recipe).
+
+| Responsibility | Track A prepares | Track B implements / demonstrates |
+|---|---|---|
+| Starting scene | Same two arms, four contacting pads, panel, and one human hand; a validated settled snapshot with reproducible reset | Initialization of controller state from the snapshot; support without a hidden root wrench or prerecorded joint motion |
+| Human and environment | Fixed human target with unchanged spring-damper parameters; zero target velocity; no external disturbance | Respond to actual contacts and human reaction without reading hidden human goals or truth forces |
+| Test input | Timestamped `AssistanceDecision`, source=`scripted_test`; HOLD mode for all T0–T3; torque 0, positive pulse, negative pulse, or bipolar sequence | Same object/arm control law for all cases; compliant pitch response, lower-level support, coordinated joint/pad commands within limits |
+| Comparison and records | Matched zero-assistance counterpart for every active run; log public sensing and private fixture truth separately | Real baseline/assistance/total/allocation/command diagnostics, saturation and contact checks; no fabricated tracking values |
+| Acceptance | Jointly agree and freeze amplitudes, rates, tolerances, and evaluation windows after calibration | Supply runnable T0–T3 results, plots, failures, exact code/version/commands; report unverified quantities honestly |
+
+Using HOLD throughout is a **control-test convention**, enabled by the contract's nonzero HOLD torque. It holds the mode/reference policy constant so T1/T2 do not accidentally test an intent-state transition. It is not an E1 decision or a demand for a perfectly immobile panel. The teammate must document how the compliant pitch law combines the test torque with basic support.
+
+Expected differences are simple: **T0 supports; T1 adds +Y torque; T2 adds −Y torque; T3 changes and removes that torque smoothly.** A torque pulse is not an angle target. We do not prescribe an exact joint trajectory or require ±10° in T1/T2. A short test may show a small deflection or mainly a change in contact loading. Passing requires credible incremental torque evidence, not a large visible rotation. Returning torque to zero removes extra assistance; returning the panel to its original pose is a separate behavior and is not automatically guaranteed.
+
+### How the human scenes differ in T4–T8
+
+These cases test interaction behavior after control capability is established. A target changes the virtual hand's spring-damper force; it does not teleport the panel or prescribe Panda joint positions.
+
+| Case | Human / environment behavior | Main question |
+|---|---|---|
+| T4 / T5 | Begin in HOLD, then move the human target toward a small positive/negative panel rotation; vary onset. ±10° are candidate offsets from the recorded initial angle | Does real guidance trigger assistance in the requested direction without anticipation? |
+| T6 | Human keeps the initial orientation, with small correction motions; no large disturbance | Does the system hold without mistaking minor interaction for a rotation command? |
+| T7 | Human target stays fixed while an independent off-COM disturbance ramps in and persists | Does assistance reduce panel deviation and human effort while preserving support? |
+| T8 | Human rotates, pauses the target at the reached intermediate reference, resumes, or reverses; vary transition times | Can the system stop adding rotation, resume, and change direction without continuing toward an obsolete goal? |
+
+A fixed/paused human target can still produce force when the panel moves away; it does not mean the human disappears or force becomes zero. Each case resets independently. All strategies share goal/impedance/disturbance conditions, while actual forces and trajectories are allowed to differ through feedback. T4–T8 schedules and intent streams are Track A's responsibility; controller execution and limits remain Track B's. Acceptance is shared.
 
 ### What counts as extra-torque tracking
 
@@ -95,7 +124,7 @@ If small extra torque cannot be tracked with position servos, report Control NO-
 
 ### Concrete next coding deliverable
 
-Build a T0–T3 runner using the existing pipeline, a machine-readable benchmark configuration pairing tasks/tests by `task_id`, and a versioned locked-threshold artifact. Keep task schedules and metrics together rather than duplicating them across documents. These artifacts **do not exist yet**; this page is their shared specification.
+Track A supplies the scene/reset/reference fixtures; Track B integrates its controllers; both own acceptance. Build a T0–T3 runner using the existing pipeline, a machine-readable benchmark configuration pairing tasks/tests by `task_id`, and a versioned locked-threshold artifact. Keep task schedules and metrics together rather than duplicating them across documents. These artifacts **do not exist yet**; this page is their shared specification.
 
 Every case must save its seed, initial q/dq, settled panel pose, human/force onset, actual controller/expert versions, code/model hashes, source data, thresholds, metrics, pass/fail (or unverified), and failure reasons. Later integration must add explicit `ground_truth_intent` in the teacher-only stream; do not infer it from A/B/C. Formal demonstrations require Expert + Controller closed-loop execution; annotating a scripted/support-only log does not qualify.
 

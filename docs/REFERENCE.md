@@ -141,6 +141,54 @@ Explicit teacher NPZ requires aligned `timestamp (N,)`, `ground_truth_intent (N,
 
 Same-source observation hashes are excluded as neighbors; also split by seed/protocol to avoid near-duplicate runs. Report coverage with local label variation, neighbor-mean error and sign conflicts. Neighbor counts are windows, not independent episodes; equal radii across feature dimensions do not ensure fairness. No matches means `insufficient_matched_evidence`, metrics=null. This is not conditional variance, a Bayes-error estimate, proof of tactile benefit, or training. The pilot caps each set at 500 windows; adjust stride before expanding it.
 
+## T0–T3 scene recipe
+
+**Planned fixture specification; not an implemented runner or validated operating point.** One frozen hardware model is reused for all four cases. No ML, intent inference, or oracle input is needed. Track A owns fixtures/reference injection/recording; Track B owns controller initialization, object/arm execution, and genuine controller diagnostics. Both freeze acceptance settings after calibration.
+
+### 1. Prepare and reset one starting state
+
+1. Load Scenario 3.0.0 / Hardware 2.0.0 through the existing Python path, with nominal q, runtime friction, pad preload, and human impedance unchanged. Begin with the existing 2 s settling procedure and zero additional assistance.
+2. Disable the independent disturbance. After initial settling, latch the **world position of the human interaction point** as the fixed human target and set target velocity to zero. Keep the spring-damper active; do not force its measured output to zero. Do not continuously move the target with the panel, which would remove the intended reaction.
+3. Allow this target change to settle under the same zero-assistance controller. The additional duration and drift/contact criteria must be calibrated and recorded, not assumed satisfied after 2 s. Confirm four-pad contact, acceptable pitch/height drift, joint margin, collision/penetration/saturation limits, and no numerical warnings.
+4. Save starting state S0: all simulation state required for reproducible continuation (including qpos/qvel, actuator/control and solver state as applicable), fixed human target, controller/filter/internal reference state, random state/seed, model/config/controller versions, and clocks. Record actual panel pose and human force; do not substitute the nominal .80 m height or assume zero residual load.
+5. Restart each T-case and its zero-assistance counterpart from equivalent S0 with identical controller initialization and human settings. Reset episode/reference clocks consistently; restore or deterministically reproduce solver/history state rather than only copying q/dq. Record reset mismatch and reject it if it exceeds the pre-locked tolerance.
+
+**Current implementation gap:** `PandaWorld("B")` uses a fixed config-derived human target; it does not latch the post-settle interaction point. The default `ScriptedContractPolicy` cycles test modes/torques; it is not T0. Therefore `collect --scenario B` alone does not implement this recipe. Add the explicit fixture reset/human-target hook and deterministic test-reference source, with a versioned fixture configuration; do not silently relabel existing B logs as T0.
+
+### 2. Inject requests, not physical torques
+
+At every 100 Hz observation timestamp, emit `AssistanceDecision(timestamp=t, mode="HOLD", assist_torque_y_nm=u(t), confidence=None, source="scripted_test", valid=True)`. Route it through the same Object Controller and Dual-Arm Controller, with five 500 Hz substeps per reference. Do not apply u(t) directly to the panel with `mj_applyFT` or a root wrench. Only ordinary arm/pad actuation may realize assistance. Human/disturbance forces remain separately owned by the fixture.
+
+Keep the same nominal object-reference policy and compliant pitch law in zero/active runs. Nonzero HOLD torque is permitted, but a rigid pitch lock competing with the extra wrench is not. The current ObjectCommand rejects nonzero assistance combined with explicitly nonzero pitch stiffness; a changed control contract must be reviewed explicitly. The teammate chooses the physical control design and reports how assistance changes commands without losing support.
+
+For sign intuition near the nominal horizontal pose, `τ_y = r_z F_x − r_x F_z`. An ideal incremental couple with left ΔF_z=+δ and right ΔF_z=−δ has zero net vertical increment and Δτ_y≈0.40 m × δ. Positive Y rotation lowers the panel's +X side and raises its −X side. This explains the sign, **not a required allocation algorithm or a claim that these forces are achievable**. Actual allocation must use current world geometry and contact constraints; both arms continue carrying baseline load.
+
+### 3. Shared command schedule
+
+Let A>0 be the **calibrated** torque amplitude in Nm; let b, r, h, z, f be baseline, ramp, plateau, intermediate-zero, and final-zero durations in seconds. Keep all event times on the 100 Hz grid. A, rate bounds, motion envelope, test duration, and abort thresholds are TBD until calibration. Never reuse .02 Nm as a proven amplitude.
+
+| Case | Sequence from identical S0 | Required zero-assistance counterpart |
+|---|---|---|
+| T0 | u=0 for the declared observation interval | Establish baseline response and repeatability |
+| T1 | 0 for b → ramp to +A over r → hold for h → ramp to 0 over r → zero for f | Same total duration, controller, fixed human target, and initial state, with u=0 throughout |
+| T2 | Exact sign mirror of T1, using the same A and durations | Same as T1; do not retune the negative case after seeing its result |
+| T3 | 0 for b → +A pulse → zero for z → −A pulse → zero for f; each pulse has ramp r / plateau h / ramp r | Same full duration with u=0; no reset between positive and negative pulses |
+
+A concrete **development-only timing sketch** is b=1 s, r=.5 s, h=1 s, z=1 s, f=1 s: T1/T2 last 4 s, T3 lasts 7 s. Run T0 for the matching 4 s and 7 s baseline windows. These times are illustrative, not acceptance thresholds; lengthen them if settling, response, or slew limits require it and lock the final values before held-out tests.
+
+For smooth ramps, interpolate endpoints using `s(v)=3v²−2v³`, `v∈[0,1]`. Its peak slew is `1.5*abs(Δu)/r`; select r to respect the calibrated rate bound. A smooth requested curve does not prove smooth realized torque. On contact loss, unacceptable joint margin/penetration/collision/saturation, or warnings, record the failure and stop/enter the predeclared fallback; do not continue to claim a successful plateau.
+
+### 4. What the teammate returns
+
+For every case, provide one self-contained result containing fixture/controller/threshold hashes, seed/reset checks, reproduction command, all failures, and these synchronized plots/metrics:
+
+- **Command and response:** requested extra torque, baseline and total wrench proposals, allocated left/right wrenches, actual joint/pad commands, total measured contact Ty, and the paired incremental estimate with its valid time window. Show state divergence beside the estimate; long diverged trajectories are not a same-state measurement.
+- **Object and human:** pitch/height/angular velocity, human force/wrench, drift/overshoot/settling. Human truth is evaluation-only; a fixed target may develop resisting force as the panel moves.
+- **Physical constraints:** four-pad contacts/normal loads (tactile supports contact diagnosis here), joint-limit margins, actuator torque/saturation, unexpected collisions/penetration, numerical warnings, and left/right load/internal-force changes with the estimation method stated.
+- **Verdict:** locked criteria, measured values, pass/fail/unverified and reason. Missing force allocation or an untrustworthy baseline separation means tracking_unverified. A changing tactile map, moving arm, or true assist_reference_executed flag alone is insufficient.
+
+T0 should support without extra assistance. T1/T2 should show opposite signed **incremental torque responses**, not necessarily opposite final angles or identical gains. T3 should track changes and return additional torque to zero without losing contact; zero torque does not promise return to the starting angle. Explicitly separate torque settling from pose recovery. Successful T0 alone is not Control GO; all T0–T3 must pass their locked acceptance tests.
+
 ## Integration and commands
 
 Use `uv sync --locked`. Default runs exercise interfaces/position hold, not the planned benchmark. New output paths are mandatory; viewer closes without recording; rendering needs ffmpeg. `simulation.py` and `sensing.py` own physics/measurements; `geometry.py` supports shared geometry/demo IK; `demos/` is scripted visualization, not Expert data.
