@@ -1,0 +1,925 @@
+{
+  "purpose": "Fixture/input transport and regression evidence; not controller acceptance",
+  "unit_tests": {
+    "passed": 31,
+    "failed": 0,
+    "command": "uv run --locked python -m unittest phase1b.tests.test_benchmark phase1b.tests.test_contracts phase1b.tests.test_integration phase1b.tests.test_expert -v",
+    "log_sha256": "8ae01fe2d21b3a8e987174633b66d04372a3b44073d2f91a958c67fe392f7229"
+  },
+  "fixture_command": "uv run --locked python -W error -m phase1b.benchmark --cases T0 T1 T2 T3 T4 T5 T6 T7 T8 --output results/phase1b/dev-controller-delivery",
+  "regression_command": "uv run --locked python -m phase1b.scripts.run_suite --output results/phase1b/dev-controller-regression-delivery",
+  "fixture_run": {
+    "fixture_version": "controller-scenes/1.0",
+    "spec": {
+      "amplitude_nm": 0.01,
+      "onset_seconds": 1.0,
+      "ramp_seconds": 0.5,
+      "hold_seconds": 1.0,
+      "zero_seconds": 1.0,
+      "max_assist_torque_nm": 0.02,
+      "max_slew_nm_s": 0.05,
+      "human_angle_deg": 10.0,
+      "correction_angle_deg": 2.0,
+      "disturbance_force_n": 2.0
+    },
+    "cases": [
+      "T0",
+      "T1",
+      "T2",
+      "T3",
+      "T4",
+      "T5",
+      "T6",
+      "T7",
+      "T8"
+    ],
+    "mode": "development",
+    "deterministic_fixture": true,
+    "policy": null,
+    "reverse_after_pause": false,
+    "controller_acceptance": "pending_calibrated_thresholds_and_tracking_evidence",
+    "object_controller": null,
+    "dual_arm_controller": null,
+    "fixture_settle_limits": {
+      "linear_speed_m_s": 0.001,
+      "angular_speed_rad_s": 0.01,
+      "joint_speed_rad_s": 0.01,
+      "penetration_m": 0.001,
+      "consecutive_steps": 100,
+      "timeout_seconds": 10.0
+    },
+    "runs": {
+      "T0": {
+        "verification": {
+          "data_pipeline_passed": true,
+          "physical_sample_checks_passed": true,
+          "samples": 400,
+          "physics_steps": 2000,
+          "min_contacts_per_pad": [
+            4,
+            4,
+            3,
+            4
+          ],
+          "max_pad_penetration_m": 0.0003250484233154566,
+          "unexpected_penetration_count": 0,
+          "min_joint_limit_margin_rad": 0.148335798778374,
+          "max_panel_balance_residual_N": 3.1839197874557925e-14,
+          "max_joint_speed_rad_s": 8.19358507869081e-05,
+          "arm_saturated_steps": 0,
+          "panel_z_range_m": [
+            0.7866953595908025,
+            0.7867039746656453
+          ],
+          "interface_ready": true,
+          "assistance_tracking_validated": false,
+          "expert_labels_validated": false,
+          "controller_status": "adapter supplied; no full motion/force controller certification"
+        },
+        "metrics": {
+          "max_orientation_change_rad": 6.86962666351197e-05,
+          "max_height_change_m": 8.616617113821334e-06,
+          "min_contacts_per_pad": [
+            4,
+            4,
+            3,
+            4
+          ],
+          "max_penetration_m": 0.0003250484233154566,
+          "max_unexpected_penetration_m": 0.0,
+          "min_joint_margin_rad": 0.148335798778374,
+          "servo_saturation_fraction": 0.0,
+          "warning_count": 0,
+          "max_human_force_n": 0.039807950327830736,
+          "max_abs_requested_assist_nm": 0.0,
+          "any_assistance_execution_reported": false,
+          "assistance_tracking_validated": false,
+          "expert_labels_validated": false
+        },
+        "controller_source_hashes": {
+          "policy": {
+            "path": "/Users/jerrychuang/Desktop/2026_fall/ENPM645_hri/ENPM645_project/phase1b/benchmark.py",
+            "sha256": "8caaf60b379c47f2f8d203c086b1e66993d229d3a49784ae35d28cadd5e454f4"
+          }
+        },
+        "initial_observation_equal": true,
+        "baseline": null,
+        "verdict": "tracking_unverified"
+      },
+      "T1": {
+        "verification": {
+          "data_pipeline_passed": true,
+          "physical_sample_checks_passed": true,
+          "samples": 400,
+          "physics_steps": 2000,
+          "min_contacts_per_pad": [
+            4,
+            4,
+            3,
+            4
+          ],
+          "max_pad_penetration_m": 0.0003250484233154566,
+          "unexpected_penetration_count": 0,
+          "min_joint_limit_margin_rad": 0.148335798778374,
+          "max_panel_balance_residual_N": 3.1839197874557925e-14,
+          "max_joint_speed_rad_s": 8.19358507869081e-05,
+          "arm_saturated_steps": 0,
+          "panel_z_range_m": [
+            0.7866953595908025,
+            0.7867039746656453
+          ],
+          "interface_ready": true,
+          "assistance_tracking_validated": false,
+          "expert_labels_validated": false,
+          "controller_status": "adapter supplied; no full motion/force controller certification"
+        },
+        "metrics": {
+          "max_orientation_change_rad": 6.86962666351197e-05,
+          "max_height_change_m": 8.616617113821334e-06,
+          "min_contacts_per_pad": [
+            4,
+            4,
+            3,
+            4
+          ],
+          "max_penetration_m": 0.0003250484233154566,
+          "max_unexpected_penetration_m": 0.0,
+          "min_joint_margin_rad": 0.148335798778374,
+          "servo_saturation_fraction": 0.0,
+          "warning_count": 0,
+          "max_human_force_n": 0.039807950327830736,
+          "max_abs_requested_assist_nm": 0.01,
+          "any_assistance_execution_reported": false,
+          "assistance_tracking_validated": false,
+          "expert_labels_validated": false
+        },
+        "controller_source_hashes": {
+          "policy": {
+            "path": "/Users/jerrychuang/Desktop/2026_fall/ENPM645_hri/ENPM645_project/phase1b/benchmark.py",
+            "sha256": "8caaf60b379c47f2f8d203c086b1e66993d229d3a49784ae35d28cadd5e454f4"
+          }
+        },
+        "initial_observation_equal": true,
+        "baseline": "T0",
+        "verdict": "tracking_unverified"
+      },
+      "T2": {
+        "verification": {
+          "data_pipeline_passed": true,
+          "physical_sample_checks_passed": true,
+          "samples": 400,
+          "physics_steps": 2000,
+          "min_contacts_per_pad": [
+            4,
+            4,
+            3,
+            4
+          ],
+          "max_pad_penetration_m": 0.0003250484233154566,
+          "unexpected_penetration_count": 0,
+          "min_joint_limit_margin_rad": 0.148335798778374,
+          "max_panel_balance_residual_N": 3.1839197874557925e-14,
+          "max_joint_speed_rad_s": 8.19358507869081e-05,
+          "arm_saturated_steps": 0,
+          "panel_z_range_m": [
+            0.7866953595908025,
+            0.7867039746656453
+          ],
+          "interface_ready": true,
+          "assistance_tracking_validated": false,
+          "expert_labels_validated": false,
+          "controller_status": "adapter supplied; no full motion/force controller certification"
+        },
+        "metrics": {
+          "max_orientation_change_rad": 6.86962666351197e-05,
+          "max_height_change_m": 8.616617113821334e-06,
+          "min_contacts_per_pad": [
+            4,
+            4,
+            3,
+            4
+          ],
+          "max_penetration_m": 0.0003250484233154566,
+          "max_unexpected_penetration_m": 0.0,
+          "min_joint_margin_rad": 0.148335798778374,
+          "servo_saturation_fraction": 0.0,
+          "warning_count": 0,
+          "max_human_force_n": 0.039807950327830736,
+          "max_abs_requested_assist_nm": 0.01,
+          "any_assistance_execution_reported": false,
+          "assistance_tracking_validated": false,
+          "expert_labels_validated": false
+        },
+        "controller_source_hashes": {
+          "policy": {
+            "path": "/Users/jerrychuang/Desktop/2026_fall/ENPM645_hri/ENPM645_project/phase1b/benchmark.py",
+            "sha256": "8caaf60b379c47f2f8d203c086b1e66993d229d3a49784ae35d28cadd5e454f4"
+          }
+        },
+        "initial_observation_equal": true,
+        "baseline": "T0",
+        "verdict": "tracking_unverified"
+      },
+      "T3": {
+        "verification": {
+          "data_pipeline_passed": true,
+          "physical_sample_checks_passed": true,
+          "samples": 700,
+          "physics_steps": 3500,
+          "min_contacts_per_pad": [
+            4,
+            4,
+            3,
+            4
+          ],
+          "max_pad_penetration_m": 0.000325096717744493,
+          "unexpected_penetration_count": 0,
+          "min_joint_limit_margin_rad": 0.148335798778374,
+          "max_panel_balance_residual_N": 3.1839197874557925e-14,
+          "max_joint_speed_rad_s": 8.19358507869081e-05,
+          "arm_saturated_steps": 0,
+          "panel_z_range_m": [
+            0.7866949128421146,
+            0.7867039746656453
+          ],
+          "interface_ready": true,
+          "assistance_tracking_validated": false,
+          "expert_labels_validated": false,
+          "controller_status": "adapter supplied; no full motion/force controller certification"
+        },
+        "metrics": {
+          "max_orientation_change_rad": 9.620931465781264e-05,
+          "max_height_change_m": 9.063274936771393e-06,
+          "min_contacts_per_pad": [
+            4,
+            4,
+            3,
+            4
+          ],
+          "max_penetration_m": 0.000325096717744493,
+          "max_unexpected_penetration_m": 0.0,
+          "min_joint_margin_rad": 0.148335798778374,
+          "servo_saturation_fraction": 0.0,
+          "warning_count": 0,
+          "max_human_force_n": 0.040430217520078,
+          "max_abs_requested_assist_nm": 0.01,
+          "any_assistance_execution_reported": false,
+          "assistance_tracking_validated": false,
+          "expert_labels_validated": false
+        },
+        "controller_source_hashes": {
+          "policy": {
+            "path": "/Users/jerrychuang/Desktop/2026_fall/ENPM645_hri/ENPM645_project/phase1b/benchmark.py",
+            "sha256": "8caaf60b379c47f2f8d203c086b1e66993d229d3a49784ae35d28cadd5e454f4"
+          }
+        },
+        "initial_observation_equal": true,
+        "baseline": "T0_for_T3",
+        "verdict": "tracking_unverified"
+      },
+      "T4": {
+        "verification": {
+          "data_pipeline_passed": true,
+          "physical_sample_checks_passed": true,
+          "samples": 400,
+          "physics_steps": 2000,
+          "min_contacts_per_pad": [
+            3,
+            4,
+            3,
+            4
+          ],
+          "max_pad_penetration_m": 0.00047614323232182605,
+          "unexpected_penetration_count": 0,
+          "min_joint_limit_margin_rad": 0.148335798778374,
+          "max_panel_balance_residual_N": 5.707370189221845e-14,
+          "max_joint_speed_rad_s": 0.0017932222367429854,
+          "arm_saturated_steps": 0,
+          "panel_z_range_m": [
+            0.7855905481997341,
+            0.7867039746656453
+          ],
+          "interface_ready": true,
+          "assistance_tracking_validated": false,
+          "expert_labels_validated": false,
+          "controller_status": "adapter supplied; no full motion/force controller certification"
+        },
+        "metrics": {
+          "max_orientation_change_rad": 0.0023516773265029236,
+          "max_height_change_m": 0.0011134286613235789,
+          "min_contacts_per_pad": [
+            3,
+            4,
+            3,
+            4
+          ],
+          "max_penetration_m": 0.00047614323232182605,
+          "max_unexpected_penetration_m": 0.0,
+          "min_joint_margin_rad": 0.148335798778374,
+          "servo_saturation_fraction": 0.0,
+          "warning_count": 0,
+          "max_human_force_n": 4.673655027116988,
+          "max_abs_requested_assist_nm": 0.0,
+          "any_assistance_execution_reported": false,
+          "assistance_tracking_validated": false,
+          "expert_labels_validated": false
+        },
+        "controller_source_hashes": {
+          "policy": {
+            "path": "/Users/jerrychuang/Desktop/2026_fall/ENPM645_hri/ENPM645_project/phase1b/benchmark.py",
+            "sha256": "8caaf60b379c47f2f8d203c086b1e66993d229d3a49784ae35d28cadd5e454f4"
+          }
+        },
+        "initial_observation_equal": true,
+        "baseline": null,
+        "verdict": "cooperation_unverified"
+      },
+      "T5": {
+        "verification": {
+          "data_pipeline_passed": true,
+          "physical_sample_checks_passed": true,
+          "samples": 400,
+          "physics_steps": 2000,
+          "min_contacts_per_pad": [
+            4,
+            3,
+            3,
+            4
+          ],
+          "max_pad_penetration_m": 0.0003736224117593155,
+          "unexpected_penetration_count": 0,
+          "min_joint_limit_margin_rad": 0.1477791633941692,
+          "max_panel_balance_residual_N": 4.5626331832324176e-14,
+          "max_joint_speed_rad_s": 0.0015986771308934852,
+          "arm_saturated_steps": 0,
+          "panel_z_range_m": [
+            0.7866958606646495,
+            0.787663924655337
+          ],
+          "interface_ready": true,
+          "assistance_tracking_validated": false,
+          "expert_labels_validated": false,
+          "controller_status": "adapter supplied; no full motion/force controller certification"
+        },
+        "metrics": {
+          "max_orientation_change_rad": 0.002218796225202806,
+          "max_height_change_m": 0.0009599508199094053,
+          "min_contacts_per_pad": [
+            4,
+            3,
+            3,
+            4
+          ],
+          "max_penetration_m": 0.0003736224117593155,
+          "max_unexpected_penetration_m": 0.0,
+          "min_joint_margin_rad": 0.1477791633941692,
+          "servo_saturation_fraction": 0.0,
+          "warning_count": 0,
+          "max_human_force_n": 4.764445191415564,
+          "max_abs_requested_assist_nm": 0.0,
+          "any_assistance_execution_reported": false,
+          "assistance_tracking_validated": false,
+          "expert_labels_validated": false
+        },
+        "controller_source_hashes": {
+          "policy": {
+            "path": "/Users/jerrychuang/Desktop/2026_fall/ENPM645_hri/ENPM645_project/phase1b/benchmark.py",
+            "sha256": "8caaf60b379c47f2f8d203c086b1e66993d229d3a49784ae35d28cadd5e454f4"
+          }
+        },
+        "initial_observation_equal": true,
+        "baseline": null,
+        "verdict": "cooperation_unverified"
+      },
+      "T6": {
+        "verification": {
+          "data_pipeline_passed": true,
+          "physical_sample_checks_passed": true,
+          "samples": 400,
+          "physics_steps": 2000,
+          "min_contacts_per_pad": [
+            4,
+            4,
+            3,
+            4
+          ],
+          "max_pad_penetration_m": 0.00032560971093175566,
+          "unexpected_penetration_count": 0,
+          "min_joint_limit_margin_rad": 0.148335798778374,
+          "max_panel_balance_residual_N": 4.85062854928923e-14,
+          "max_joint_speed_rad_s": 0.000290475522823644,
+          "arm_saturated_steps": 0,
+          "panel_z_range_m": [
+            0.7864927110405875,
+            0.7867039746656453
+          ],
+          "interface_ready": true,
+          "assistance_tracking_validated": false,
+          "expert_labels_validated": false,
+          "controller_status": "adapter supplied; no full motion/force controller certification"
+        },
+        "metrics": {
+          "max_orientation_change_rad": 0.0004940176488424946,
+          "max_height_change_m": 0.0002112636250578559,
+          "min_contacts_per_pad": [
+            4,
+            4,
+            3,
+            4
+          ],
+          "max_penetration_m": 0.00032560971093175566,
+          "max_unexpected_penetration_m": 0.0,
+          "min_joint_margin_rad": 0.148335798778374,
+          "servo_saturation_fraction": 0.0,
+          "warning_count": 0,
+          "max_human_force_n": 0.9052221059358693,
+          "max_abs_requested_assist_nm": 0.0,
+          "any_assistance_execution_reported": false,
+          "assistance_tracking_validated": false,
+          "expert_labels_validated": false
+        },
+        "controller_source_hashes": {
+          "policy": {
+            "path": "/Users/jerrychuang/Desktop/2026_fall/ENPM645_hri/ENPM645_project/phase1b/benchmark.py",
+            "sha256": "8caaf60b379c47f2f8d203c086b1e66993d229d3a49784ae35d28cadd5e454f4"
+          }
+        },
+        "initial_observation_equal": true,
+        "baseline": null,
+        "verdict": "cooperation_unverified"
+      },
+      "T7": {
+        "verification": {
+          "data_pipeline_passed": true,
+          "physical_sample_checks_passed": true,
+          "samples": 400,
+          "physics_steps": 2000,
+          "min_contacts_per_pad": [
+            4,
+            4,
+            3,
+            4
+          ],
+          "max_pad_penetration_m": 0.00032467399910861706,
+          "unexpected_penetration_count": 0,
+          "min_joint_limit_margin_rad": 0.148335798778374,
+          "max_panel_balance_residual_N": 4.4794639379896203e-14,
+          "max_joint_speed_rad_s": 0.0004931079166915957,
+          "arm_saturated_steps": 0,
+          "panel_z_range_m": [
+            0.7862992574906177,
+            0.7867039746656453
+          ],
+          "interface_ready": true,
+          "assistance_tracking_validated": false,
+          "expert_labels_validated": false,
+          "controller_status": "adapter supplied; no full motion/force controller certification"
+        },
+        "metrics": {
+          "max_orientation_change_rad": 0.0006478891955114593,
+          "max_height_change_m": 0.0004047190728836414,
+          "min_contacts_per_pad": [
+            4,
+            4,
+            3,
+            4
+          ],
+          "max_penetration_m": 0.00032467399910861706,
+          "max_unexpected_penetration_m": 0.0,
+          "min_joint_margin_rad": 0.148335798778374,
+          "servo_saturation_fraction": 0.0,
+          "warning_count": 0,
+          "max_human_force_n": 0.08743381350238912,
+          "max_abs_requested_assist_nm": 0.0,
+          "any_assistance_execution_reported": false,
+          "assistance_tracking_validated": false,
+          "expert_labels_validated": false
+        },
+        "controller_source_hashes": {
+          "policy": {
+            "path": "/Users/jerrychuang/Desktop/2026_fall/ENPM645_hri/ENPM645_project/phase1b/benchmark.py",
+            "sha256": "8caaf60b379c47f2f8d203c086b1e66993d229d3a49784ae35d28cadd5e454f4"
+          }
+        },
+        "initial_observation_equal": true,
+        "baseline": null,
+        "verdict": "cooperation_unverified"
+      },
+      "T8": {
+        "verification": {
+          "data_pipeline_passed": true,
+          "physical_sample_checks_passed": true,
+          "samples": 400,
+          "physics_steps": 2000,
+          "min_contacts_per_pad": [
+            3,
+            4,
+            3,
+            4
+          ],
+          "max_pad_penetration_m": 0.0004765350533125609,
+          "unexpected_penetration_count": 0,
+          "min_joint_limit_margin_rad": 0.148335798778374,
+          "max_panel_balance_residual_N": 4.7595589666739437e-14,
+          "max_joint_speed_rad_s": 0.001305992109865049,
+          "arm_saturated_steps": 0,
+          "panel_z_range_m": [
+            0.7855905508238699,
+            0.7867039746656453
+          ],
+          "interface_ready": true,
+          "assistance_tracking_validated": false,
+          "expert_labels_validated": false,
+          "controller_status": "adapter supplied; no full motion/force controller certification"
+        },
+        "metrics": {
+          "max_orientation_change_rad": 0.0023289364311602535,
+          "max_height_change_m": 0.0011134261116761968,
+          "min_contacts_per_pad": [
+            3,
+            4,
+            3,
+            4
+          ],
+          "max_penetration_m": 0.0004765350533125609,
+          "max_unexpected_penetration_m": 0.0,
+          "min_joint_margin_rad": 0.148335798778374,
+          "servo_saturation_fraction": 0.0,
+          "warning_count": 0,
+          "max_human_force_n": 4.551995709577167,
+          "max_abs_requested_assist_nm": 0.0,
+          "any_assistance_execution_reported": false,
+          "assistance_tracking_validated": false,
+          "expert_labels_validated": false
+        },
+        "controller_source_hashes": {
+          "policy": {
+            "path": "/Users/jerrychuang/Desktop/2026_fall/ENPM645_hri/ENPM645_project/phase1b/benchmark.py",
+            "sha256": "8caaf60b379c47f2f8d203c086b1e66993d229d3a49784ae35d28cadd5e454f4"
+          }
+        },
+        "initial_observation_equal": true,
+        "baseline": null,
+        "verdict": "cooperation_unverified"
+      },
+      "T0_for_T3": {
+        "verification": {
+          "data_pipeline_passed": true,
+          "physical_sample_checks_passed": true,
+          "samples": 700,
+          "physics_steps": 3500,
+          "min_contacts_per_pad": [
+            4,
+            4,
+            3,
+            4
+          ],
+          "max_pad_penetration_m": 0.000325096717744493,
+          "unexpected_penetration_count": 0,
+          "min_joint_limit_margin_rad": 0.148335798778374,
+          "max_panel_balance_residual_N": 3.1839197874557925e-14,
+          "max_joint_speed_rad_s": 8.19358507869081e-05,
+          "arm_saturated_steps": 0,
+          "panel_z_range_m": [
+            0.7866949128421146,
+            0.7867039746656453
+          ],
+          "interface_ready": true,
+          "assistance_tracking_validated": false,
+          "expert_labels_validated": false,
+          "controller_status": "adapter supplied; no full motion/force controller certification"
+        },
+        "metrics": {
+          "max_orientation_change_rad": 9.620931465781264e-05,
+          "max_height_change_m": 9.063274936771393e-06,
+          "min_contacts_per_pad": [
+            4,
+            4,
+            3,
+            4
+          ],
+          "max_penetration_m": 0.000325096717744493,
+          "max_unexpected_penetration_m": 0.0,
+          "min_joint_margin_rad": 0.148335798778374,
+          "servo_saturation_fraction": 0.0,
+          "warning_count": 0,
+          "max_human_force_n": 0.040430217520078,
+          "max_abs_requested_assist_nm": 0.0,
+          "any_assistance_execution_reported": false,
+          "assistance_tracking_validated": false,
+          "expert_labels_validated": false
+        },
+        "controller_source_hashes": {
+          "policy": {
+            "path": "/Users/jerrychuang/Desktop/2026_fall/ENPM645_hri/ENPM645_project/phase1b/benchmark.py",
+            "sha256": "8caaf60b379c47f2f8d203c086b1e66993d229d3a49784ae35d28cadd5e454f4"
+          }
+        },
+        "initial_observation_equal": true,
+        "baseline": null,
+        "verdict": "tracking_unverified"
+      }
+    },
+    "status": "completed",
+    "initial_state_sha256": "ab2b750705f700fca4e368082a4c3ddde3d86d7f64383c7871b5af6871379a5e",
+    "post_latch_settle_steps": 145,
+    "fixed_human_target_world_m": [
+      0.2697471337816568,
+      -0.0996162321724427,
+      0.7849992538970747
+    ],
+    "input_spec_sha256": "4d361de0f4dba49ad35391d08388bd6a30f0c7828a1d8e34f889cd179311b092",
+    "active_run": "T0_for_T3"
+  },
+  "source_hashes": {
+    "phase1b/benchmark.py": "8caaf60b379c47f2f8d203c086b1e66993d229d3a49784ae35d28cadd5e454f4",
+    "phase1b/control.py": "b25c97870cc1ce5f3b882b460f274d300fe913f5b1d19a55462d2630e02b56c7",
+    "phase1b/geometry.py": "46c924883515818583e7eba0ec6ca119591edd8901afa1b28aa82c5e691f2bba",
+    "phase1b/hardware.py": "9b7d208b0e4757e2c09500d033fa717709b4875a629ab50ef7b5414e2297be96",
+    "phase1b/interfaces.py": "a6a62a40c1019011e3326d3961724ff1d39e7054dd0cf4f4a5831a3919e02898",
+    "phase1b/pipeline.py": "23d495762b6d7bae8b77ae2fbda2ca1dce3acd3594c45afb7f58c02d9c999384",
+    "phase1b/sensing.py": "f37c0dfc217293653fba445dfc7ca33730d774eca1a058f21a781b0b463c3233",
+    "phase1b/simulation.py": "7db7c39573d18a5896afbeea839e4814bf919c90c29cb61393e3f5badcab6a36"
+  },
+  "test_source_sha256": "99e02f894183c323d29c29b15886ee53d5afa1d2eff3e326f00378cd280d673a",
+  "model_hash": "e05d03dc53f43e83357fe854ffc03f8dbae21762a71287c2976f111e1b77ae8f",
+  "config_hash": "54bbaa69c20d498ea3ea6d6eb9d3fb60d0e167302d0334df6bdeb4b80e6952db",
+  "hardware_hash": "aa9486a4e2fa77ba5ac95b31305524b334d9ce70c14070d4b1ea9f3836b11c00",
+  "scenario_version": "3.0.0",
+  "hardware_version": "2.0.0",
+  "physics_steps": 23000,
+  "regression": {
+    "tests_passed": true,
+    "episodes": {
+      "A": {
+        "data_pipeline_passed": true,
+        "physical_sample_checks_passed": true,
+        "samples": 400,
+        "physics_steps": 2000,
+        "min_contacts_per_pad": [
+          3,
+          4,
+          3,
+          4
+        ],
+        "max_pad_penetration_m": 0.00047564180224836253,
+        "unexpected_penetration_count": 0,
+        "min_joint_limit_margin_rad": 0.1481905802910406,
+        "max_panel_balance_residual_N": 4.619683465118333e-14,
+        "max_joint_speed_rad_s": 0.0022603024979254366,
+        "arm_saturated_steps": 0,
+        "panel_z_range_m": [
+          0.7847839857256239,
+          0.7869729824824653
+        ],
+        "interface_ready": true,
+        "assistance_tracking_validated": false,
+        "expert_labels_validated": false,
+        "controller_status": "adapter supplied; no full motion/force controller certification"
+      },
+      "B": {
+        "data_pipeline_passed": true,
+        "physical_sample_checks_passed": true,
+        "samples": 400,
+        "physics_steps": 2000,
+        "min_contacts_per_pad": [
+          4,
+          4,
+          4,
+          4
+        ],
+        "max_pad_penetration_m": 0.00033968582246127714,
+        "unexpected_penetration_count": 0,
+        "min_joint_limit_margin_rad": 0.14818515098895535,
+        "max_panel_balance_residual_N": 2.6645607100889167e-14,
+        "max_joint_speed_rad_s": 4.6043990717378476e-05,
+        "arm_saturated_steps": 0,
+        "panel_z_range_m": [
+          0.7869728007493048,
+          0.7869731131279598
+        ],
+        "interface_ready": true,
+        "assistance_tracking_validated": false,
+        "expert_labels_validated": false,
+        "controller_status": "adapter supplied; no full motion/force controller certification"
+      },
+      "C": {
+        "data_pipeline_passed": true,
+        "physical_sample_checks_passed": true,
+        "samples": 400,
+        "physics_steps": 2000,
+        "min_contacts_per_pad": [
+          2,
+          2,
+          3,
+          4
+        ],
+        "max_pad_penetration_m": 0.0005234213650920619,
+        "unexpected_penetration_count": 0,
+        "min_joint_limit_margin_rad": 0.14818493418234935,
+        "max_panel_balance_residual_N": 4.6195514352911575e-14,
+        "max_joint_speed_rad_s": 0.0100403583160726,
+        "arm_saturated_steps": 0,
+        "panel_z_range_m": [
+          0.783029239357631,
+          0.7869729824824653
+        ],
+        "interface_ready": true,
+        "assistance_tracking_validated": false,
+        "expert_labels_validated": false,
+        "controller_status": "adapter supplied; no full motion/force controller certification"
+      }
+    },
+    "exact_replay": {
+      "A": 131,
+      "B": 131,
+      "C": 131
+    },
+    "motion": {
+      "A": {
+        "human_peak_time_s": 2.22,
+        "human_peak_force_vector_N": [
+          -0.8385860240069378,
+          -0.04174149876491294,
+          -1.8682284037448724
+        ],
+        "case": "A",
+        "name": "Rotate and hold",
+        "samples": 800,
+        "physics_steps": 4000,
+        "observed_pitch_change_deg": 19.995619441883502,
+        "observed_lift_m": 0.030496116384778116,
+        "max_joint_change_rad": 0.7103490051418813,
+        "max_joint_speed_rad_s": 0.4469737052792743,
+        "min_contacts": [
+          4,
+          4,
+          3,
+          4
+        ],
+        "max_pad_penetration_m": 0.000508699484464434,
+        "unexpected_penetration_m": 0.0,
+        "min_joint_margin_rad": 0.04000290441644472,
+        "saturated_steps": 0,
+        "max_force_balance_residual_N": 8.304960908921803e-09,
+        "max_human_force_N": 2.0482300263735076,
+        "late_human_force_mean_N": [
+          0.15632611033244245,
+          -0.09345385994660632,
+          1.2702568154417786
+        ],
+        "late_external_force_N": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "hold_pitch_range_deg": 0.0004063775203029252,
+        "hold_z_range_m": 0.00017374749288756597,
+        "ik_max_position_error_m": 3.4639265495379733e-07,
+        "passed": true
+      },
+      "B": {
+        "human_peak_time_s": 2.18,
+        "human_peak_force_vector_N": [
+          0.021460685679739896,
+          -0.02451125813865296,
+          5.41296303460065
+        ],
+        "case": "B",
+        "name": "Lift then hold",
+        "samples": 800,
+        "physics_steps": 4000,
+        "observed_pitch_change_deg": 0.027468889894036314,
+        "observed_lift_m": 0.07979878567131293,
+        "max_joint_change_rad": 0.27339836061138034,
+        "max_joint_speed_rad_s": 0.17207799334131463,
+        "min_contacts": [
+          4,
+          3,
+          4,
+          4
+        ],
+        "max_pad_penetration_m": 0.00037755565737423747,
+        "unexpected_penetration_m": 0.0,
+        "min_joint_margin_rad": 0.14794572176743293,
+        "saturated_steps": 0,
+        "max_force_balance_residual_N": 4.506358399249748e-14,
+        "max_human_force_N": 5.413061072698003,
+        "late_human_force_mean_N": [
+          0.014672143659237994,
+          0.018586369894962654,
+          1.3514987773891751
+        ],
+        "late_external_force_N": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "hold_pitch_range_deg": 0.00029417377996932004,
+        "hold_z_range_m": 3.0471733858394856e-07,
+        "ik_max_position_error_m": 3.020940547926162e-07,
+        "passed": true
+      },
+      "C": {
+        "human_peak_time_s": 2.18,
+        "human_peak_force_vector_N": [
+          -0.29064711667701115,
+          -0.026846012599282862,
+          4.191275593402174
+        ],
+        "case": "C",
+        "name": "Reposition and resist constant load",
+        "samples": 800,
+        "physics_steps": 4000,
+        "observed_pitch_change_deg": -11.94357952907876,
+        "observed_lift_m": -0.00451584166850727,
+        "max_joint_change_rad": 0.30299331875470414,
+        "max_joint_speed_rad_s": 0.18836034704936794,
+        "min_contacts": [
+          2,
+          3,
+          3,
+          4
+        ],
+        "max_pad_penetration_m": 0.00047057140559658364,
+        "unexpected_penetration_m": 0.0,
+        "min_joint_margin_rad": 0.1480176459678435,
+        "saturated_steps": 0,
+        "max_force_balance_residual_N": 5.70065582650415e-11,
+        "max_human_force_N": 4.201426847473829,
+        "late_human_force_mean_N": [
+          -0.009926941178444976,
+          0.10138965418814286,
+          1.857891673114301
+        ],
+        "late_external_force_N": [
+          0.0,
+          0.0,
+          -20.0
+        ],
+        "hold_pitch_range_deg": 0.0005733586092961929,
+        "hold_z_range_m": 0.00022331088219995632,
+        "ik_max_position_error_m": 2.5035406037836763e-07,
+        "passed": true
+      }
+    },
+    "interface_ready": true,
+    "controller_implemented": "reference-only and position-hold adapters",
+    "assistance_tracking_validated": false,
+    "expert_labels_validated": false,
+    "negative_controls": {
+      "remove_pad_contacts": {
+        "passed": true,
+        "duration_s": 0.3,
+        "panel_drop_m": 0.32237760100917406,
+        "max_joint_change_rad": 0.0010789175170251575,
+        "tactile_norms": [
+          0.0,
+          0.0
+        ]
+      },
+      "disable_arm_actuators": {
+        "passed": true,
+        "duration_s": 0.3,
+        "panel_drop_m": 0.32273915731489,
+        "max_joint_change_rad": 0.5908102581615662,
+        "tactile_norms": [
+          82.65889213223548,
+          54.78935915509936
+        ]
+      },
+      "robot_support_without_human": {
+        "passed": true,
+        "duration_s": 1.0,
+        "total_robot_vertical_contact_force_N": 9.810000653671866,
+        "panel_weight_N": 9.81,
+        "panel_z_change_m": -0.00028583114445601687
+      }
+    },
+    "fk_readback": {
+      "A": {
+        "passed": true,
+        "frames": 400,
+        "max_pose_component_error": 0.0
+      },
+      "B": {
+        "passed": true,
+        "frames": 400,
+        "max_pose_component_error": 0.0
+      },
+      "C": {
+        "passed": true,
+        "frames": 400,
+        "max_pose_component_error": 0.0
+      }
+    },
+    "passed": true
+  },
+  "limitations": [
+    "Default reference/position-hold adapters do not execute assistance.",
+    "Controller acceptance thresholds, allocation diagnostics and incremental tracking remain unvalidated.",
+    "T4-T8 use zero assistance in this run; no Expert cooperation or labels are validated.",
+    "T6 currently uses the nominal S0; multiple starting poses are not covered.",
+    "T8 reversal input is unit-tested; this full run uses resume."
+  ]
+}

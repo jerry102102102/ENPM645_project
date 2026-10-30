@@ -38,6 +38,9 @@ def run_episode(
     output,
     scenario="B",
     duration=4.0,
+    world=None,
+    step_guard=None,
+    episode_context=None,
     **components,
 ):
     output = Path(output)
@@ -46,8 +49,11 @@ def run_episode(
     count = round(duration * 100)
     if count <= 0 or not np.isclose(count / 100, duration):
         raise ValueError("duration must be a positive multiple of .01 s")
-    world = PandaWorld(scenario)
-    world.settle()
+    if world is None:
+        world = PandaWorld(scenario)
+        world.settle()
+    elif world.tick != 0 or world.scenario != scenario:
+        raise ValueError("prepared world must start at episode tick zero and match scenario")
     controller = ControlChain(**components)
     sections = {
         k: []
@@ -63,122 +69,141 @@ def run_episode(
         )
     }
     raw_states = []
-    for i in range(count):
-        before, _ = world.snapshot()
-        truth = {k: np.array(v, copy=True) for k, v in world.truth.items()}
-        policy_observation(before)  # Assert the default profile can be built.
-        commands = []
-        diagnostics = []
-        raw_states.append(dict(qpos=world.d.qpos.copy(), qvel=world.d.qvel.copy()))
-        for _ in range(5):
-            current, _ = world.snapshot()
-            inp = controller_input(world, current)
-            command = controller.step(inp)
-            validate_command(command, inp)
-            world.set_commands(command.arm_position_target, command.pad_force_command)
-            world.refresh(world.tick * world.m.opt.timestep)
-            at, diag = world.snapshot()
-            requested = (
-                world.m.actuator_gainprm[world.aa, 0] * world.d.ctrl[world.aa]
-                + world.m.actuator_biasprm[world.aa, 1] * world.d.qpos[world.qa]
-                + world.m.actuator_biasprm[world.aa, 2] * world.d.qvel[world.va]
-            )
-            forces = world.d.actuator_force[world.aa].copy()
-            torques = world.d.qfrc_actuator[world.va].copy()
-            c = dict(
-                command_timestamp=current["timestamp"],
-                arm_position_target=command.arm_position_target.copy(),
-                pad_force_command=command.pad_force_command.copy(),
-                arm_requested_servo_torque=requested.copy(),
-                arm_actuator_torque_at_actuation=torques,
-                arm_actuator_force_at_actuation=forces,
-                arm_force_saturated=np.abs(requested - forces) > 1e-8,
-                controller_mode=command.controller_mode,
-                assist_reference_executed=command.assist_reference_executed,
-            )
-            # Full-model contact audit, not only panel-to-pad contacts.
-            pad_ids = sum(world.pad_g, [])
-            unexpected = []
-            for contact in world.d.contact:
-                expected = world.pg in (contact.geom1, contact.geom2) and (
-                    contact.geom1 in pad_ids or contact.geom2 in pad_ids
+    commands = []
+    try:
+        for i in range(count):
+            before, _ = world.snapshot()
+            truth = {k: np.array(v, copy=True) for k, v in world.truth.items()}
+            policy_observation(before)  # Assert the default profile can be built.
+            commands = []
+            diagnostics = []
+            raw_states.append(dict(qpos=world.d.qpos.copy(), qvel=world.d.qvel.copy()))
+            for _ in range(5):
+                current, _ = world.snapshot()
+                inp = controller_input(world, current)
+                command = controller.step(inp)
+                validate_command(command, inp)
+                world.set_commands(command.arm_position_target, command.pad_force_command)
+                world.refresh(world.tick * world.m.opt.timestep)
+                at, diag = world.snapshot()
+                requested = (
+                    world.m.actuator_gainprm[world.aa, 0] * world.d.ctrl[world.aa]
+                    + world.m.actuator_biasprm[world.aa, 1] * world.d.qpos[world.qa]
+                    + world.m.actuator_biasprm[world.aa, 2] * world.d.qvel[world.va]
                 )
-                if not expected and contact.dist < -1e-5:
-                    unexpected.append(-contact.dist)
-            joint_margin = np.minimum(
-                world.d.qpos[world.qa] - world.m.jnt_range[world.arm_joints, 0],
-                world.m.jnt_range[world.arm_joints, 1] - world.d.qpos[world.qa],
-            )
-            total = (
-                at["object_contact_wrench"]
-                + world.truth["human_applied_wrench"]
-                + world.truth["external_disturbance_wrench"]
-            )
-            residual = (
-                world.m.body_mass[world.panel]
-                * (diag["panel_acceleration"] - world.m.opt.gravity)
-                - total[:3]
-            )
-            diagnostics.append(
-                dict(
-                    timestamp=current["timestamp"],
-                    penetration_m=diag["penetration"],
-                    unexpected_penetration_count=len(unexpected),
-                    unexpected_penetration_max_m=max(unexpected, default=0),
-                    arm_joint_limit_margin_rad=joint_margin,
-                    contact_counts=np.r_[
-                        at["contact_state_left"], at["contact_state_right"]
-                    ],
-                    panel_balance_residual_N=np.linalg.norm(residual),
-                    arm_external_generalized_force=world.d.qfrc_applied[
-                        world.va
-                    ].copy(),
-                    xfrc_applied_norm=np.linalg.norm(world.d.xfrc_applied),
-                    warnings=world.d.warning.number.copy(),
+                forces = world.d.actuator_force[world.aa].copy()
+                torques = world.d.qfrc_actuator[world.va].copy()
+                c = dict(
+                    command_timestamp=current["timestamp"],
+                    arm_position_target=command.arm_position_target.copy(),
+                    pad_force_command=command.pad_force_command.copy(),
+                    arm_requested_servo_torque=requested.copy(),
+                    arm_actuator_torque_at_actuation=torques,
+                    arm_actuator_force_at_actuation=forces,
+                    arm_force_saturated=np.abs(requested - forces) > 1e-8,
+                    controller_mode=command.controller_mode,
+                    assist_reference_executed=command.assist_reference_executed,
                 )
-            )
-            world.step()
-            after, _ = world.snapshot()
+                # Full-model contact audit, not only panel-to-pad contacts.
+                pad_ids = sum(world.pad_g, [])
+                unexpected = []
+                for contact in world.d.contact:
+                    expected = world.pg in (contact.geom1, contact.geom2) and (
+                        contact.geom1 in pad_ids or contact.geom2 in pad_ids
+                    )
+                    if not expected and contact.dist < -1e-5:
+                        unexpected.append(-contact.dist)
+                joint_margin = np.minimum(
+                    world.d.qpos[world.qa] - world.m.jnt_range[world.arm_joints, 0],
+                    world.m.jnt_range[world.arm_joints, 1] - world.d.qpos[world.qa],
+                )
+                total = (
+                    at["object_contact_wrench"]
+                    + world.truth["human_applied_wrench"]
+                    + world.truth["external_disturbance_wrench"]
+                )
+                residual = (
+                    world.m.body_mass[world.panel]
+                    * (diag["panel_acceleration"] - world.m.opt.gravity)
+                    - total[:3]
+                )
+                diagnostics.append(
+                    dict(
+                        timestamp=current["timestamp"],
+                        penetration_m=diag["penetration"],
+                        unexpected_penetration_count=len(unexpected),
+                        unexpected_penetration_max_m=max(unexpected, default=0),
+                        arm_joint_limit_margin_rad=joint_margin,
+                        contact_counts=np.r_[
+                            at["contact_state_left"], at["contact_state_right"]
+                        ],
+                        panel_balance_residual_N=np.linalg.norm(residual),
+                        arm_external_generalized_force=world.d.qfrc_applied[
+                            world.va
+                        ].copy(),
+                        xfrc_applied_norm=np.linalg.norm(world.d.xfrc_applied),
+                        warnings=world.d.warning.number.copy(),
+                    )
+                )
+                world.step()
+                after, _ = world.snapshot()
+                c.update(
+                    realized_timestamp=after["timestamp"],
+                    arm_actuator_torque_after_step=after["arm_actuator_torque"],
+                    realized_object_contact_wrench=after["object_contact_wrench"],
+                )
+                commands.append(c)
+                if step_guard is not None:
+                    step_guard(world)
+            sections["observations"].append(before)
+            sections["next_observations"].append(after)
+            decision = decision_row(controller.decision)
+            obj = object_row(controller.command)
+            sections["decisions"].append(decision)
+            sections["object_commands"].append(obj)
+            c = stack(commands)
             c.update(
-                realized_timestamp=after["timestamp"],
-                arm_actuator_torque_after_step=after["arm_actuator_torque"],
-                realized_object_contact_wrench=after["object_contact_wrench"],
-            )
-            commands.append(c)
-        sections["observations"].append(before)
-        sections["next_observations"].append(after)
-        decision = decision_row(controller.decision)
-        obj = object_row(controller.command)
-        sections["decisions"].append(decision)
-        sections["object_commands"].append(obj)
-        c = stack(commands)
-        c.update(
-            timestamp=before["timestamp"],
-            reference_timestamp=decision["timestamp"],
-            desired_assist_torque=decision["assist_torque_y_nm"],
-            reference_valid=decision["valid"],
-            reference_source=decision["source"],
-            decision_timestamp=np.full(5, decision["timestamp"]),
-            object_command_timestamp=np.full(5, obj["timestamp"]),
-            requested_object_wrench=np.full((5, 6), np.nan),
-            requested_object_wrench_valid=np.zeros(5, bool),
-            allocated_gripper_wrenches=np.full((5, 2, 6), np.nan),
-            allocation_valid=np.zeros(5, bool),
-            tracking_error_Nm=np.nan,
-            tracking_error_valid=False,
-        )
-        sections["controller"].append(c)
-        sections["privileged"].append(
-            dict(timestamp=before["timestamp"], scenario_label=scenario, **truth)
-        )
-        sections["supervision"].append(
-            dict(
                 timestamp=before["timestamp"],
-                expert_assist_torque_ref=np.nan,
-                expert_label_valid=False,
+                reference_timestamp=decision["timestamp"],
+                desired_assist_torque=decision["assist_torque_y_nm"],
+                reference_valid=decision["valid"],
+                reference_source=decision["source"],
+                decision_timestamp=np.full(5, decision["timestamp"]),
+                object_command_timestamp=np.full(5, obj["timestamp"]),
+                requested_object_wrench=np.full((5, 6), np.nan),
+                requested_object_wrench_valid=np.zeros(5, bool),
+                allocated_gripper_wrenches=np.full((5, 2, 6), np.nan),
+                allocation_valid=np.zeros(5, bool),
+                tracking_error_Nm=np.nan,
+                tracking_error_valid=False,
             )
-        )
-        sections["diagnostics"].append(stack(diagnostics))
+            sections["controller"].append(c)
+            sections["privileged"].append(
+                dict(timestamp=before["timestamp"],
+                     scenario_label=(episode_context or {}).get("task_id", scenario), **truth)
+            )
+            sections["supervision"].append(
+                dict(
+                    timestamp=before["timestamp"],
+                    expert_assist_torque_ref=np.nan,
+                    expert_label_valid=False,
+                )
+            )
+            sections["diagnostics"].append(stack(diagnostics))
+    except Exception as error:
+        # Partial files are failure evidence, not a valid transition dataset.
+        output.mkdir(parents=True)
+        for name, rows in sections.items():
+            if rows:
+                np.savez_compressed(output / ("partial_" + name + ".npz"), **stack(rows))
+        if commands:
+            np.savez_compressed(output / "failed_transition_commands.npz", **stack(commands))
+        (output / "failure.json").write_text(json.dumps(dict(
+            error=f"{type(error).__name__}: {error}", physics_tick=world.tick,
+            completed_transitions=len(sections["observations"]),
+            partial_data_valid=False,
+        ), indent=2) + "\n")
+        raise
     output.mkdir(parents=True)
     layouts = {}
     for name, rows in sections.items():
@@ -226,6 +251,7 @@ def run_episode(
         expert_labels="unavailable",
         control_status="three-layer interfaces; assistance tracking and Expert labels not validated",
         array_layout=layouts,
+        experiment=episode_context,
     )
     (output / "metadata.json").write_text(json.dumps(meta, indent=2) + "\n")
     result = validate_episode(output)

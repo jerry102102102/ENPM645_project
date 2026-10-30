@@ -103,13 +103,9 @@ class PandaWorld:
         self.d.ctrl[self.aa] = arm_position
         self.d.ctrl[self.pad_aa] = pad_force
 
-    def refresh(self, t, scenario=None):
-        scenario = self.scenario if scenario is None else scenario
-        m, d, p = self.m, self.d, self.p
-        d.qfrc_applied[:] = 0
-        d.xfrc_applied[:] = 0
-        mujoco.mj_fwdPosition(m, d)
-        mujoco.mj_fwdVelocity(m, d)
+    def environment_targets(self, t, scenario):
+        """Runner-owned human/environment inputs; never controller observations."""
+        p = self.p
         u, du = smooth(t, 0.7, p["ramp_duration"])
         delta = p["direction"] * p["target_angle"] if scenario == "A" else 0.0
         goal = p["initial_angle"] + delta * u
@@ -118,6 +114,21 @@ class PandaWorld:
         velocity = clip_norm(
             np.cross([0.0, delta * du, 0.0], radius), p["human_target_speed_limit"]
         )
+        fe = np.zeros(3)
+        if scenario == "C":
+            on, _ = smooth(t, p["disturbance_start"], 0.15)
+            off, _ = smooth(t, p["disturbance_end"], 0.15)
+            fe[2] = -p["direction"] * p["disturbance_magnitude"] * (on - off)
+        return goal, target, velocity, fe
+
+    def refresh(self, t, scenario=None):
+        scenario = self.scenario if scenario is None else scenario
+        m, d, p = self.m, self.d, self.p
+        d.qfrc_applied[:] = 0
+        d.xfrc_applied[:] = 0
+        mujoco.mj_fwdPosition(m, d)
+        mujoco.mj_fwdVelocity(m, d)
+        goal, target, velocity, fe = self.environment_targets(t, scenario)
         hp = d.site_xpos[self.hsite].copy()
         jac = np.zeros((3, m.nv))
         mujoco.mj_jacSite(m, d, jac, None, self.hsite)
@@ -128,11 +139,6 @@ class PandaWorld:
         ep = d.xpos[self.panel] + d.xmat[self.panel].reshape(3, 3) @ np.array(
             p["disturbance_point"]
         )
-        fe = np.zeros(3)
-        if scenario == "C":
-            on, _ = smooth(t, p["disturbance_start"], 0.15)
-            off, _ = smooth(t, p["disturbance_end"], 0.15)
-            fe[2] = -p["direction"] * p["disturbance_magnitude"] * (on - off)
         for force, point in [(fh, hp), (fe, ep)]:
             mujoco.mj_applyFT(
                 m, d, force, np.zeros(3), point, self.panel, d.qfrc_applied
