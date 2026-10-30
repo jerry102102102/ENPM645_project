@@ -1,20 +1,20 @@
-# 檢索與來源核對紀錄
+# Search and Source-Verification Log
 
-查核日：**2026-10-10（America/New_York）**
+Verification date: **2026-10-10 (America/New_York)**
 
-## 目的與範圍
+## Purpose and scope
 
-起點是使用者提供的 ChatGPT 文字，其中列出 9 篇論文。這次逐篇尋找原文／出版 metadata，建立適合兩人專題的初步閱讀入口。
+The starting point was user-provided ChatGPT text listing nine papers. Each was checked against original sources/publication metadata to create an initial reading guide for a two-person project.
 
-纳入條件：原始來源可確認存在，且與共同物體操作、意圖辨識、感測融合、載荷估計或觸覺控制相關。直接對應翻轉者優先；相關任務只標為方法參考。英文、2018–2026 的這 9 個種子題名為本次範圍，不代表完整年代檢索。
+Inclusion criteria: existence confirmed through an original source, and relevance to shared-object manipulation, intent recognition, sensor fusion, payload estimation, or tactile control. Papers directly addressing reorientation received priority; related tasks were marked as method references. The scope was these nine English-language seed titles from 2018–2026, not a comprehensive search across that period.
 
-本次 9 篇都找到來源；按題名／DOI 對齊版本，未發現需去重的獨立種子。Workshop 不是論文，不列進閱讀清單。沒有保存完整搜尋結果數，因此不報告 PRISMA flow 或完整召回率。
+Sources were found for all nine papers. Versions were aligned by title/DOI, with no duplicate independent seed entries identified. Workshops are not papers and were not added to the reading list. Complete search-result counts were not retained, so no PRISMA flow or complete recall estimate is reported.
 
-## 檢索方式
+## Search method
 
-以完整題名搜尋並搭配第一作者／年份。主要來源為作者頁、Honda Research Institute、TU Delft repository、Frontiers、IEEE 索引、Springer、Wiley、Nature、arXiv；P08 使用 PubMed 收錄的原論文摘要。
+Searches used full titles with first author/year. Main sources included author pages, Honda Research Institute, the TU Delft repository, Frontiers, IEEE indexes, Springer, Wiley, Nature, and arXiv. P08 used the original paper's abstract indexed by PubMed.
 
-實際查詢家族：
+Query families used:
 
 - `"Human-Robot Cooperative Object Manipulation with Contact Changes" Gienger`
 - `"Human-Robot Planar Co-Manipulation of Extended Objects" Mielke`
@@ -26,45 +26,45 @@
 - `"Multistep Intent Estimation Guided Adaptive Passive Control"`
 - `"Embodied Sensorimotor Integration for Whole-Arm Tactile Sensing"`
 
-## 核對範圍
+## Inspection scope
 
-| ID | Metadata／存在性依據 | 查閱內容 | 尚未完成 |
+| ID | Metadata / existence evidence | Content inspected | Not completed |
 | --- | --- | --- | --- |
-| P01 | TU Delft metadata + Honda accepted manuscript | III、VI、VII 等關鍵段落 | 團隊全文閱讀／程式與控制重現 |
-| P02 | Frontiers／PMC | 方法、實驗、5.3–5.4、結論 | 團隊全文閱讀／原始資料重分析 |
-| P03 | Frontiers／PMC | Results、Conclusion | 團隊全文閱讀／原始資料重分析 |
-| P04 | IEEE metadata + arXiv | 摘要與版本核對 | 全文方法／實驗查核 |
-| P05 | Springer chapter metadata + arXiv | 摘要與版本核對 | 全文方法／實驗查核 |
-| P06 | Wiley | Abstract、2 Experimental Section、2.1–2.4 | 全文假設／控制穩定性審查 |
-| P07 | arXiv v4 + 作者專案 | 摘要／版本／專案方法說明 | 全文／正式 proceedings DOI |
-| P08 | PubMed PMID 41071693 | 原論文摘要與 metadata | IEEE 全文；DOI 入口在本次 web tool 無法開啟 |
-| P09 | Nature 搜尋索引 + 作者實驗室頁 | 摘要與 metadata | Nature 直接 open 出錯；全文／supplement 未查阅 |
+| P01 | TU Delft metadata + Honda accepted manuscript | Key sections including III, VI, and VII | Team full-text reading / code and control reproduction |
+| P02 | Frontiers / PMC | Methods, experiments, 5.3–5.4, conclusion | Team full-text reading / raw-data reanalysis |
+| P03 | Frontiers / PMC | Results, Conclusion | Team full-text reading / raw-data reanalysis |
+| P04 | IEEE metadata + arXiv | Abstract and version alignment | Full-text methods / experiment verification |
+| P05 | Springer chapter metadata + arXiv | Abstract and version alignment | Full-text methods / experiment verification |
+| P06 | Wiley | Abstract, 2 Experimental Section, 2.1–2.4 | Full review of assumptions / control stability |
+| P07 | arXiv v4 + author project | Abstract / version / project-method description | Full text / formal proceedings DOI |
+| P08 | PubMed PMID 41071693 | Original-paper abstract and metadata | IEEE full text; the DOI page could not be opened with the web tool during this check |
+| P09 | Nature search index + author laboratory page | Abstract and metadata | Direct Nature open failed; full text / supplement not inspected |
 
-各篇 [閱讀卡](README.md) 提供原文來源。這裡的「存在性確認」不表示所有 DOI 已成功解析、所有結果已重現或每篇全文都已閱讀。未執行 Semantic Scholar／OpenAlex programmatic verification，也未進行全面撤稿、COI、venue indexing 審查。
+Each [Reading Card](README.md) links to original sources. “Existence confirmed” does not mean all DOIs resolved successfully, all results were reproduced, or every full paper was read. No Semantic Scholar/OpenAlex programmatic verification or comprehensive retraction, COI, or venue-indexing review was performed.
 
-## 對原始貼文的更正與保留
+## Corrections and qualifications to the initial pasted material
 
-1. **P01：**90° 箱子轉動存在於 VII Evaluation；是雙臂系統。該實驗的互動判斷使用由關節力矩估出的力，硬體另有 F/T 與 tactile。[Honda manuscript](https://www.honda-ri.de/pubs/pdf/3729.pdf)
-2. **P02：**安全／困惑／可預測性偏好不能宣稱統計顯著；論文另報 Good Force Amount 差異。[5.3–5.4](https://www.frontiersin.org/journals/neurorobotics/articles/10.3389/fnbot.2024.1291694/full)
-3. **P04：**preprint 是 2022，online publication 是 2023，正式 issue 是 2024；引用以 2024 issue 為主。[IEEE](https://ieeexplore.ieee.org/document/10144527/)
-4. **P05：**除 2022 preprint 外，已有 2023 Springer 正式章節。[Springer](https://link.springer.com/chapter/10.1007/978-3-031-26889-2_11)
-5. **P06：**online 2024／issue 2025；sensorless 指人側不需要感測器，機器人末端仍使用 6D F/T。[Wiley §2](https://advanced.onlinelibrary.wiley.com/doi/10.1002/aisy.202400616)
-6. **P07：**arXiv v4 與作者頁標明 IROS 2026 accepted；BibTeX 先引用實際查閱的 arXiv v4，不猜 proceedings DOI／頁碼。v4 作者順序與早期版本不同。[arXiv v4](https://arxiv.org/abs/2605.23568v4)、[作者頁](https://shayfeng.github.io/TactileReflex/)
-7. **P08：**2026 issue 與 DOI 中的 2025 並不矛盾；目前僅摘要依據。[PubMed](https://pubmed.ncbi.nlm.nih.gov/41071693/)
-8. **P09：**2026 Nature Sensors 出版可由 Nature 索引與實驗室出版頁對齊；不將硬體展示當成單臂共握翻轉成果。[Nature](https://www.nature.com/articles/s44460-026-00097-1)、[實驗室](https://mirs.hkust.edu.hk/publications/)
-9. 原貼文中的 IROS workshop 日期、UMD 課程綱要並非本次論文核對的必要內容，因此未作為支持研究結論的證據。
+1. **P01:** The 90° box rotation appears in VII Evaluation and uses a dual-arm system. Interaction decisions in that experiment use forces estimated from joint torques; the hardware also includes F/T and tactile sensors. [Honda manuscript](https://www.honda-ri.de/pubs/pdf/3729.pdf)
+2. **P02:** Safety/confusion/predictability preferences cannot be claimed as statistically significant; the paper separately reports a difference in Good Force Amount. [5.3–5.4](https://www.frontiersin.org/journals/neurorobotics/articles/10.3389/fnbot.2024.1291694/full)
+3. **P04:** The preprint is from 2022, online publication from 2023, and formal issue from 2024. Cite the 2024 issue as the primary publication. [IEEE](https://ieeexplore.ieee.org/document/10144527/)
+4. **P05:** In addition to the 2022 preprint, a formal Springer chapter was published in 2023. [Springer](https://link.springer.com/chapter/10.1007/978-3-031-26889-2_11)
+5. **P06:** Online publication was in 2024 and the issue in 2025. Sensorless means no human-side sensor is required; the robot end effector still uses 6D F/T. [Wiley §2](https://advanced.onlinelibrary.wiley.com/doi/10.1002/aisy.202400616)
+6. **P07:** arXiv v4 and the author page state acceptance to IROS 2026. BibTeX cites the inspected arXiv v4 rather than guessing a proceedings DOI/page range. The v4 author order differs from earlier versions. [arXiv v4](https://arxiv.org/abs/2605.23568v4), [Author page](https://shayfeng.github.io/TactileReflex/)
+7. **P08:** The 2026 issue and 2025 in the DOI are not contradictory; evidence is currently limited to the abstract. [PubMed](https://pubmed.ncbi.nlm.nih.gov/41071693/)
+8. **P09:** The 2026 Nature Sensors publication can be aligned between the Nature index and laboratory publication page. Do not treat its hardware demonstration as a single-arm co-grasped flipping result. [Nature](https://www.nature.com/articles/s44460-026-00097-1), [Laboratory](https://mirs.hkust.edu.hk/publications/)
+9. IROS workshop dates and the UMD course syllabus in the initial text were not necessary for this paper-verification task and were not used as evidence supporting research conclusions.
 
-## 後續補文獻的方向
+## Directions for the next literature search
 
-以下是未執行的下一輪搜尋建議：
+The following are suggested queries for a future search; they have not been executed:
 
 - `("co-manipulation" OR "physical human-robot collaboration") AND ("vision-language model" OR VLM) AND intent`
 - `"collaborative object reorientation" single arm admittance`
 - `"vision tactile force" intention ablation human robot`
 - `"co-manipulation" ("negative results" OR latency OR ambiguity)`
 
-目前清單依種子材料選取，不能由「找不到直接三模態例子」推論新穎性已成立。VLM、單臂翻面幾何、真實人類泛化與開放程式的可重現性仍是證據缺口。這是定向探索式整理，不是 systematic review。
+The current list was selected from seed material. Failure to find a direct three-modal example does not establish novelty. Evidence gaps remain in VLMs, single-arm flipping geometry, generalization to real humans, and reproducibility with open code. This is a targeted exploratory review, not a systematic review.
 
-## AI 使用說明
+## AI disclosure
 
-Codex 協助檢索、對齊 metadata、整理短摘要與設計推論；沒有代替團隊宣告任何論文已讀、沒有執行實驗，也沒有聲稱獨立跨模型審查。正式報告引用前，由團隊閱讀相關原文並確認 locator。
+Codex assisted with searching, metadata alignment, short summaries, and design inferences. It did not declare any paper read on the team's behalf, run experiments, or claim independent cross-model review. Before citing a result in the formal report, the team should read the relevant source and confirm its locator.

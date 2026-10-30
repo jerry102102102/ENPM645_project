@@ -1,45 +1,45 @@
-# Pxx — 原始英文題名
+# Pxx — Original English Title
 
-> **最值得帶回專題的概念：** 用一句話說明。
+> **Core concept for our project:** State it in one sentence.
 
-## 來源與狀態
+## Sources and status
 
-- 完整作者／年份／venue：
-- DOI／arXiv ID：
-- 原文／Demo／code：
-- 版本：正式出版／accepted author manuscript／preprint
-- 核對日期：
-- AI 查閱範圍（如有）：
-- Human reading status：queued
-- Reader／日期：
-- Team read scope：全文／具體章節
-- Citation key：
+- Full authors / year / venue:
+- DOI / arXiv ID:
+- Paper / demo / code:
+- Version: formal publication / accepted author manuscript / preprint
+- Verification date:
+- AI inspection scope (if any):
+- Human reading status: queued
+- Reader / date:
+- Team read scope: full text / specific sections
+- Citation key:
 
-## 論文到底做什麼
+## What the paper actually does
 
-- 任務與人機配置：
-- 感測器的位置／輸入：
-- 意圖定義與輸出：
-- 模型／控制器：
-- 核心結果與 section／figure／table：
-- 限制／不支持的推論：
+- Task and human-robot configuration:
+- Sensor placement / inputs:
+- Definition of intent and outputs:
+- Model / controller:
+- Main findings and section / figure / table:
+- Limitations / unsupported inferences:
 
-## 我們可以怎麼用
+## How we could use it
 
-- 一個核心概念：
-- 我們打算採用的部分：
-- 所需資料／硬體／模擬量：
-- 一個最小驗證實驗：
-- Baseline／對照：
-- 指標：
-- 採用／暫緩的理由：
+- One core concept:
+- What we plan to adopt:
+- Required data / hardware / simulation quantities:
+- One minimal validation experiment:
+- Baseline / comparison:
+- Metrics:
+- Reasons to adopt / defer:
 
-## 團隊討論
+## Team discussion
 
-- 另一位組員的問題：
-- 共同結論：
-- 更新到專題概念的內容：
+- Questions from the other teammate:
+- Shared conclusion:
+- Updates to the project concept:
 
-## 引用原文
+## Citing the source
 
-以短引文或自己的轉述配合來源連結與 locator；把論文結果、作者推測與我們的設計推論分開。
+Use brief quotations or your own paraphrases with source links and locators. Distinguish the paper's results, the authors' speculation, and our design inferences.

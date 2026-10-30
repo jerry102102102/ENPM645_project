@@ -1,18 +1,18 @@
-# Track A / Track B — 單一三層介面
+# Track A / Track B — One Three-Layer Interface
 
-先讀 [三層契約](THREE_LAYER_INTERFACE.md)。現行所有型別從 `phase1b.interfaces` 匯入；唯一收集入口是 `phase1b.scripts.collect`。
+Start with the [Three-Layer Contract](THREE_LAYER_INTERFACE.md). Import all current types from `phase1b.interfaces`; the only collection entry point is `phase1b.scripts.collect`.
 
-| 開發項目 | 輸入 → 輸出 |
+| Development task | Input → output |
 |---|---|
 | Track A Policy / candidate Expert | `PolicyHistory → AssistanceDecision` |
 | Object-Level Controller | `AssistanceDecision + ArmControllerInput + dt=.01 → ObjectCommand` |
-| Track B Dual-Arm Controller | `ObjectCommand + 最新 ArmControllerInput → ArmCommand` |
+| Track B Dual-Arm Controller | `ObjectCommand + latest ArmControllerInput → ArmCommand` |
 
-Controller observation 是公開感測的唯讀副本，包含 q/dq、EE pose、F/T、tactile、object state。另有名義 q、pad preload 與 actuator command limits。沒有 human goal、scenario label、外力真值、future state 或 live MuJoCo handle。
+Controller observations are read-only copies of public sensing: q/dq, EE pose, F/T, tactile, and object state. Nominal q, pad preload, and actuator command limits are also available. Human goals, scenario labels, disturbance truth, future states, and live MuJoCo handles are excluded.
 
-## 接入
+## Integration
 
-自訂類別需提供上述 predict/step 方法；CLI 使用無參數 constructor。可只替換正在開發的一層，其餘使用 reference-only / position-hold adapters：
+Custom classes must provide the predict/step methods above. The CLI uses constructors without arguments. You may replace just the layer under development and retain the reference-only / position-hold adapters for the others:
 
 ```bash
 uv run --locked python -m phase1b.scripts.collect \
@@ -22,7 +22,7 @@ uv run --locked python -m phase1b.scripts.collect \
   --output results/phase1b/dev-controller
 ```
 
-需要 constructor 參數時用 Python：
+Use Python when constructor arguments are needed:
 
 ```python
 from phase1b.pipeline import run_episode
@@ -32,9 +32,9 @@ run_episode("results/phase1b/dev-controller", scenario="B", duration=4,
             max_assist_torque_nm=.02, max_rotation_rate_rad_s=.5)
 ```
 
-這兩個限額是介面測試設定，不是安全認證。Import、型別、時鐘、超限錯誤會直接中止，不靜默退回 baseline。
+These two bounds are interface test settings, not safety certification. Import, type, clock, and bound errors abort execution without silently falling back to a baseline.
 
-## 現有 ArmCommand
+## Existing ArmCommand
 
 ```python
 from phase1b.interfaces import ArmCommand
@@ -50,16 +50,16 @@ class DualArmController:
         )
 ```
 
-Arm commands 為 `(2,7)` **rad**，pad commands 為 `(4,)` **N**；不能把 object Nm 放進 position targets。World +Y / panel COM 的 assistance 與基本支撐分開；非零 Ty 不可與獨立高剛性 pitch position loop 疊加。直接 torque actuation 需要另建 hardware/controller version。
+Arm commands are `(2,7)` in **rad**; pad commands are `(4,)` in **N**. Do not put object-level Nm into position targets. Assistance about World +Y / panel COM is separate from basic support; nonzero Ty must not be added to an independent high-stiffness pitch position loop. Direct torque actuation requires a new hardware/controller version.
 
-目前 reference-only adapter 只在 HOLD 入口 latch 當下姿態，ROTATE 不產生動作；dual-arm adapter 只保持 nominal q。完整 admittance、IK/Jacobian execution、配力、接觸控制、限幅平滑與 assistance tracking 仍待實作。Scalar AssistTorqueReference 僅保留明確資料轉換，舊 step(reference, inp) 執行分支已依單一版本要求移除。
+The current reference-only adapter latches the current pose only on entry to HOLD; ROTATE produces no motion. The dual-arm adapter only holds nominal q. Full admittance, IK/Jacobian execution, wrench allocation, contact control, bounds/smoothing, and assistance tracking remain unimplemented. Scalar AssistTorqueReference retains only explicit data conversion; the old step(reference, inp) execution branch was removed to maintain one version.
 
-換控制器後須驗證：支撐與 assistance 的責任、requested → allocated → commands → realized、接觸／碰撞／限制／飽和及 tracking error。`assist_reference_executed=True` 只是使用請求的旗標；不是 tracking 或 Expert quality 通過。
+After changing controllers, validate support versus assistance responsibilities, requested → allocated → commands → realized, contact/collision/limits/saturation, and tracking error. `assist_reference_executed=True` is only a flag that the request was used; it does not establish tracking or Expert quality.
 
-[硬體](CURRENT_HARDWARE_HANDOFF.md) · [資料格式與時間事件](DATA_SCHEMA_V2.md) · [測試結果](../results/phase1b/current/verification.json)
+[Hardware](CURRENT_HARDWARE_HANDOFF.md) · [Data Schema and Timing Events](DATA_SCHEMA_V2.md) · [Test Results](../results/phase1b/current/verification.json)
 
-## Expert 候選接入
+## Integrating Expert candidates
 
-[E0/E1/E2 設計與 API](EXPERT_DATA_DESIGN.md) 已可計算 `candidate.decision`，尚未加入物理 runner。TeacherGoal/DisturbanceTruth 留在上層獨立通道；組員接收的仍只有 AssistanceDecision，不接收 expert reference angle。ROTATE 的反向 torque 可能是煞車，不能直接拒絕；UNCERTAIN 仍為零。三個 expert 與 student 必須共用相同下游邏輯。
+The [E0/E1/E2 Design and API](EXPERT_DATA_DESIGN.md) can compute `candidate.decision`, but are not yet connected to the physical runner. TeacherGoal/DisturbanceTruth remain in a separate upstream channel. Teammates still receive only AssistanceDecision, not the expert reference angle. Opposing torque in ROTATE may be braking and must not be rejected solely for its sign; UNCERTAIN still requires zero. All three experts and the student must share the same downstream logic.
 
-ExpertConfig 的 torque_max/rate_max 要由控制器驗證後提供；目前沒有認證值，也沒有因新增 generators 就將 tracking 或 labels 標有效。
+ExpertConfig torque_max/rate_max must come from controller validation. There are currently no certified values, and adding generators does not make tracking or labels valid.

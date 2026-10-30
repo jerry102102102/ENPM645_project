@@ -1,66 +1,66 @@
 # Data Schema — enpm645-three-layer-transition/1.0
 
-唯一 writer/reader/validator：`phase1b.pipeline.run_episode / read_episode / validate_episode`。Hardware 2.0.0 / Scenario 3.0.0。
+The only formal writer/reader/validator is `phase1b.pipeline.run_episode / read_episode / validate_episode`. Hardware 2.0.0 / Scenario 3.0.0.
 
-## 時間
+## Timing
 
-每筆 transition：`o_t → decision_t → object_command_t → 5 個 500 Hz arm commands/steps → o_next`。Observation/reference 100 Hz，physics/control 500 Hz；settle 2 秒後 episode clock 歸零，engine clock 另存。
+Each transition: `o_t → decision_t → object_command_t → 5 arm commands/steps at 500 Hz → o_next`. Observations/references run at 100 Hz; physics/control at 500 Hz. The episode clock resets after 2 seconds of settling; engine time is recorded separately.
 
-| 檔案 | 內容 |
+| File | Contents |
 |---|---|
-| observations.npz | 決策前 t 的 sensing/state；前一個命令仍作用 |
-| decisions.npz | AssistanceDecision 原始請求，含 mode、torque、source、valid；confidence 不可用時 NaN + confidence_present=false |
-| object_commands.npz | t 的 world pose/twist/assist wrench、mode、valid、frame/point；stiffness/damping 各有 valid mask，不可用填 NaN |
-| controller.npz | 五個子步的實際命令、來源時間、torque、saturation 與 post-step contact wrench |
-| next_observations.npz | t+0.01；除末筆外，精確等於下一筆 observations；不供當下 policy |
-| privileged.npz | 人手目標、作用點／真值外力、scenario；不供 policy 或下層 controller |
-| supervision.npz | 正式 Expert Labels；目前 torque=NaN、expert_label_valid=false，與 candidate decision 分開 |
-| diagnostics.npz | 500 Hz 接觸、穿透、joint limits、force balance、外加力稽核與 warnings |
-| render_states.npz | qpos/qvel，僅供 replay／FK／影片 |
-| metadata.json | Schema/model/hardware/source hashes、component 類別、white-list profile、limits、array shapes/dtypes |
-| verification.json | 此 episode 的契約與物理檢查結果，不代表控制能力已驗證 |
+| observations.npz | Sensing/state at t before the decision; the previous command is still active |
+| decisions.npz | Original AssistanceDecision request: mode, torque, source, valid; unavailable confidence uses NaN + confidence_present=false |
+| object_commands.npz | World pose/twist/assistance wrench at t, mode, valid, frame/point; stiffness/damping each have a validity mask and use NaN when unavailable |
+| controller.npz | Actual commands, source timestamps, torque, saturation, and post-step contact wrench for five substeps |
+| next_observations.npz | t+0.01; exactly equals the next observations row except at the episode end; unavailable to the current policy |
+| privileged.npz | Human targets, application points / ground-truth forces, and scenario; excluded from policy and lower-level controllers |
+| supervision.npz | Formal Expert labels; currently torque=NaN and expert_label_valid=false, separate from candidate decisions |
+| diagnostics.npz | 500 Hz contacts, penetration, joint limits, force balance, applied-force audit, and warnings |
+| render_states.npz | qpos/qvel, for replay / FK / videos only |
+| metadata.json | Schema/model/hardware/source hashes, component classes, allowlist profile, limits, and array shapes/dtypes |
+| verification.json | Contract and physics checks for this episode; not proof of validated control capability |
 
-## Observation
+## Observations
 
-所有 shapes 不含 N；arm 順序 left/right，各 joint1…7。
+Shapes exclude N. Arm order is left/right, with joint1…7 per arm.
 
-| 欄位 | Shape／單位 |
+| Field | Shape / units |
 |---|---|
-| wrist_ft_left/right | 各 `(6,)`，接觸重建的 panel-on-gripper wrench；gripper-local、about gripper origin；force xyz→torque xyz |
-| wrist_sensor_left/right | 各 `(6,)`，child→parent transmitted wrench；sensor 在 gripper local `[0,.12,0]`，包含下游重量與動力學，未補償 |
-| tactile_left/right | 各 `(2,3,4,4)`；upper/lower × sensor z/x/y × angular bins；N/bin |
-| object_position/orientation | `(3,)` world xyz m / `(4,)` quaternion wxyz |
-| object_linear/angular_velocity | 各 `(3,)` world m/s、rad/s |
-| contact_state_left/right | 各 `(2,)` upper/lower 接觸點數 |
-| arm_joint_position/velocity | 各 `(2,7)`，rad、rad/s |
-| arm_actuator_torque/force | 各 `(2,7)`；目前 unit-gear hinge，數值皆為 Nm；不是外力估計 |
-| end_effector_pose/velocity | `(2,7)` xyz+wxyz / `(2,6)` angular→linear；兩 pad 中間的 gripper frame |
-| gripper_joint_position/velocity | 各 `(2,2)`，m、m/s |
-| gripper_actuator_force | `(4,)` N |
-| object_contact_wrench | `(6,)`，gripper-on-panel、world、about instantaneous panel COM |
+| wrist_ft_left/right | Each `(6,)`; contact-reconstructed panel-on-gripper wrench; gripper-local, about the gripper origin; force xyz→torque xyz |
+| wrist_sensor_left/right | Each `(6,)`; child→parent transmitted wrench; sensor at gripper-local `[0,.12,0]`; includes downstream weight and dynamics, uncompensated |
+| tactile_left/right | Each `(2,3,4,4)`; upper/lower × sensor z/x/y × angular bins; N/bin |
+| object_position/orientation | `(3,)` world xyz in m / `(4,)` quaternion wxyz |
+| object_linear/angular_velocity | Each `(3,)`, world m/s and rad/s |
+| contact_state_left/right | Each `(2,)`, upper/lower contact counts |
+| arm_joint_position/velocity | Each `(2,7)`, rad and rad/s |
+| arm_actuator_torque/force | Each `(2,7)`; current unit-gear hinges make both numerically Nm; not an external-force estimate |
+| end_effector_pose/velocity | `(2,7)` xyz+wxyz / `(2,6)` angular→linear; gripper frame between the two pads |
+| gripper_joint_position/velocity | Each `(2,2)`, m and m/s |
+| gripper_actuator_force | `(4,)`, N |
+| object_contact_wrench | `(6,)`; gripper-on-panel, world, about the instantaneous panel COM |
 
-另保留 gripper/object pose/velocity 合併欄位與左右 world-at-panel-COM contact wrenches，供診斷。
+Combined gripper/object pose/velocity fields and separate left/right contact wrenches in world coordinates about the panel COM are also retained for diagnostics.
 
-## Commands 與診斷
+## Commands and diagnostics
 
-- Decision/ObjectCommand 各 N 筆；來源時間與 observation_t 相同。
-- `command_timestamp / decision_timestamp / object_command_timestamp`：各 `(N,5)`；前者 t+[0,.002,.004,.006,.008]，後兩者保持 t。
-- `arm_position_target (N,5,2,7)` rad；`pad_force_command (N,5,4)` N。
-- `arm_requested_servo_torque`、`arm_actuator_torque_at_actuation`、`arm_actuator_torque_after_step`：分別為 clipping 前、作用後 step 前、step 後；不可互換。
-- `realized_timestamp`=command_timestamp+.002；`realized_object_contact_wrench (N,5,6)` 是總接觸 wrench，不是已分離的 assistance。
-- `requested_object_wrench (N,5,6)` 定義為含支撐的總需求，尚未計算，NaN + requested_object_wrench_valid=false。已知的額外 assistance request 存於 object_commands.assist_wrench_world。
-- `allocated_gripper_wrenches (N,5,2,6)` 尚無 allocator，NaN + allocation_valid=false。
-- `tracking_error_Nm (N,)` 為 NaN、tracking_error_valid=false；不可用總 Ty 代替。
-- `controller_mode / assist_reference_executed` 每子步記錄；contact_status 對應 diagnostics.contact_counts，saturation 對應 controller.arm_force_saturated。
+- Decision/ObjectCommand each have N rows; their source times equal observation_t.
+- `command_timestamp / decision_timestamp / object_command_timestamp`: each `(N,5)`; the first is t+[0,.002,.004,.006,.008], while the latter two remain t.
+- `arm_position_target (N,5,2,7)` in rad; `pad_force_command (N,5,4)` in N.
+- `arm_requested_servo_torque`, `arm_actuator_torque_at_actuation`, and `arm_actuator_torque_after_step`: respectively before clipping, after command application but before stepping, and after stepping; not interchangeable.
+- `realized_timestamp`=command_timestamp+.002; `realized_object_contact_wrench (N,5,6)` is the total contact wrench, not isolated assistance.
+- `requested_object_wrench (N,5,6)` denotes the total demand including support. It is not yet computed: NaN + requested_object_wrench_valid=false. The known additional assistance request is in object_commands.assist_wrench_world.
+- `allocated_gripper_wrenches (N,5,2,6)` has no allocator yet: NaN + allocation_valid=false.
+- `tracking_error_Nm (N,)` is NaN with tracking_error_valid=false; total Ty must not substitute for assistance tracking.
+- `controller_mode / assist_reference_executed` are logged per substep; contact_status corresponds to diagnostics.contact_counts, and saturation to controller.arm_force_saturated.
 
-## 學習邊界
+## Learning boundary
 
-預設 policy 只有上述兩側 contact F/T、tactile、object pose/velocity、contact state（10 fields）。`with_joint_states` 再開啟 q/dq。Raw wrist sensors、torques、commands、truth、metadata 不自動加入。
+By default, the policy receives the two contact F/T streams, tactile, object pose/velocity, and contact state listed above (10 fields). `with_joint_states` additionally enables q/dq. Raw wrist sensors, torques, commands, truth, and metadata are not automatically included.
 
-Source 寫 oracle_expert 也不會讓 supervision 自動有效。所有候選決策與正式標籤分開；沒有配力／追蹤驗證前，仍不產生有效 Expert Labels。
+Setting source to oracle_expert does not make supervision valid. Candidate decisions remain separate from formal labels. No valid Expert labels are produced before allocation/tracking validation.
 
-Scripted motion 展示沿用獨立的 render/diagnostic record，含 privileged truth，**不是正式訓練資料格式**。舊 schema 與實驗只留在歷史 Git revision；現行 reader 不保留多版本分支。
+Scripted motion demonstrations use separate render/diagnostic records containing privileged truth. **These are not the formal training-data format.** Old schemas and experiments remain only in historical Git revisions; the current reader does not maintain multiple-version branches.
 
 ## Expert shadow annotation
 
-[Expert Data Contract](EXPERT_DATA_DESIGN.md) 定義 `enpm645-expert-shadow/1.0` sidecar：衍生感測、分開的 E0/E1/E2 candidates、詳細 metadata 與教師內部 state。不新增第二個物理 pipeline，也不覆寫本 schema 的原始檔。Shadow candidates 即使數值有效，正式 torque 仍 NaN、execution_valid/supervision_eligible=false。
+The [Expert Data Contract](EXPERT_DATA_DESIGN.md) defines the `enpm645-expert-shadow/1.0` sidecar: derived sensing, separate E0/E1/E2 candidates, detailed metadata, and teacher-internal state. It adds no second physical pipeline and does not overwrite this schema's original files. Even numerically valid shadow candidates keep formal torque NaN and execution_valid/supervision_eligible=false.

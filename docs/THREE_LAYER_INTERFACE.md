@@ -1,57 +1,57 @@
 # Three-Layer Control Interface v1.1
 
-唯一執行鏈：`PolicyObservation → AssistanceDecision → ObjectCommand → ArmCommand → MuJoCo`。Scenario 3.0.0 / Hardware 2.0.0 不變。型別在 `phase1b/interfaces.py`，串接在 `phase1b/control.py`，記錄在 `phase1b/pipeline.py`。
+One execution chain: `PolicyObservation → AssistanceDecision → ObjectCommand → ArmCommand → MuJoCo`. Scenario 3.0.0 / Hardware 2.0.0 remain unchanged. Types are in `phase1b/interfaces.py`, orchestration in `phase1b/control.py`, and logging in `phase1b/pipeline.py`.
 
-| 狀態 | 目前範圍 |
+| Status | Current scope |
 |---|---|
-| Interface Ready | 型別、驗證、因果隔離與正式記錄已接通；測試見 results/phase1b/current |
-| Controller Implemented | 只有 reference-only object adapter 與 position-hold dual-arm adapter |
-| Assistance Tracking Validated | **否**；沒有 allocation / tracking algorithm |
-| Expert Labels Validated | **否**；所有正式 supervision 保持 invalid |
+| Interface Ready | Types, validation, causal isolation, and formal logging are connected; see results/phase1b/current for tests |
+| Controller Implemented | Only a reference-only object adapter and a position-hold dual-arm adapter |
+| Assistance Tracking Validated | **No**; no allocation / tracking algorithm |
+| Expert Labels Validated | **No**; all formal supervision remains invalid |
 
 ## ① AssistanceDecision
 
-| 欄位 | 契約 |
+| Field | Contract |
 |---|---|
-| timestamp | Episode seconds，有限且非負；必須等於本次決策 observation 時間 |
+| timestamp | Episode seconds, finite and nonnegative; must equal this decision's observation time |
 | mode | `ROTATE_POS / ROTATE_NEG / HOLD / UNCERTAIN` |
-| assist_torque_y_nm | 有限 scalar；World +Y、instantaneous panel COM、Nm；不含基本支撐 |
-| confidence | `None` 或 `[0,1]`；無校準估計時用 None |
+| assist_torque_y_nm | Finite scalar; World +Y, instantaneous panel COM, Nm; excludes basic support |
+| confidence | `None` or `[0,1]`; use None without a calibrated estimate |
 | source | `scripted_test / rule_based / oracle_expert / learned_policy` |
-| valid | 真正 bool；無效 decision 必須是 UNCERTAIN、torque=0 |
+| valid | Actual bool; an invalid decision must be UNCERTAIN with torque=0 |
 
-ROTATE_POS / ROTATE_NEG 表示意圖方向，torque 可反向煞車，不能用正負號直接推定意圖；HOLD 可正、可負、可非零。UNCERTAIN torque 必須為零，不得新增主動旋轉。`HOLD + disturbance` 不是第五種意圖。有效 UNCERTAIN 表示有效的「無法判定」結果；valid=false 表示上游結果不可用。
+ROTATE_POS / ROTATE_NEG express intent direction. Torque may oppose that direction for braking; its sign does not directly determine intent. HOLD may have positive, negative, or nonzero torque. UNCERTAIN requires zero torque and must not introduce active rotation. `HOLD + disturbance` is not a fifth intent. Valid UNCERTAIN means a valid assessment of uncertainty; valid=false means the upstream result is unavailable.
 
-保留一個 scalar 資料轉接器：`AssistanceDecision.from_legacy(AssistTorqueReference(...), mode="HOLD")`；mode 必須明示，不能從 torque 正負推定意圖。`to_legacy()` 將 oracle_expert 對應 model_based_expert；舊 enum 無法表達 rule_based，會明確拒絕。這只是單一模組內的資料轉換，不保留舊 pipeline。
+One scalar data adapter remains: `AssistanceDecision.from_legacy(AssistTorqueReference(...), mode="HOLD")`. Mode must be explicit, not inferred from the torque sign. `to_legacy()` maps oracle_expert to model_based_expert; the old enum cannot represent rule_based, so that conversion is explicitly rejected. This is a data conversion within one module, not a retained legacy pipeline.
 
 ## ② ObjectCommand
 
-| 欄位 | 契約 |
+| Field | Contract |
 |---|---|
-| timestamp / mode / valid | 與本次 AssistanceDecision 相同 |
-| pose_ref_world | `(7,)`，world xyz + unit quaternion **wxyz**，位置在 panel COM |
-| twist_ref_world | `(6,)`，**angular xyz → linear xyz**，rad/s、m/s |
-| assist_wrench_world | `(6,)`，**force xyz → torque xyz**，N、Nm；MVP 精確為 `[0,0,0,0,decision.torque,0]` |
-| impedance_parameters | 可省略的 stiffness/damping；各 `(6,)`、非負，**angular→linear**。空 dict 表示未指定，不代表零剛性控制器已實作 |
-| reference_point / frame_id | 僅允許 `panel_com` / `world` |
+| timestamp / mode / valid | Same as the current AssistanceDecision |
+| pose_ref_world | `(7,)`, world xyz + unit quaternion **wxyz**, positioned at the panel COM |
+| twist_ref_world | `(6,)`, **angular xyz → linear xyz**, rad/s and m/s |
+| assist_wrench_world | `(6,)`, **force xyz → torque xyz**, N and Nm; MVP is exactly `[0,0,0,0,decision.torque,0]` |
+| impedance_parameters | Optional stiffness/damping, each `(6,)`, nonnegative, **angular→linear**. An empty dict means unspecified, not an implemented zero-stiffness controller |
+| reference_point / frame_id | Only `panel_com` / `world` |
 
-Rotational stiffness/damping 單位 Nm/rad、Nm·s/rad；translational 部分 N/m、N·s/m。Arrays 防禦性複製為唯讀；impedance mapping 亦唯讀。
+Rotational stiffness/damping units are Nm/rad and Nm·s/rad; translational units are N/m and N·s/m. Arrays are defensively copied and made read-only; the impedance mapping is also read-only.
 
-**責任與優先順序：** 基本支撐／接觸與機械限制優先，然後才是主動協助。Pose/twist 是名義運動參考；額外 wrench 應由組員的單一 compliant pitch control law 整合，不可在 Y 旋轉方向疊上互相競爭的高剛性位置控制與力矩控制。非零 Ty 與明示非零 pitch stiffness 的組合會被契約拒絕。
+**Responsibilities and priority:** Basic support, contact, and mechanical limits take priority over active assistance. Pose/twist provide nominal motion references. The teammate's single compliant pitch control law must integrate the additional wrench; do not combine competing high-stiffness position control and torque control about Y. The contract rejects nonzero Ty combined with explicitly nonzero pitch stiffness.
 
-`ControlChain` 的測試預設 bound 為 `max_assist_torque_nm=.02`、`max_rotation_rate_rad_s=.5`；超限拒絕，不偷偷改值。這些是可設定的介面限額，不是驗證過的安全工作範圍。完整 pose-path rate limiting、smoothing、admittance、contact constraints 與飽和處置仍由正式控制器負責。
+`ControlChain` test defaults are `max_assist_torque_nm=.02` and `max_rotation_rate_rad_s=.5`. Excess requests are rejected, not silently modified. These are configurable interface bounds, not a validated safe operating envelope. The full controller remains responsible for pose-path rate limiting, smoothing, admittance, contact constraints, and saturation handling.
 
-目前 `ReferenceOnlyObjectAdapter` 在進入 HOLD 時記住當下 pose；ROTATE 只編碼力矩請求，保留當下 pose、zero twist，**不生成旋轉軌跡**。UNCERTAIN 使用當下 pose、zero twist/wrench。下層 position hold 忽略高層 motion/wrench，不宣稱追蹤。
+The current `ReferenceOnlyObjectAdapter` latches the current pose on entry to HOLD. ROTATE only encodes the torque request, retaining the current pose and zero twist; **it does not generate a rotation trajectory**. UNCERTAIN uses the current pose with zero twist/wrench. The lower-level position-hold adapter ignores high-level motion/wrench and makes no tracking claim.
 
 ## ③ ArmCommand
 
-沿用既有欄位：`arm_position_target (2,7)` rad、`pad_force_command (4,)` N、`controller_mode`、`assist_reference_executed`。驗證 finite、shape、joint/pad command bounds、模式與 bool。Arm position servos 不接受 Nm。
+Retained fields: `arm_position_target (2,7)` in rad, `pad_force_command (4,)` in N, `controller_mode`, and `assist_reference_executed`. Validation checks finiteness, shapes, joint/pad command bounds, mode, and bool types. Arm position servos do not accept Nm.
 
-為避免重複 clock，ArmCommand 不另增 timestamp 欄位；唯一 pipeline 在發送當刻記錄 `command_timestamp`，以及此命令使用的 `decision_timestamp`、`object_command_timestamp`。它們與命令一起構成有時間戳的執行事件。
+To avoid duplicate clocks, ArmCommand has no separate timestamp field. At dispatch, the single pipeline records `command_timestamp`, plus the command's source `decision_timestamp` and `object_command_timestamp`. Together with the command, these form a timestamped execution event.
 
-`assist_reference_executed` 只表示控制器有使用 assistance；不表示力矩追蹤成功。UNCERTAIN 禁止回報已執行 assistance。實際 actuator torque、contact state、saturation、post-step wrench 由 pipeline 記錄，不由 controller 偽造。
+`assist_reference_executed` only indicates that the controller used assistance; it does not establish successful torque tracking. UNCERTAIN must not report executed assistance. The pipeline records actual actuator torque, contact state, saturation, and post-step wrench rather than accepting fabricated controller measurements.
 
-## Protocol 與 clock
+## Protocol and clock
 
 ```python
 AssistancePolicy.predict(history: PolicyHistory) -> AssistanceDecision
@@ -59,13 +59,13 @@ ObjectMotionController.step(decision, observation: ArmControllerInput, dt: float
 DualArmController.step(command, observation: ArmControllerInput) -> ArmCommand
 ```
 
-每 100 Hz：先取得 observation，policy 與 object controller 各呼叫一次。五個 500 Hz 子步保留同一 ObjectCommand，但每次取得新的公開 observation；最大 reference age 為 0.008 s。缺步、亂序、future/stale decision、錯誤輸出均中止；不靜默改用其他 controller。
+At each 100 Hz tick, acquire the observation and call the policy and object controller once each. Five 500 Hz substeps retain the same ObjectCommand while acquiring fresh public observations. Maximum reference age is 0.008 s. Missing/out-of-order ticks, future/stale decisions, and invalid outputs abort execution; there is no silent controller fallback.
 
-Policy 收到既有白名單的歷史，預設最多 50 筆；q/dq 用 `with_joint_states` 明確開啟。Object/arm controllers 取得更完整的公開 robot/object sensing、名義 q、pad commands 及 limits。每個 callback 前都建立白名單副本；不傳入 simulator handle、human goal、scenario、ground-truth forces 或 future commands。這是模組資料邊界，不是對不受信任 Python 程式的 sandbox。
+The policy receives allowlisted history, up to 50 rows by default; q/dq require explicit `with_joint_states`. Object/arm controllers receive more complete public robot/object sensing, nominal q, pad commands, and limits. An allowlisted copy is created before every callback. Simulator handles, human goals, scenario labels, ground-truth forces, and future commands are excluded. This is a module data boundary, not a sandbox for untrusted Python code.
 
-新增 [Expert & Data Design](EXPERT_DATA_DESIGN.md)：候選 reference 只向下游提供 AssistanceDecision，不傳教師內部目標；本次只跑純數學測試。
+See the new [Expert & Data Design](EXPERT_DATA_DESIGN.md): candidate references pass only AssistanceDecision downstream, never teacher-internal goals. The Expert update ran pure mathematical tests only.
 
-## 測試與執行
+## Tests and execution
 
 ```bash
 uv run --locked python -m unittest phase1b.tests.test_contracts phase1b.tests.test_integration -v
@@ -73,6 +73,6 @@ uv run --locked python -m phase1b.scripts.collect --duration .12 --output result
 uv run --locked python -m phase1b.scripts.run_suite --output results/phase1b/reproduction --render
 ```
 
-測試涵蓋 modes/sign/confidence、frame/quaternion、白名單與 future rejection、HOLD latch、三層執行、時鐘、invalid masks、scalar adapter、物理無變動及資料損壞拒絕。完整 suite 另檢查支撐負對照、FK、重播與 A/B/C 動作；[37b8c24 物理結果](../results/phase1b/current/verification.json)。
+Tests cover modes/sign/confidence, frames/quaternions, allowlists and future-data rejection, HOLD latching, three-layer execution, clocks, invalid masks, the scalar adapter, unchanged physics, and rejection of corrupted data. The full suite also checks support negative controls, FK, replay, and A/B/C motion; see [Physical Results at 37b8c24](../results/phase1b/current/verification.json).
 
-[資料格式](DATA_SCHEMA_V2.md) · [組員接入](CONTROL_HANDOFF_ARMS.md) · [硬體](CURRENT_HARDWARE_HANDOFF.md)
+[Data Schema](DATA_SCHEMA_V2.md) · [Controller Handoff](CONTROL_HANDOFF_ARMS.md) · [Hardware](CURRENT_HARDWARE_HANDOFF.md)

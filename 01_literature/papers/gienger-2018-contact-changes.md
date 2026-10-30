@@ -1,47 +1,47 @@
 # P01 — Human-Robot Cooperative Object Manipulation with Contact Changes
 
-> **最值得帶回專題的概念：把翻轉拆成「辨識方向、確認人已準備好、協作執行、交還主導權」，用力訊號同步各階段。**
+> **Core concept for our project: Split reorientation into direction recognition, human-readiness confirmation, cooperative execution, and returning initiative; synchronize stages using force signals.**
 
-## 來源與狀態
+## Sources and status
 
-- 作者：Michael Gienger; Dirk Ruiken; Tamas Bates; Mohamed Regaieg; Michael Meißner; Jens Kober; Philipp Seiwald; Arne-Christoph Hildebrandt
-- 年份／venue：2018 · IROS 2018, pp. 1354–1360
-- DOI：[10.1109/IROS.2018.8594140](https://doi.org/10.1109/IROS.2018.8594140)
-- 原文入口：[論文／摘要](https://www.honda-ri.de/pubs/pdf/3729.pdf) · [出版紀錄](https://research.tudelft.nl/en/publications/human-robot-cooperative-object-manipulation-with-contact-changes/) · [官方 Demo](https://www.honda-ri.de/human-robot-cooperative-object-manipulation-with-contact-changes/)
-- 閱讀優先：必讀 1
-- 核對日期：2026-10-10
-- AI 查閱範圍：全文重點核對：III Interaction Layer、VI Robot Setup、VII Evaluation
-- Human reading status：**queued**
-- 團隊 reader：待認領
-- Citation key：`gienger_2018_contact_changes`
+- Authors: Michael Gienger; Dirk Ruiken; Tamas Bates; Mohamed Regaieg; Michael Meißner; Jens Kober; Philipp Seiwald; Arne-Christoph Hildebrandt
+- Year / venue: 2018 · IROS 2018, pp. 1354–1360
+- DOI: [10.1109/IROS.2018.8594140](https://doi.org/10.1109/IROS.2018.8594140)
+- Source links: [Paper / abstract](https://www.honda-ri.de/pubs/pdf/3729.pdf) · [Publication record](https://research.tudelft.nl/en/publications/human-robot-cooperative-object-manipulation-with-contact-changes/) · [Official demo](https://www.honda-ri.de/human-robot-cooperative-object-manipulation-with-contact-changes/)
+- Reading priority: Essential 1
+- Verification date: 2026-10-10
+- AI inspection scope: Selected full-text sections checked: III Interaction Layer、VI Robot Setup、VII Evaluation
+- Human reading status: **queued**
+- Team reader: Unassigned
+- Citation key: `gienger_2018_contact_changes`
 
-## 論文結果（依上述查阅範圍）
+## Paper findings (within the scope above)
 
-雙臂移動機器人與人共同將箱子轉動 90°；該實驗以關節力矩估計手端力，人工調整門檻。整體硬體也裝有六軸 F/T 與 tactile pads，不能把實驗所用訊號等同於全部硬體能力。 來源：[原文](https://www.honda-ri.de/pubs/pdf/3729.pdf)。
+A dual-arm mobile robot and a human jointly rotate a box by 90°. The experiment estimates hand forces from joint torques and uses manually tuned thresholds. The hardware also includes six-axis F/T sensors and tactile pads; the signals used in this experiment are not the same as the system's full sensing capabilities. Source: [Paper](https://www.honda-ri.de/pubs/pdf/3729.pdf)
 
-## 我們可以怎麼用（設計推論）
+## Potential use in our project (design inference)
 
-先做不用換手的單軸狀態機，保留 readiness 與 UNKNOWN；把高階意圖估計、運動規劃、順應控制分開。
+Start with a single-axis state machine without regrasping, retaining readiness and UNKNOWN. Separate high-level intent estimation, motion planning, and compliant control.
 
-**第一個要驗證的問題：** 單臂固定握點能完成多少角度？人換握時，支撐與暫停條件如何定義？
+**First question to test:** What rotation range can a single arm achieve with a fixed grasp? How should support and pause conditions be defined during human regrasping?
 
-## 不能直接推論的部分
+## What this does not establish
 
-雙臂與接觸變更的系統；並非單臂、任意形狀或三模態模型的直接驗證。初始提示動作仍需向使用者說明。
+This is a dual-arm system with contact changes, not direct validation of single-arm manipulation, arbitrary shapes, or a three-modal model. Users still need instructions on the initial cueing action.
 
-## 建議閱讀焦點
+## Suggested reading focus
 
-用原文確認感測器裝在哪裡、資料如何處理、意圖如何定義、控制介面是什麼，以及實驗是否真的與我們的單臂模擬翻轉相同。重要結果補上 section／figure／table locator；不要沿用其他任務的成功率作為我們的成果。
+Check the original paper for sensor placement, data processing, the definition of intent, control interfaces, and whether the experiment actually matches our original single-arm simulated-flipping concept. Add section/figure/table locators for important findings. Do not present another task's success rate as our own result.
 
-## 團隊閱讀結論（由實際閱讀者填）
+## Team conclusions (complete after actually reading)
 
-- Reader／日期：
-- Read scope（全文或哪些章節）：
-- 用自己的話重寫核心概念：
-- 支持段落／Figure／Table：
-- 我們決定採用／暫緩的部分與理由：
-- 最小驗證實驗：
-- 另一位組員的問題：
+- Reader / date:
+- Read scope (full text or specific sections):
+- Core concept in your own words:
+- Supporting section / figure / table:
+- What we will adopt / defer, and why:
+- Smallest validation experiment:
+- Questions from the other teammate:
 
 ---
-初步筆記由 Codex 輔助整理；來源存在與局部內容核對不等於團隊已完成全文 review。
+These preliminary notes were prepared with Codex assistance. Verifying a source and selected content does not mean the team has completed a full-paper review.

@@ -1,29 +1,29 @@
 # ENPM 645 — Human-Robot Collaboration
 
-兩支 Franka Panda 與單一虛擬人手共同操作板材。只維護一套 MuJoCo 場景與資料管線：
+Two Franka Panda arms and one virtual human hand jointly manipulate a panel. The repository maintains one MuJoCo scene and one data pipeline:
 
 **Policy → Object Controller → Dual-Arm Controller → MuJoCo**
 
-已完成：三層介面、因果資料隔離、雙臂接觸支撐、Joint State Logging，以及 scripted 旋轉／抬升／固定外力展示。新增 E0/E1/E2 候選參考與離線資料診斷；完整控制、assistance tracking、有效 Expert 示範與學習模型尚未完成。
+Implemented: three-layer interfaces, causal data isolation, dual-arm contact support, joint-state logging, and scripted rotation, lifting, and sustained-force demonstrations. E0/E1/E2 candidate references and offline data diagnostics are also available. Full control algorithms, assistance tracking, validated Expert demonstrations, and learned models are not yet complete.
 
-| 用途 | 文件 |
+| Purpose | Document |
 |---|---|
-| 硬體與場景 | [目前硬體](docs/CURRENT_HARDWARE_HANDOFF.md) |
-| 三層型別、模式與時鐘 | [Interface Contract](docs/THREE_LAYER_INTERFACE.md) |
-| 組員接入控制器 | [Controller Handoff](docs/CONTROL_HANDOFF_ARMS.md) |
-| Expert 數學、候選標籤與可學性檢查 | [Expert & Data Design](docs/EXPERT_DATA_DESIGN.md) |
-| 感測、命令與標籤記錄 | [Data Schema](docs/DATA_SCHEMA_V2.md) |
-| 測試證據與影片 | [目前結果](results/phase1b/current/README.md) |
+| Hardware and scenario | [Current Hardware](docs/CURRENT_HARDWARE_HANDOFF.md) |
+| Three-layer types, modes, and clocks | [Interface Contract](docs/THREE_LAYER_INTERFACE.md) |
+| Controller integration for teammates | [Controller Handoff](docs/CONTROL_HANDOFF_ARMS.md) |
+| Expert mathematics, candidate labels, and learnability diagnostics | [Expert & Data Design](docs/EXPERT_DATA_DESIGN.md) |
+| Sensor, command, and label logging | [Data Schema](docs/DATA_SCHEMA_V2.md) |
+| Test evidence and videos | [Current Results](results/phase1b/current/README.md) |
 
-## 執行
+## Running the project
 
-本機 Python 3.12.11、MuJoCo 3.3.5、uv；無 Docker。輸出使用新目錄，渲染需本機 ffmpeg。
+Local Python 3.12.11, MuJoCo 3.3.5, and uv; no Docker. Use a new output directory. Rendering requires a local ffmpeg installation.
 
 ```bash
 uv sync --locked
 uv run --locked python -m phase1b.scripts.run_suite --output results/phase1b/reproduction --render
 ```
 
-`phase1b/` 是唯一程式實作，`results/phase1b/current/` 是 `37b8c24` 的物理驗證結果（本次 Expert 更新未重跑模擬）；單段收集與 viewer 見 [執行入口](phase1b/README.md)。
+`phase1b/` is the only maintained implementation. `results/phase1b/current/` contains physical validation results from `37b8c24`; the Expert update did not rerun simulation. See [Run Entry Points](phase1b/README.md) for individual episodes and the viewer.
 
-[文獻筆記](01_literature/README.md) · [團隊協作](CONTRIBUTING.md)。歷史實驗已移出目前工作樹，只留在 Git；清理前版本為 `996a524`。
+[Literature Notes](01_literature/README.md) · [Contributing](CONTRIBUTING.md). Historical experiments have been removed from the working tree and remain in Git; the revision before cleanup is `996a524`.

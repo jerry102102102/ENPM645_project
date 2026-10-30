@@ -1,47 +1,47 @@
 # P02 — Human-robot planar co-manipulation of extended objects: data-driven models and control from human-human dyads
 
-> **最值得帶回專題的概念：同一個端點受力可能代表平移或旋轉；意圖辨識要考慮時序與物體運動。**
+> **Core concept for our project: The same endpoint force can imply translation or rotation; intent recognition must consider temporal context and object motion.**
 
-## 來源與狀態
+## Sources and status
 
-- 作者：Erich Mielke; Eric Townsend; David Wingate; John L. Salmon; Marc D. Killpack
-- 年份／venue：2024 · Frontiers in Neurorobotics, 18, 1291694
-- DOI：[10.3389/fnbot.2024.1291694](https://doi.org/10.3389/fnbot.2024.1291694)
-- 原文入口：[論文／摘要](https://www.frontiersin.org/journals/neurorobotics/articles/10.3389/fnbot.2024.1291694/full) · [PMC 全文](https://pmc.ncbi.nlm.nih.gov/articles/PMC10894988/)
-- 閱讀優先：必讀 2
-- 核對日期：2026-10-10
-- AI 查閱範圍：全文重點核對：4.2–4.4、5.3–5.4、6 Conclusion
-- Human reading status：**queued**
-- 團隊 reader：待認領
-- Citation key：`mielke_2024_planar_co_manipulation`
+- Authors: Erich Mielke; Eric Townsend; David Wingate; John L. Salmon; Marc D. Killpack
+- Year / venue: 2024 · Frontiers in Neurorobotics, 18, 1291694
+- DOI: [10.3389/fnbot.2024.1291694](https://doi.org/10.3389/fnbot.2024.1291694)
+- Source links: [Paper / abstract](https://www.frontiersin.org/journals/neurorobotics/articles/10.3389/fnbot.2024.1291694/full) · [PMC full text](https://pmc.ncbi.nlm.nih.gov/articles/PMC10894988/)
+- Reading priority: Essential 2
+- Verification date: 2026-10-10
+- AI inspection scope: Selected full-text sections checked: 4.2–4.4、5.3–5.4、6 Conclusion
+- Human reading status: **queued**
+- Team reader: Unassigned
+- Citation key: `mielke_2024_planar_co_manipulation`
 
-## 論文結果（依上述查阅範圍）
+## Paper findings (within the scope above)
 
-比較力矩觸發的 EVIC 與運動預測的 NNPC，實際人機控制驗證限於平面 3-DoF。NNPC 的客觀表現較佳，但安全感、可預測性等偏好趨勢未達統計顯著；Good Force Amount 問項有顯著差異。 來源：[原文](https://www.frontiersin.org/journals/neurorobotics/articles/10.3389/fnbot.2024.1291694/full)。
+The paper compares torque-triggered EVIC with motion-predictive NNPC; human-robot control validation is limited to planar 3-DoF motion. NNPC performs better on objective measures, but preference trends for perceived safety and predictability are not statistically significant. The Good Force Amount item shows a significant difference. Source: [Paper](https://www.frontiersin.org/journals/neurorobotics/articles/10.3389/fnbot.2024.1291694/full)
 
-## 我們可以怎麼用（設計推論）
+## Potential use in our project (design inference)
 
-把平移與調整握持設為翻轉辨識的負例；比較固定門檻與短時序模型。之後除了成功率，也評估協作是否容易理解。
+Use translation and grasp adjustment as negative examples for flipping recognition. Compare fixed thresholds with short-history models. Later, evaluate how understandable the collaboration is, in addition to success rate.
 
-**第一個要驗證的問題：** 在單軸翻轉中，哪些擾動最容易造成錯誤啟動？如何定義旋轉起始時間？
+**First question to test:** Which disturbances are most likely to cause false starts during single-axis reorientation? How should rotation onset be defined?
 
-## 不能直接推論的部分
+## What this does not establish
 
-不是翻面旋轉的直接證據；系統使用雙臂／移動平台與 motion capture。不能把低延遲相機估計當成同等品質。
+This is not direct evidence for flipping an object to expose another face. The system uses dual arms, a mobile platform, and motion capture. A low-latency camera estimate cannot be assumed to have equivalent quality.
 
-## 建議閱讀焦點
+## Suggested reading focus
 
-用原文確認感測器裝在哪裡、資料如何處理、意圖如何定義、控制介面是什麼，以及實驗是否真的與我們的單臂模擬翻轉相同。重要結果補上 section／figure／table locator；不要沿用其他任務的成功率作為我們的成果。
+Check the original paper for sensor placement, data processing, the definition of intent, control interfaces, and whether the experiment actually matches our original single-arm simulated-flipping concept. Add section/figure/table locators for important findings. Do not present another task's success rate as our own result.
 
-## 團隊閱讀結論（由實際閱讀者填）
+## Team conclusions (complete after actually reading)
 
-- Reader／日期：
-- Read scope（全文或哪些章節）：
-- 用自己的話重寫核心概念：
-- 支持段落／Figure／Table：
-- 我們決定採用／暫緩的部分與理由：
-- 最小驗證實驗：
-- 另一位組員的問題：
+- Reader / date:
+- Read scope (full text or specific sections):
+- Core concept in your own words:
+- Supporting section / figure / table:
+- What we will adopt / defer, and why:
+- Smallest validation experiment:
+- Questions from the other teammate:
 
 ---
-初步筆記由 Codex 輔助整理；來源存在與局部內容核對不等於團隊已完成全文 review。
+These preliminary notes were prepared with Codex assistance. Verifying a source and selected content does not mean the team has completed a full-paper review.

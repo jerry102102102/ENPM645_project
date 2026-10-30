@@ -1,8 +1,8 @@
-# 團隊協作
+# Team Collaboration
 
-- 只維護 `phase1b/` 這套雙 Panda 實作；型別與執行順序以 [三層介面](docs/THREE_LAYER_INTERFACE.md) 為準。
-- `uv sync --locked` 後執行；依賴變更提交 `pyproject.toml` 與 `uv.lock`。
-- 變更前核對 [硬體](docs/CURRENT_HARDWARE_HANDOFF.md)、[控制器介面](docs/CONTROL_HANDOFF_ARMS.md)、[資料格式](docs/DATA_SCHEMA_V2.md)。硬體／握持幾何變更須新版本與驗證。
-- 實驗用新輸出路徑；目前正式證據在 `results/phase1b/current/`，過時版本由 Git 保存，不另維護平行實作。
-- 提交前跑相關測試；不得把 scripted decision、measured contact wrench 或 motion demo 當成有效 Expert Labels。
-- 各自開分支、透過 PR 互看。文獻在 [閱讀入口](01_literature/README.md) 更新；只有實際閱讀者填 reader／read scope／日期，AI 摘要不代表已讀。
+- Maintain only the dual-Panda implementation in `phase1b/`. Follow the [Three-Layer Interface](docs/THREE_LAYER_INTERFACE.md) for types and execution order.
+- Run `uv sync --locked` before execution. Commit both `pyproject.toml` and `uv.lock` when dependencies change.
+- Before making changes, check the [Hardware](docs/CURRENT_HARDWARE_HANDOFF.md), [Controller Interface](docs/CONTROL_HANDOFF_ARMS.md), and [Data Schema](docs/DATA_SCHEMA_V2.md). Hardware or grasp-geometry changes require a new version and validation.
+- Use a new output path for each experiment. Retained physical evidence is in `results/phase1b/current/`; Git preserves superseded versions, without parallel maintained implementations.
+- Run relevant tests before committing. Never treat scripted decisions, measured contact wrenches, or motion demonstrations as valid Expert labels.
+- Work on separate branches and review each other's pull requests. Update literature through the [Reading Guide](01_literature/README.md). Only the actual reader should fill in the reader, reading scope, and date; an AI summary does not count as having read the paper.

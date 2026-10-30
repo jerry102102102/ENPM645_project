@@ -1,47 +1,47 @@
 # P04 — Vision- and Tactile-Based Continuous Multimodal Intention and Attention Recognition for Safer Physical Human–Robot Interaction
 
-> **最值得帶回專題的概念：接觸訊號需要視覺上下文，才可能判斷互動是否有意。**
+> **Core concept for our project: Contact signals need visual context to help determine whether an interaction is intentional.**
 
-## 來源與狀態
+## Sources and status
 
-- 作者：Christopher Yee Wong; Lucas Vergez; Wael Suleiman
-- 年份／venue：2024 · IEEE Transactions on Automation Science and Engineering, 21(3), 3205–3215; online 2023
-- DOI：[10.1109/TASE.2023.3276856](https://doi.org/10.1109/TASE.2023.3276856)
-- 原文入口：[論文／摘要](https://arxiv.org/abs/2206.11350) · [IEEE 出版紀錄](https://ieeexplore.ieee.org/document/10144527/)
-- 閱讀優先：方法參考
-- 核對日期：2026-10-10
-- AI 查閱範圍：arXiv 摘要與 IEEE 索引摘要／出版 metadata；未逐節審讀全文
-- Human reading status：**queued**
-- 團隊 reader：待認領
-- Citation key：`wong_2024_vision_tactile_intention`
+- Authors: Christopher Yee Wong; Lucas Vergez; Wael Suleiman
+- Year / venue: 2024 · IEEE Transactions on Automation Science and Engineering, 21(3), 3205–3215; online 2023
+- DOI: [10.1109/TASE.2023.3276856](https://doi.org/10.1109/TASE.2023.3276856)
+- Source links: [Paper / abstract](https://arxiv.org/abs/2206.11350) · [IEEE Publication record](https://ieeexplore.ieee.org/document/10144527/)
+- Reading priority: Method reference
+- Verification date: 2026-10-10
+- AI inspection scope: arXiv abstract and IEEE indexed abstract/publication metadata; no section-by-section full-text review
+- Human reading status: **queued**
+- Team reader: Unassigned
+- Citation key: `wong_2024_vision_tactile_intention`
 
-## 論文結果（依上述查阅範圍）
+## Paper findings (within the scope above)
 
-以觸碰位置、人體姿態與注視等特徵分類 intentional／unintentional touch，摘要報告 F1 86%。使用的是機器人皮膚上的接觸資訊。 來源：[原文](https://arxiv.org/abs/2206.11350)。
+Touch location, human pose, gaze, and related features classify intentional versus unintentional touch. The abstract reports an F1 score of 86%. Contact information comes from the robot's skin. Source: [Paper](https://arxiv.org/abs/2206.11350)
 
-## 我們可以怎麼用（設計推論）
+## Potential use in our project (design inference)
 
-借用多模態互補與低維特徵的思路；將 VLM 的上下文輸出與 F/T 意圖線索分別消融比較。
+Borrow the ideas of complementary modalities and low-dimensional features. Ablate VLM context outputs and F/T intent cues separately.
 
-**第一個要驗證的問題：** 哪些視覺線索可由渲染影像可靠取得？VLM 在遮擋時如何表達不確定？
+**First question to test:** Which visual cues can be extracted reliably from rendered images? How should a VLM express uncertainty under occlusion?
 
-## 不能直接推論的部分
+## What this does not establish
 
-類別不是翻轉／平移；86% 不能當成本專題預期分數。人直接觸碰機器人的配置，也不同於共同握持物體。
+The classes are not flipping versus translation, and 86% is not an expected score for our project. Direct human contact with a robot also differs from jointly grasping an object.
 
-## 建議閱讀焦點
+## Suggested reading focus
 
-用原文確認感測器裝在哪裡、資料如何處理、意圖如何定義、控制介面是什麼，以及實驗是否真的與我們的單臂模擬翻轉相同。重要結果補上 section／figure／table locator；不要沿用其他任務的成功率作為我們的成果。
+Check the original paper for sensor placement, data processing, the definition of intent, control interfaces, and whether the experiment actually matches our original single-arm simulated-flipping concept. Add section/figure/table locators for important findings. Do not present another task's success rate as our own result.
 
-## 團隊閱讀結論（由實際閱讀者填）
+## Team conclusions (complete after actually reading)
 
-- Reader／日期：
-- Read scope（全文或哪些章節）：
-- 用自己的話重寫核心概念：
-- 支持段落／Figure／Table：
-- 我們決定採用／暫緩的部分與理由：
-- 最小驗證實驗：
-- 另一位組員的問題：
+- Reader / date:
+- Read scope (full text or specific sections):
+- Core concept in your own words:
+- Supporting section / figure / table:
+- What we will adopt / defer, and why:
+- Smallest validation experiment:
+- Questions from the other teammate:
 
 ---
-初步筆記由 Codex 輔助整理；來源存在與局部內容核對不等於團隊已完成全文 review。
+These preliminary notes were prepared with Codex assistance. Verifying a source and selected content does not mean the team has completed a full-paper review.

@@ -1,47 +1,47 @@
 # P06 — Sensorless Human–Robot Interaction: Real-Time Estimation of Co-Grasped Object Mass and Human Wrench for Compliant Interaction
 
-> **最值得帶回專題的概念：人類意圖力必須與物體重量及動態效應區分。**
+> **Core concept for our project: Forces related to human intent must be distinguished from object weight and dynamic effects.**
 
-## 來源與狀態
+## Sources and status
 
-- 作者：Minghao Bai; Xizhe Zang; Lei Wu; Changle Li; Yanhe Zhu; Jie Zhao
-- 年份／venue：2025 · Advanced Intelligent Systems, 7(6), 2400616; online 2024-09-30
-- DOI：[10.1002/aisy.202400616](https://doi.org/10.1002/aisy.202400616)
-- 原文入口：[論文／摘要](https://advanced.onlinelibrary.wiley.com/doi/10.1002/aisy.202400616)
-- 閱讀優先：方法參考
-- 核對日期：2026-10-10
-- AI 查閱範圍：全文重點核對：Abstract、2 Experimental Section、2.1–2.4
-- Human reading status：**queued**
-- 團隊 reader：待認領
-- Citation key：`bai_2025_object_mass_human_wrench`
+- Authors: Minghao Bai; Xizhe Zang; Lei Wu; Changle Li; Yanhe Zhu; Jie Zhao
+- Year / venue: 2025 · Advanced Intelligent Systems, 7(6), 2400616; online 2024-09-30
+- DOI: [10.1002/aisy.202400616](https://doi.org/10.1002/aisy.202400616)
+- Source links: [Paper / abstract](https://advanced.onlinelibrary.wiley.com/doi/10.1002/aisy.202400616)
+- Reading priority: Method reference
+- Verification date: 2026-10-10
+- AI inspection scope: Selected full-text sections checked: Abstract、2 Experimental Section、2.1–2.4
+- Human reading status: **queued**
+- Team reader: Unassigned
+- Citation key: `bai_2025_object_mass_human_wrench`
 
-## 論文結果（依上述查阅範圍）
+## Paper findings (within the scope above)
 
-以 EKF 估計物體參數，搭配 disturbance observer 估計人類 wrench。重要更正：不需要人側力感測器，但 Experimental Section 明寫機器人末端裝有 6D F/T sensor。 來源：[原文](https://advanced.onlinelibrary.wiley.com/doi/10.1002/aisy.202400616)。
+An EKF estimates object parameters, and a disturbance observer estimates the human wrench. Important correction: no human-side force sensor is required, but the Experimental Section explicitly describes a 6D F/T sensor at the robot end effector. Source: [Paper](https://advanced.onlinelibrary.wiley.com/doi/10.1002/aisy.202400616)
 
-## 我們可以怎麼用（設計推論）
+## Potential use in our project (design inference)
 
-模擬可用真值評估 wrench 估計误差；實際辨識輸入只用感測量／估計量。先校準載荷，再測換重量時的誤判。
+Use simulation ground truth to evaluate wrench-estimation error, while recognition inputs use only sensing/estimates. Calibrate the payload first, then test misclassification when mass changes.
 
-**第一個要驗證的問題：** 簡單重力補償是否已足夠？何種負載／速度範圍才需要完整 observer？
+**First question to test:** Is simple gravity compensation sufficient? Which payload/speed ranges require a full observer?
 
-## 不能直接推論的部分
+## What this does not establish
 
-sensorless 不代表整個系統沒有 F/T；需要模型與握持幾何假設，不能直接以末端讀值等同人類施力。
+Sensorless does not mean that the entire system lacks F/T sensing. The method requires model and grasp-geometry assumptions; end-effector readings cannot simply be equated with human force.
 
-## 建議閱讀焦點
+## Suggested reading focus
 
-用原文確認感測器裝在哪裡、資料如何處理、意圖如何定義、控制介面是什麼，以及實驗是否真的與我們的單臂模擬翻轉相同。重要結果補上 section／figure／table locator；不要沿用其他任務的成功率作為我們的成果。
+Check the original paper for sensor placement, data processing, the definition of intent, control interfaces, and whether the experiment actually matches our original single-arm simulated-flipping concept. Add section/figure/table locators for important findings. Do not present another task's success rate as our own result.
 
-## 團隊閱讀結論（由實際閱讀者填）
+## Team conclusions (complete after actually reading)
 
-- Reader／日期：
-- Read scope（全文或哪些章節）：
-- 用自己的話重寫核心概念：
-- 支持段落／Figure／Table：
-- 我們決定採用／暫緩的部分與理由：
-- 最小驗證實驗：
-- 另一位組員的問題：
+- Reader / date:
+- Read scope (full text or specific sections):
+- Core concept in your own words:
+- Supporting section / figure / table:
+- What we will adopt / defer, and why:
+- Smallest validation experiment:
+- Questions from the other teammate:
 
 ---
-初步筆記由 Codex 輔助整理；來源存在與局部內容核對不等於團隊已完成全文 review。
+These preliminary notes were prepared with Codex assistance. Verifying a source and selected content does not mean the team has completed a full-paper review.

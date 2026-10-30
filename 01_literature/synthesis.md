@@ -1,41 +1,41 @@
-# 快速結論：這些論文怎麼變成我們的設計
+# Quick Takeaways: Turning the Papers into Our Design
 
-**第一版先完成可解釋的協作翻轉迴路，再量測 tactile 與 VLM 的額外價值。** 這是從目前文獻作出的設計建議，並非已有三模態實驗成果。
+**First build an interpretable cooperative-reorientation loop, then measure the additional value of tactile sensing and a VLM.** This is a design recommendation based on the literature reviewed so far, not an existing three-modal experimental result.
 
-| 我們的設計問題 | 文獻線索 | 可帶回的決定（團隊待討論） |
+| Design question | Literature cue | Possible decision (for team discussion) |
 | --- | --- | --- |
-| 何時跟隨、何時主動協助？ | [P01](papers/gienger-2018-contact-changes.md)：mixed initiative 與 readiness | 意圖不明時維持支撐，確認方向與接觸後才開始旋轉 |
-| 推一下真的代表翻轉嗎？ | [P02](papers/mielke-2024-planar-co-manipulation.md)：translation／rotation ambiguity | 保留平移、握持調整與碰撞負例，別只訓練乾淨的旋轉 |
-| 起動與停止怎麼評估？ | [P03](papers/shaw-2025-motion-haptics.md)：速度訊號的低速限制 | 分段評估 onset、持續旋轉、停止 |
-| 多模態怎麼融合？ | [P04](papers/wong-2024-vision-tactile-intention.md)、[P05](papers/mohandes-2023-handover-fusion.md)：互補感知 | 各來源先輸出有限、可檢查的特徵／決策，再融合 |
-| F/T 讀值能直接當人類意圖力嗎？ | [P06](papers/bai-2025-object-mass-human-wrench.md)：object dynamics 與 human wrench estimation | 先做載荷補償；評估重量改變造成的誤判 |
-| Tactile 最先能幫什麼？ | [P07](papers/feng-2026-tactilereflex.md)：local grasp reflex | 先做握持監控，分開測分類改善與滑移減少 |
-| 如何逐步走向主動預測？ | [P08](papers/liu-2026-multistep-passive-control.md)：prediction + adaptive control | baseline 成立後再考慮多步預測，避免第一版重現整套架構 |
-| Tactile 感測位置有何差別？ | [P09](papers/tang-2026-emarm.md)：whole-arm tactile + proprioception | 明確區分全臂接觸、夾爪接觸与 wrist F/T |
+| When should the robot follow or actively assist? | [P01](papers/gienger-2018-contact-changes.md): mixed initiative and readiness | Maintain support when intent is unclear; rotate only after direction and contact are confirmed |
+| Does a push really mean “flip”? | [P02](papers/mielke-2024-planar-co-manipulation.md): translation/rotation ambiguity | Include translation, grasp adjustment, and collision negatives, rather than training only on clean rotations |
+| How should onset and stopping be evaluated? | [P03](papers/shaw-2025-motion-haptics.md): low-speed limitations of velocity signals | Evaluate onset, sustained rotation, and stopping separately |
+| How should modalities be fused? | [P04](papers/wong-2024-vision-tactile-intention.md), [P05](papers/mohandes-2023-handover-fusion.md): complementary sensing | Have each source produce limited, inspectable features/decisions before fusion |
+| Can F/T readings directly represent human-intent forces? | [P06](papers/bai-2025-object-mass-human-wrench.md): object dynamics and human-wrench estimation | Compensate for payload first; evaluate errors caused by mass changes |
+| Where can tactile help first? | [P07](papers/feng-2026-tactilereflex.md): local grasp reflex | Start with grasp monitoring; measure classification improvement and slip reduction separately |
+| How can we progress toward active prediction? | [P08](papers/liu-2026-multistep-passive-control.md): prediction + adaptive control | Consider multistep prediction after establishing a baseline; avoid reproducing the full architecture in the first version |
+| How does tactile sensor placement matter? | [P09](papers/tang-2026-emarm.md): whole-arm tactile + proprioception | Distinguish whole-arm contact, gripper contact, and wrist F/T |
 
-## 不要預先假設融合一定更好
+## Do not assume fusion is better
 
-- P01 已用力線索完成特定箱子轉動。因此 **F/T baseline 必須認真做**，否則不能判斷融合有沒有價值。[P01](papers/gienger-2018-contact-changes.md)
-- P03 支持運動訊號的價值。VLM 可能只重述物體已在轉動，額外推論延遲卻錯過起始階段；這是我們需要實驗檢查的替代解釋。[P03](papers/shaw-2025-motion-haptics.md)
-- P07 的觸覺成果屬於局部操作保護。若 tactile 只減少滑移、沒有提升 intention F1，仍可報告為接觸穩定性的收益。[P07](papers/feng-2026-tactilereflex.md)
-- P02 提醒我們：客觀效率與人的感受可能不一致。其安全／可預測性偏好趨勢未達顯著，不能寫成「已證明人更喜歡較簡單的控制器」。[P02](papers/mielke-2024-planar-co-manipulation.md)
+- P01 uses force cues to achieve a specific box rotation. **Build a serious F/T baseline** before judging the value of fusion. [P01](papers/gienger-2018-contact-changes.md)
+- P03 supports the value of motion signals. A VLM might merely describe rotation already in progress, while inference latency misses onset. This alternative explanation needs experimental testing. [P03](papers/shaw-2025-motion-haptics.md)
+- P07's tactile results concern local manipulation protection. If tactile reduces slips without improving intention F1, report that as a contact-stability benefit. [P07](papers/feng-2026-tactilereflex.md)
+- P02 reminds us that objective efficiency and human perception may differ. Its safety/predictability preference trends were not significant; do not claim it “proved people prefer the simpler controller.” [P02](papers/mielke-2024-planar-co-manipulation.md)
 
-## 對 VLM 的工作假設
+## Working hypothesis for a VLM
 
-目前選定清單沒有直接驗證 **VLM + tactile + F/T → 無語音單臂翻转**。我們建議先讓 VLM 提供可見的手／物體情境與不確定性，再與快速力學訊號融合。它是否改善遮擋、接觸準備或歧義判斷，都屬於待測假設。
+The selected list does not directly validate **VLM + tactile + F/T → nonverbal single-arm flipping**, the original project concept. Initially, a VLM could provide visible hand/object context and uncertainty, fused with fast mechanical signals. Benefits for occlusion, contact readiness, or ambiguity remain hypotheses to test.
 
-建議比較只用 pose／幾何特徵的視覺版本，並測量 VLM 的延遲；這能分辨語意模型的價值與一般視覺資訊的價值。後續檢索應優先補上 VLM 在 physical co-manipulation／接觸情境推理的原始研究。
+Compare against vision using only pose/geometric features and measure VLM latency. This separates the value of a semantic model from that of visual information generally. Future searches should prioritize primary research on VLMs in physical co-manipulation and reasoning about contact situations.
 
-## 我們的最小驗證路徑
+## Minimal validation path
 
-1. 在固定握點與單軸場景中建立 B0，確認感測方向、載荷補償與旋轉幾何。
-2. 加入時序辨識與非旋轉負例，評估錯誤啟動。
-3. 分別加入 tactile／VLM，再測全部融合；保持低階控制器一致。
-4. 測 noise、latency、遮擋、質量變化與缺失模態。
-5. 根據收益決定下一步：180°、換握、真實人類互動或更複雜預測。
+1. Establish B0 in a fixed-grasp, single-axis setting; verify sensing directions, payload compensation, and rotation geometry.
+2. Add temporal recognition and non-rotation negatives; evaluate false starts.
+3. Add tactile and VLM separately, then test full fusion while holding the low-level controller constant.
+4. Test noise, latency, occlusion, mass changes, and missing modalities.
+5. Use measured benefits to choose the next step: 180° reorientation, regrasping, real human interaction, or more complex prediction.
 
-具體架構與指標見 [目前介面](../docs/THREE_LAYER_INTERFACE.md)。模擬成績只支持該場景與人類代理；使用者體驗需要後續真實人的證據。
+See the [Current Interface](../docs/THREE_LAYER_INTERFACE.md) for the concrete architecture and metrics. Simulation results support only the tested scenario and human proxy; user experience requires later evidence from real people.
 
-## 查閱限制與 AI 揭露
+## Review limitations and AI disclosure
 
-這是從 9 篇定向搜尋材料建立的初步 synthesis；部分僅查阅摘要，閱讀範圍逐篇公開。不是 PRISMA review、不是完整可重現性審查，也未確認研究新穎性。由 Codex 輔助整理，採用決策由團隊討論。
+This preliminary synthesis comes from a targeted set of nine papers, some inspected only at abstract level. Each paper discloses its reading scope. This is not a PRISMA review, a complete reproducibility audit, or confirmation of novelty. Codex assisted with organization; the team makes adoption decisions.

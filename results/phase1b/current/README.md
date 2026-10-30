@@ -1,45 +1,45 @@
 # Physical verification at 37b8c24 — single dual-Panda implementation
 
-以下為 `37b8c24` 留存的物理驗證，不是 Expert 更新後重跑的結果。Expert v1.0 只執行[純數學／資料測試](../expert_math/verification.json)；既有 arrays/hashes 保留。嚴格 source-hash 驗證這些 episodes 須使用 `37b8c24`，或日後在新目錄重跑目前程式，不能直接改舊 provenance。
+The following physical validation is retained from `37b8c24`; it was not rerun after the Expert update. Expert v1.0 ran only [Mathematical / Data Tests](../expert_math/verification.json). Existing arrays/hashes are preserved. Strict source-hash validation of these episodes requires `37b8c24`, or a future rerun of the current code into a new directory; do not modify old provenance.
 
-- **Interface Ready：是。** 15 項 contract／physics tests 通過。
-- **Controller Implemented：只有 reference-only object adapter 與 position-hold dual-arm adapter。**
-- **Assistance Tracking Validated：否。** 配力、總需求與 tracking error 保持 unavailable。
-- **Expert Labels Validated：否。** Candidate decisions 與正式 supervision 分開，labels 全 invalid。
+- **Interface Ready: yes.** All 15 contract/physics tests passed.
+- **Controller Implemented: only the reference-only object adapter and position-hold dual-arm adapter.**
+- **Assistance Tracking Validated: no.** Allocation, total demand, and tracking error remain unavailable.
+- **Expert Labels Validated: no.** Candidate decisions are separate from formal supervision; all labels are invalid.
 
-[完整結果](verification.json) · [測試輸出](tests.txt) · [清理前後回歸](migration_regression.json)
+[Full Results](verification.json) · [Test Output](tests.txt) · [Cleanup Regression](migration_regression.json)
 
-## 物理與資料
+## Physics and data
 
-三層 A/B/C smoke 各 4 秒：共 1,200 transitions、6,000 physics steps。每個 100 Hz decision/object reference 對應五個 500 Hz arm commands；目前 adapter 不執行 assistance。
+Three-layer A/B/C smoke runs lasted 4 seconds each: 1,200 transitions and 6,000 physics steps in total. Each 100 Hz decision/object reference corresponds to five 500 Hz arm commands. The current adapters do not execute assistance.
 
-四片 pads 保持接觸，無非預期穿透超標或 MuJoCo warnings，無 arm actuator saturation。移除 pad 接觸／停用 arm actuators 的負對照都失去支撐；移除 human force 後機器人接觸力約 9.81 N，可基本支撐 1 kg 板材。各 episode 原始資料在 `episodes/A`、`B`、`C`。
+All four pads maintained contact, without unexpected penetration above the threshold, MuJoCo warnings, or arm actuator saturation. Negative controls removing pad contact or disabling arm actuators both lost support. After removing human force, robot contact force was approximately 9.81 N, providing basic support for the 1 kg panel. Raw episodes are in `episodes/A`, `B`, and `C`.
 
-相較清理前 `996a524`，A/B/C 各 103 個既有 arrays 完全一致，共 309 個；差異限於新的決策／命令欄位與測試 reference metadata。模型 XML 與 compiled hardware contract 完全未改。
+Compared with the pre-cleanup revision `996a524`, all 103 existing arrays per A/B/C episode were exactly identical, 309 in total. Differences were limited to new decision/command fields and test-reference metadata. Model XML and the compiled hardware contract were unchanged.
 
-## 動作展示
+## Motion demonstrations
 
-[同步 MP4](motion/visuals/ABC_comparison.mp4) · [A 旋轉](motion/visuals/A.mp4) · [B 抬升](motion/visuals/B.mp4) · [C 固定外力](motion/visuals/C.mp4)
+[Synchronized MP4](motion/visuals/ABC_comparison.mp4) · [A: Rotation](motion/visuals/A.mp4) · [B: Lifting](motion/visuals/B.mp4) · [C: Sustained External Force](motion/visuals/C.mp4)
 
 ![A/B/C](motion/visuals/ABC_comparison.gif)
 
-| 範例 | 實際運動 | 人手 peak force，world XYZ | 外部擾動 |
+| Example | Actual motion | Human peak force, world XYZ | External disturbance |
 |---|---|---|---|
-| A | +20.00°，抬升 3.05 cm 後停留 | 2.05 N，`[-.84,-.04,-1.87]` N | 無 |
-| B | 抬升 7.98 cm 後停留 | 5.41 N，`[+.02,-.02,+5.41]` N | 無 |
-| C | −11.94° 後承受固定外力 | 4.20 N，`[-.29,-.03,+4.19]` N | 4.3–8 秒 world −Z 20 N |
+| A | +20.00°, lift 3.05 cm, then hold | 2.05 N, `[-.84,-.04,-1.87]` N | None |
+| B | Lift 7.98 cm, then hold | 5.41 N, `[+.02,-.02,+5.41]` N | None |
+| C | −11.94°, then withstand sustained external force | 4.20 N, `[-.29,-.03,+4.19]` N | World −Z 20 N during 4.3–8 seconds |
 
-每段 8 秒，human target 0.6 s 開始，預設 arm trajectory 1.4–3.8 s；C 外力 4.0–4.3 s 漸增。紅箭頭是人手、橘箭頭是外力，固定 0.12 m 表示方向，大小看 N 數字；tactile 共用 0–40 N/bin 色階。
+Each demonstration lasts 8 seconds. The human target begins at 0.6 s; the predefined arm trajectory runs during 1.4–3.8 s. In C, external force ramps up during 4.0–4.3 s. Red arrows show human force and orange arrows show external force. Arrows have a fixed 0.12 m length to indicate direction; read the N values for magnitude. Tactile maps share a 0–40 N/bin scale.
 
-三段共 12,000 physics steps，保持接觸。相較原展示，168 arrays 全部精確一致；5 秒畫面亦完全相同。A 最小 joint margin 約 0.04 rad，結果不代表任意旋轉或 90° 翻轉可達。
+The three demonstrations total 12,000 physics steps and maintain contact. All 168 arrays are exactly identical to the original demonstrations; the rendered frames at 5 seconds are also identical. A's minimum joint margin is approximately 0.04 rad. These results do not establish reachability for arbitrary rotations or 90° flips.
 
-這是 scripted trajectory 物理展示，不是三層控制已能理解意圖。`motion/*/samples.npz` 混有 truth／render state，不能當成 policy input 或 Expert supervision。
+These are physical demonstrations of scripted trajectories, not evidence that the three-layer controller understands intent. `motion/*/samples.npz` mixes truth and render state and must not be used as policy input or Expert supervision.
 
-## 重現
+## Reproduction
 
 ```bash
 uv sync --locked
 uv run --locked python -m phase1b.scripts.run_suite --output results/phase1b/reproduction --render
 ```
 
-輸出需新路徑，渲染需 ffmpeg。歷史程式與資料只存於 Git，現行工作樹維護本套版本。
+Use a new output path. Rendering requires ffmpeg. Historical code and data remain in Git; the working tree maintains only the current implementation.

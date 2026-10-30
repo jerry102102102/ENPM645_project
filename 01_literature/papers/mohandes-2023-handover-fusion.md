@@ -1,47 +1,47 @@
 # P05 — Robot to Human Object Handover Using Vision and Joint Torque Sensor Modalities
 
-> **最值得帶回專題的概念：各模態回答不同問題，再融合成可解釋的動作決策。**
+> **Core concept for our project: Let each modality answer a different question, then combine them into an interpretable action decision.**
 
-## 來源與狀態
+## Sources and status
 
-- 作者：Mohammadhadi Mohandes; Behnam Moradi; Kamal Gupta; Mehran Mehrandezh
-- 年份／venue：2023 · Robot Intelligence Technology and Applications 7 (RiTA 2022), LNNS 642, pp. 109–124; preprint 2022
-- DOI：[10.1007/978-3-031-26889-2_11](https://doi.org/10.1007/978-3-031-26889-2_11)
-- 原文入口：[論文／摘要](https://link.springer.com/chapter/10.1007/978-3-031-26889-2_11) · [開放 preprint](https://arxiv.org/abs/2210.15085)
-- 閱讀優先：方法參考
-- 核對日期：2026-10-10
-- AI 查閱範圍：Springer metadata／摘要 + arXiv 摘要；未逐節審讀全文
-- Human reading status：**queued**
-- 團隊 reader：待認領
-- Citation key：`mohandes_2023_handover_fusion`
+- Authors: Mohammadhadi Mohandes; Behnam Moradi; Kamal Gupta; Mehran Mehrandezh
+- Year / venue: 2023 · Robot Intelligence Technology and Applications 7 (RiTA 2022), LNNS 642, pp. 109–124; preprint 2022
+- DOI: [10.1007/978-3-031-26889-2_11](https://doi.org/10.1007/978-3-031-26889-2_11)
+- Source links: [Paper / abstract](https://link.springer.com/chapter/10.1007/978-3-031-26889-2_11) · [Open preprint](https://arxiv.org/abs/2210.15085)
+- Reading priority: Method reference
+- Verification date: 2026-10-10
+- AI inspection scope: Springer metadata/abstract and arXiv abstract; no section-by-section full-text review
+- Human reading status: **queued**
+- Team reader: Unassigned
+- Citation key: `mohandes_2023_handover_fusion`
 
-## 論文結果（依上述查阅範圍）
+## Paper findings (within the scope above)
 
-關節力矩網路判斷 pull／hold／bump，RGB-D 網路辨識人手是否包覆物體，最後決定是否釋放。正式章節於 2023 出版，不能只標成 2022 未出版稿。 來源：[原文](https://link.springer.com/chapter/10.1007/978-3-031-26889-2_11)。
+A joint-torque network classifies pull/hold/bump, while an RGB-D network determines whether a human hand encloses the object; the combined decision controls release. The formal chapter was published in 2023 and should not be labeled only as a 2022 unpublished manuscript. Source: [Paper](https://link.springer.com/chapter/10.1007/978-3-031-26889-2_11)
 
-## 我們可以怎麼用（設計推論）
+## Potential use in our project (design inference)
 
-讓 F/T 預測旋轉方向、觸覺評估握持、VLM 描述可見情境，再用明確規則融合。
+Use F/T to predict rotation direction, tactile to assess grasping, and a VLM to describe visible context; combine them with explicit rules.
 
-**第一個要驗證的問題：** 兩個模態不同意時，怎麼維持支撐並等待更可靠的資訊？
+**First question to test:** When two modalities disagree, how can the system maintain support while waiting for more reliable information?
 
-## 不能直接推論的部分
+## What this does not establish
 
-交接任務，不是共同旋轉；其準確率不代表翻轉控制表現。也不是 VLM 方法。
+This is a handover task, not cooperative rotation. Its accuracy does not establish flipping-control performance. It is also not a VLM method.
 
-## 建議閱讀焦點
+## Suggested reading focus
 
-用原文確認感測器裝在哪裡、資料如何處理、意圖如何定義、控制介面是什麼，以及實驗是否真的與我們的單臂模擬翻轉相同。重要結果補上 section／figure／table locator；不要沿用其他任務的成功率作為我們的成果。
+Check the original paper for sensor placement, data processing, the definition of intent, control interfaces, and whether the experiment actually matches our original single-arm simulated-flipping concept. Add section/figure/table locators for important findings. Do not present another task's success rate as our own result.
 
-## 團隊閱讀結論（由實際閱讀者填）
+## Team conclusions (complete after actually reading)
 
-- Reader／日期：
-- Read scope（全文或哪些章節）：
-- 用自己的話重寫核心概念：
-- 支持段落／Figure／Table：
-- 我們決定採用／暫緩的部分與理由：
-- 最小驗證實驗：
-- 另一位組員的問題：
+- Reader / date:
+- Read scope (full text or specific sections):
+- Core concept in your own words:
+- Supporting section / figure / table:
+- What we will adopt / defer, and why:
+- Smallest validation experiment:
+- Questions from the other teammate:
 
 ---
-初步筆記由 Codex 輔助整理；來源存在與局部內容核對不等於團隊已完成全文 review。
+These preliminary notes were prepared with Codex assistance. Verifying a source and selected content does not mean the team has completed a full-paper review.
