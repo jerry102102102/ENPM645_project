@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1240" height="640" viewBox="0 0 1240 640" role="img" aria-labelledby="title desc">
+<title id="title">One controller for test references, Expert and Student</title>
+<desc id="desc">All decision sources send AssistanceDecision to one shared Object-Level and Dual-Arm controller stack. The stack drives MuJoCo and receives public sensing. Hidden goals are available to E1 and E2 only; disturbance truth is available to E2 only. The controller implementation and benchmark acceptance are pending.</desc>
+<defs>
+ <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10Z" fill="#64748b"/></marker>
+ <marker id="blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10Z" fill="#2563eb"/></marker>
+ <marker id="purple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10Z" fill="#8b5cf6"/></marker>
+ <style>text{font-family:Arial,Helvetica,sans-serif;fill:#172b4d} .heading{font-size:19px;font-weight:700}.body{font-size:15px}.small{font-size:13px;fill:#52637a}.link{fill:none;stroke:#64748b;stroke-width:2.2;marker-end:url(#arrow)}.feedback{fill:none;stroke:#2563eb;stroke-width:2.2;marker-end:url(#blue)}</style>
+</defs>
+<rect width="1240" height="640" rx="20" fill="#f6f8fc"/>
+<text x="40" y="46" font-size="25" font-weight="700">One controller. Different decision sources.</text>
+<text x="40" y="75" class="body">Priority: use the existing interfaces, implement control, then pass T0–T3.</text>
+<!-- Decision sources -->
+<rect x="40" y="125" width="220" height="255" rx="16" fill="white" stroke="#d7e0ed"/>
+<text x="58" y="158" class="heading">Decision source</text>
+<rect x="56" y="180" width="188" height="46" rx="9" fill="#e8efff"/>
+<text x="70" y="201" class="body" font-weight="700">Scripted references</text><text x="70" y="218" class="small">T0–T3 fixtures: to build</text>
+<rect x="56" y="242" width="188" height="46" rx="9" fill="#fff3da"/>
+<text x="70" y="263" class="body" font-weight="700">Expert E0 / E1 / E2</text><text x="70" y="280" class="small">Candidate formulas exist</text>
+<rect x="56" y="304" width="188" height="46" rx="9" fill="#f0f3f8"/>
+<text x="70" y="325" class="body" font-weight="700">Learned Student</text><text x="70" y="342" class="small">Future work</text>
+<path d="M244 203H278V265M244 327H278V265" fill="none" stroke="#64748b" stroke-width="2.2"/>
+<path d="M244 265H310" class="link"/>
+<!-- Contract -->
+<rect x="310" y="209" width="180" height="113" rx="14" fill="white" stroke="#b6c7e2"/>
+<text x="326" y="238" font-size="16" font-weight="700">AssistanceDecision</text>
+<text x="326" y="264" class="body">mode + extra torque</text>
+<text x="326" y="286" class="small">World +Y · panel COM</text><text x="326" y="305" class="small">Nm · 100 Hz</text>
+<path d="M490 265H536" class="link"/>
+<!-- One controller stack -->
+<rect x="536" y="125" width="328" height="285" rx="16" fill="#edf4ff" stroke="#2563eb" stroke-width="2"/>
+<text x="555" y="157" class="heading">Shared controller — to build</text>
+<text x="555" y="180" class="small">Same code, configuration and public inputs</text>
+<rect x="555" y="196" width="290" height="70" rx="10" fill="white" stroke="#bdd1f4"/>
+<text x="574" y="224" class="heading">Object-Level Controller</text>
+<text x="574" y="247" class="body">100 Hz · compliant object reference</text>
+<path d="M700 266V307" class="link"/>
+<text x="712" y="292" class="small">ObjectCommand</text>
+<rect x="555" y="309" width="290" height="76" rx="10" fill="white" stroke="#bdd1f4"/>
+<text x="574" y="338" class="heading">Dual-Arm Controller</text>
+<text x="574" y="362" class="body">500 Hz · coordination and contact</text>
+<!-- Actuation -->
+<path d="M845 348H912V292H942" class="link"/>
+<text x="882" y="382" class="small">ArmCommand</text>
+<text x="882" y="400" class="small">joint rad · pad N</text>
+<rect x="942" y="210" width="260" height="113" rx="14" fill="#e9f6ef" stroke="#94c6ab"/>
+<text x="960" y="239" class="heading">MuJoCo · 500 Hz</text>
+<text x="960" y="264" class="body">Two Pandas + four pads</text>
+<text x="960" y="287" class="body">Panel + virtual human</text>
+<text x="960" y="309" class="small">Frozen physical model</text>
+<!-- Public feedback -->
+<path d="M1072 323V485" class="feedback"/>
+<rect x="536" y="485" width="666" height="75" rx="13" fill="white" stroke="#9bbcf0"/>
+<text x="555" y="515" class="heading">Public sensor / state feedback</text>
+<text x="555" y="540" class="body">F/T · tactile · object state · q/dq · EE state · contact</text>
+<path d="M700 485V410" class="feedback"/>
+<path d="M536 535H292V399H150V380" class="feedback"/>
+<text x="310" y="523" class="small">Allowlisted history</text>
+<!-- Privileged teacher-only branch -->
+<rect x="40" y="450" width="220" height="110" rx="13" fill="#f5efff" stroke="#d1b8fb"/>
+<text x="58" y="479" class="heading">Teacher-only truth</text>
+<text x="58" y="505" class="body">Goal: E1 / E2 only</text>
+<text x="58" y="529" class="body">Disturbance: E2 only</text>
+<path d="M72 450V424H20V265H56" fill="none" stroke="#8b5cf6" stroke-width="2" stroke-dasharray="6 5" marker-end="url(#purple)"/>
+<text x="40" y="608" class="body">Acceptance: T0 support → T1 positive torque → T2 negative torque → T3 command sequence</text>
+</svg>
