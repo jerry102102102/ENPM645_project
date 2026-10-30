@@ -1,70 +1,62 @@
-# Articulated Data Schema — enpm645-articulated-transition/1.0
+# Data Schema — enpm645-three-layer-transition/1.0
 
-這是新的資料格式，適用 Scenario 3.0.0 / Hardware 2.0.0。舊 Phase 1A schema、檔案與結果不修改；不得用零填補舊資料不存在的 Joint States。入口為 `phase1b.pipeline.read_episode / validate_episode`。
+唯一 writer/reader/validator：`phase1b.pipeline.run_episode / read_episode / validate_episode`。Hardware 2.0.0 / Scenario 3.0.0。
 
-## 時間與命令順序
+## 時間
 
-每筆 transition 是：`o_t → reference → 5 個 500 Hz commands/physics steps → o_next`。settle 2 秒後 episode time 歸零，engine timestamp 保留原時鐘。`physics_tick` 與 index 同步，100 Hz 的相鄰 samples 相隔五個 physics ticks。
+每筆 transition：`o_t → decision_t → object_command_t → 5 個 500 Hz arm commands/steps → o_next`。Observation/reference 100 Hz，physics/control 500 Hz；settle 2 秒後 episode clock 歸零，engine clock 另存。
 
-- `observations.npz`：決策前、上一個命令仍作用的狀態，timestamp = t。
-- `controller.npz`：五個 ordered 子步。`command_timestamp` 是該子步決策時刻；`*_at_actuation` 是新命令設定及 forward 後、step 前；`realized_timestamp` 與 `*_after_step` 是 step 後。
-- `next_observations.npz`：t + 0.01 s；除末筆外，與下一筆 observations 精確相同。不得用於當下 policy。
-- `privileged.npz`：t 時刻的人手目標、來源、外力與作用點；供評估和影片標註，不提供 controller/policy。
-- `supervision.npz`：expert torque 全為 NaN，valid 全 false。
-- `diagnostics.npz`：500 Hz 接觸數、穿模、關節界限、panel 力平衡、警告及外加力稽核。
-- `render_states.npz`：t 的完整 MuJoCo qpos/qvel，僅供 native FK 畫面與資料驗證，不是 policy input。
+| 檔案 | 內容 |
+|---|---|
+| observations.npz | 決策前 t 的 sensing/state；前一個命令仍作用 |
+| decisions.npz | AssistanceDecision 原始請求，含 mode、torque、source、valid；confidence 不可用時 NaN + confidence_present=false |
+| object_commands.npz | t 的 world pose/twist/assist wrench、mode、valid、frame/point；stiffness/damping 各有 valid mask，不可用填 NaN |
+| controller.npz | 五個子步的實際命令、來源時間、torque、saturation 與 post-step contact wrench |
+| next_observations.npz | t+0.01；除末筆外，精確等於下一筆 observations；不供當下 policy |
+| privileged.npz | 人手目標、作用點／真值外力、scenario；不供 policy 或下層 controller |
+| supervision.npz | 正式 Expert Labels；目前 torque=NaN、expert_label_valid=false，與 candidate decision 分開 |
+| diagnostics.npz | 500 Hz 接觸、穿透、joint limits、force balance、外加力稽核與 warnings |
+| render_states.npz | qpos/qvel，僅供 replay／FK／影片 |
+| metadata.json | Schema/model/hardware/source hashes、component 類別、white-list profile、limits、array shapes/dtypes |
+| verification.json | 此 episode 的契約與物理檢查結果，不代表控制能力已驗證 |
 
-## Observation 新增欄位
+## Observation
 
-以下 shape 不含最前面的 N；arm 順序固定 `[left, right]`，每臂 joints 1…7。`metadata.json` 記錄精確 joint names；不要假設 qpos index 等於 joint id。
+所有 shapes 不含 N；arm 順序 left/right，各 joint1…7。
 
-| 欄位 | Shape | 單位／定義 |
-|---|---|---|
-| `arm_joint_position` | (2,7) | rad；qpos 經 named joint qposadr 取得 |
-| `arm_joint_velocity` | (2,7) | rad/s；qvel 經 named joint dofadr 取得 |
-| `arm_actuator_torque` | (2,7) | Nm；qfrc_actuator 在 arm DOFs 的 generalized torque，不含其他 generalized force |
-| `arm_actuator_force` | (2,7) | 原始 actuator_force；本版本 unit gear hinge transmission，數值等於上述 Nm，但保留不同語意 |
-| `gripper_joint_position` | (2,2) | m；每個 upper/lower pad slide 位移 |
-| `gripper_joint_velocity` | (2,2) | m/s |
-| `gripper_actuator_force` | (4,) | N；L upper/lower、R upper/lower |
-| `end_effector_pose` | (2,7) | custom gripper frame 的 world xyz + wxyz；等於本版 gripper_pose，不是 Panda link7 frame |
-| `end_effector_velocity` | (2,6) | world angular xyz、linear xyz；rad/s、m/s |
-| `wrist_sensor_left/right` | (6,) | MuJoCo wrist site force/torque，N/Nm，下面另述 |
+| 欄位 | Shape／單位 |
+|---|---|
+| wrist_ft_left/right | 各 `(6,)`，接觸重建的 panel-on-gripper wrench；gripper-local、about gripper origin；force xyz→torque xyz |
+| wrist_sensor_left/right | 各 `(6,)`，child→parent transmitted wrench；sensor 在 gripper local `[0,.12,0]`，包含下游重量與動力學，未補償 |
+| tactile_left/right | 各 `(2,3,4,4)`；upper/lower × sensor z/x/y × angular bins；N/bin |
+| object_position/orientation | `(3,)` world xyz m / `(4,)` quaternion wxyz |
+| object_linear/angular_velocity | 各 `(3,)` world m/s、rad/s |
+| contact_state_left/right | 各 `(2,)` upper/lower 接觸點數 |
+| arm_joint_position/velocity | 各 `(2,7)`，rad、rad/s |
+| arm_actuator_torque/force | 各 `(2,7)`；目前 unit-gear hinge，數值皆為 Nm；不是外力估計 |
+| end_effector_pose/velocity | `(2,7)` xyz+wxyz / `(2,6)` angular→linear；兩 pad 中間的 gripper frame |
+| gripper_joint_position/velocity | 各 `(2,2)`，m、m/s |
+| gripper_actuator_force | `(4,)` N |
+| object_contact_wrench | `(6,)`，gripper-on-panel、world、about instantaneous panel COM |
 
-原本 object_position/orientation、linear/angular velocity、左右 tactile、contact state 與 contact-wrench F/T 保留。另保存 object_pose/velocity 的合併形式供記錄／視覺共用。
+另保留 gripper/object pose/velocity 合併欄位與左右 world-at-panel-COM contact wrenches，供診斷。
 
-## 兩種 F/T 必須區分
+## Commands 與診斷
 
-- `wrist_ft_left/right`：沿用 Phase 1A 的 **panel-on-gripper 接觸 wrench 重建**，gripper-local、about gripper origin，`[Fx,Fy,Fz,Tx,Ty,Tz]`。只納入 panel 與對應 pads 的接觸。
-- `wrist_sensor_left/right`：新加入的 MuJoCo force/torque sensor，位於 custom gripper local `[0,+0.12,0]`，sensor axes 與 gripper 一致。它是 gripper child 對 parent tool flange 的傳遞 wrench（官方 child→parent convention），包含下游手部動力學，未做重量／慣性補償；不可直接替換上述 contact wrench。
-- `wrist_ft_*_world_at_panel_com` 與 `object_contact_wrench`：gripper-on-panel、world、about instantaneous panel COM。
+- Decision/ObjectCommand 各 N 筆；來源時間與 observation_t 相同。
+- `command_timestamp / decision_timestamp / object_command_timestamp`：各 `(N,5)`；前者 t+[0,.002,.004,.006,.008]，後兩者保持 t。
+- `arm_position_target (N,5,2,7)` rad；`pad_force_command (N,5,4)` N。
+- `arm_requested_servo_torque`、`arm_actuator_torque_at_actuation`、`arm_actuator_torque_after_step`：分別為 clipping 前、作用後 step 前、step 後；不可互換。
+- `realized_timestamp`=command_timestamp+.002；`realized_object_contact_wrench (N,5,6)` 是總接觸 wrench，不是已分離的 assistance。
+- `requested_object_wrench (N,5,6)` 定義為含支撐的總需求，尚未計算，NaN + requested_object_wrench_valid=false。已知的額外 assistance request 存於 object_commands.assist_wrench_world。
+- `allocated_gripper_wrenches (N,5,2,6)` 尚無 allocator，NaN + allocation_valid=false。
+- `tracking_error_Nm (N,)` 為 NaN、tracking_error_valid=false；不可用總 Ty 代替。
+- `controller_mode / assist_reference_executed` 每子步記錄；contact_status 對應 diagnostics.contact_counts，saturation 對應 controller.arm_force_saturated。
 
-[MuJoCo force/torque 官方定義](https://mujoco.readthedocs.io/en/3.3.5/XMLreference.html#sensor-force)。tactile 仍為各 pad 的 sensor-frame z/x/y、4×4 angular bins，N/bin；不是 Pa。
+## 學習邊界
 
-## Controller 記錄
+預設 policy 只有上述兩側 contact F/T、tactile、object pose/velocity、contact state（10 fields）。`with_joint_states` 再開啟 q/dq。Raw wrist sensors、torques、commands、truth、metadata 不自動加入。
 
-| 欄位 | 每 transition shape | 語意 |
-|---|---|---|
-| `desired_assist_torque` | scalar | Nm；World +Y、Panel COM、額外 assistance，source=scripted_test |
-| `arm_position_target` | (5,2,7) | 實際送入 position servo 的 rad 命令 |
-| `pad_force_command` | (5,4) | 實際送入 pad motors 的 N 命令 |
-| `arm_requested_servo_torque` | (5,2,7) | 模型 gain/bias 計算出的 clipping 前 servo torque，Nm |
-| `arm_actuator_torque_at_actuation` | (5,2,7) | 新命令作用後、step 前的實際 generalized actuator torque，Nm |
-| `arm_actuator_torque_after_step` | (5,2,7) | step 完成並 refresh 後的 torque，Nm |
-| `arm_force_saturated` | (5,2,7) | torque 經模型 force limit clipping 的 flags |
-| `realized_object_contact_wrench` | (5,6) | 每子步完成後的總 panel 接觸 wrench，不等於額外 assistance |
-| `assist_reference_executed` | (5,) | hold baseline 全 false；不等於 tracking 成功旗標 |
-| `tracking_error_Nm / tracking_error_valid` | scalar | NaN / false，尚無驗證過的 assistance tracking evaluator |
+Source 寫 oracle_expert 也不會讓 supervision 自動有效。所有候選決策與正式標籤分開；沒有配力／追蹤驗證前，仍不產生有效 Expert Labels。
 
-沒有已實作的 allocator，所以不產生偽造 allocated wrench 或有效 expert label。
-
-## Policy whitelist
-
-`phase1b.interfaces.POLICY_PROFILES`：
-
-- `baseline`（預設）：精確沿用 Phase 1A 的 10 項 sensor allowlist。q/dq、actuator torques、raw wrist sensor、commands、truth 與 metadata 不加入。
-- `with_joint_states`（opt-in）：baseline + `arm_joint_position`、`arm_joint_velocity`。此開關是未來消融介面，目前沒有學習模型。
-
-`policy_observation` 只複製 whitelist 欄位，回傳唯讀 arrays。控制器可讀當下全部公開 observation（含 joints），但不取得 privileged section；controller 能讀 joints 不代表 learner 已使用 joints。
-
-讀回驗證包含 clocks、五子步對齊、前後 observation 連續性、q/dq 與 raw MuJoCo state 的索引對照、command/torque bounds、unit gear torque 關係、NaN/valid masks，以及無 arm/root 外加 wrench。完整 suite 另驗證 FK 對照與 exact replay。
+Scripted motion 展示沿用獨立的 render/diagnostic record，含 privileged truth，**不是正式訓練資料格式**。舊 schema 與實驗只留在歷史 Git revision；現行 reader 不保留多版本分支。

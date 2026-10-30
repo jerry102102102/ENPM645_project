@@ -1,0 +1,20 @@
+test_adapters_leave_physics_unchanged (phase1b.tests.test_contracts.Contracts.test_adapters_leave_physics_unchanged) ... ok
+test_causal_isolation_and_joint_opt_in (phase1b.tests.test_contracts.Contracts.test_causal_isolation_and_joint_opt_in) ... ok
+test_chain_rejects_future_unbounded_and_mutated_intent (phase1b.tests.test_contracts.Contracts.test_chain_rejects_future_unbounded_and_mutated_intent) ... ok
+test_frames_units_quaternion_and_pitch_responsibility (phase1b.tests.test_contracts.Contracts.test_frames_units_quaternion_and_pitch_responsibility) ... ok
+test_hold_latch_uncertain_and_substep_clock (phase1b.tests.test_contracts.Contracts.test_hold_latch_uncertain_and_substep_clock) ... ok
+test_legacy_scalar_adapter_requires_explicit_mode (phase1b.tests.test_contracts.Contracts.test_legacy_scalar_adapter_requires_explicit_mode) ... ok
+test_modes_signs_confidence_and_invalid (phase1b.tests.test_contracts.Contracts.test_modes_signs_confidence_and_invalid) ... ok
+test_three_layer_logging_and_no_automatic_expert_labels (phase1b.tests.test_contracts.Contracts.test_three_layer_logging_and_no_automatic_expert_labels) ... ok
+test_arm_actuator_disable_loses_support (phase1b.tests.test_integration.IntegrationTests.test_arm_actuator_disable_loses_support) ... ok
+test_default_policy_logs_but_excludes_joint_states_and_truth (phase1b.tests.test_integration.IntegrationTests.test_default_policy_logs_but_excludes_joint_states_and_truth) ... ok
+test_logging_alignment_replay_and_corruption_rejection (phase1b.tests.test_integration.IntegrationTests.test_logging_alignment_replay_and_corruption_rejection) ... ok
+test_nominal_ik_and_limits (phase1b.tests.test_integration.IntegrationTests.test_nominal_ik_and_limits) ... ok
+test_only_panel_has_free_joint_and_bases_are_fixed (phase1b.tests.test_integration.IntegrationTests.test_only_panel_has_free_joint_and_bases_are_fixed) ... ok
+test_pad_removal_removes_sensing_and_support (phase1b.tests.test_integration.IntegrationTests.test_pad_removal_removes_sensing_and_support) ... ok
+test_reference_units_future_rejection_and_bounds (phase1b.tests.test_integration.IntegrationTests.test_reference_units_future_rejection_and_bounds) ... ok
+
+----------------------------------------------------------------------
+Ran 15 tests in 2.850s
+
+OK

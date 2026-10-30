@@ -53,7 +53,7 @@ Wrench 排列統一 `[Fx,Fy,Fz,Tx,Ty,Tz]`。Tactile 使用 `mujoco.sensor.touch_
 - Physics/control：500 Hz；高層 reference/observation：100 Hz；episode 前 settle 2 秒。
 - 正式 transition：`o_t → reference → 5 個 control/physics 子步 → o_next`。
 - 現有命令：`arm_position_target (2,7)`，rad；`pad_force_command (4,)`，N。每臂 joint 1–4 torque bounds ±87 Nm、5–7 ±12 Nm；這是 position-servo 模型，沒有直接 joint-torque adapter。
-- 高層介面：`desired_assist_torque`，scalar、World +Y、instantaneous Panel COM、Nm，表示額外協助力矩。**目前尚無 assistance tracking、allocator 或 Expert。**
+- 高層介面：`AssistanceDecision → ObjectCommand → ArmCommand`；額外 assistance 為 scalar、World +Y、instantaneous Panel COM、Nm。**目前只有 reference-only / position-hold adapters，尚無 assistance tracking、allocator 或 Expert。** 詳見 [三層契約](THREE_LAYER_INTERFACE.md)。
 - q/dq 已記錄，policy 預設不使用；`with_joint_states` 可開啟。Privileged truth、commands、render states 不自動成為 policy inputs；Expert labels 仍為 NaN / invalid。
 
 ## 已驗證的動作
@@ -64,4 +64,4 @@ A：旋轉約 +20°、抬升 3.05 cm 後停留。B：抬升 7.98 cm 後停留。
 
 ## 精確規格與入口
 
-[場景／初始 q／human 參數](../phase1b/config/dual_panda_v1.json) · [完整硬體與限制](../phase1b/config/hardware_v2.json) · [資料格式](DATA_SCHEMA_V2.md) · [Controller 介面](CONTROL_HANDOFF_ARMS.md) · [動作與驗證](../results/phase1b/motion_examples_v1/README.md) · [執行方式](../phase1b/README.md)
+[場景／初始 q／human 參數](../phase1b/config/dual_panda_v1.json) · [完整硬體與限制](../phase1b/config/hardware_v2.json) · [資料格式](DATA_SCHEMA_V2.md) · [Controller 介面](CONTROL_HANDOFF_ARMS.md) · [動作與驗證](../results/phase1b/current/README.md) · [執行方式](../phase1b/README.md)

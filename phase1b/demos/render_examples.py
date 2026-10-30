@@ -11,7 +11,7 @@ import mujoco
 import numpy as np
 from PIL import Image, ImageDraw
 
-from phase1a.scripts.render_tactile_sync import arrow, font, marker
+from phase1b.demos.render_helpers import arrow, font, marker
 from phase1b.simulation import ROOT, PandaWorld
 
 COLORS = {"human": (255, 90, 90), "target": (49, 224, 205), "external": (255, 180, 45)}

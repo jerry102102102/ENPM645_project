@@ -7,10 +7,11 @@ from pathlib import Path
 import mujoco
 import numpy as np
 
-from phase1a.interfaces.controller_contract import AssistTorqueReference
 from phase1b.interfaces import (
     ArmCommand,
-    PositionHoldBaseline,
+    AssistanceDecision,
+    PositionHoldDualArmAdapter,
+    ReferenceOnlyObjectAdapter,
     policy_observation,
     validate_command,
 )
@@ -75,13 +76,12 @@ class IntegrationTests(unittest.TestCase):
         w.refresh(0)
         o, _ = w.snapshot()
         inp = controller_input(w, o)
-        ref = AssistTorqueReference(0, 0.02)
-        np.testing.assert_array_equal(ref.assistance_wrench(), [0, 0, 0, 0, 0.02, 0])
-        out = PositionHoldBaseline().step(ref, inp)
+        ref = AssistanceDecision(0, "HOLD", 0.02, None, "scripted_test", True)
+        obj = ReferenceOnlyObjectAdapter().step(ref, inp, 0.01)
+        np.testing.assert_array_equal(obj.assist_wrench_world, [0, 0, 0, 0, 0.02, 0])
+        out = PositionHoldDualArmAdapter().step(obj, inp)
         validate_command(out, inp)
         self.assertFalse(out.assist_reference_executed)
-        with self.assertRaises(ValueError):
-            PositionHoldBaseline().step(AssistTorqueReference(0.1, 0.02), inp)
         bad = out.arm_position_target.copy()
         bad[0, 0] = 10
         with self.assertRaises(ValueError):

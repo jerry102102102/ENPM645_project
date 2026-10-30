@@ -1,0 +1,71 @@
+{
+  "demo_version": "scripted-motion/1.0",
+  "scenario_version": "3.0.0",
+  "hardware_version": "2.0.0",
+  "schedule": {
+    "name": "Reposition and resist constant load",
+    "angle_deg": -12.0,
+    "lift_m": 0.0,
+    "external_force_N": 20.0
+  },
+  "duration_s": 8.0,
+  "human_motion_start_s": 0.6,
+  "robot_motion_start_s": 1.4,
+  "motion_duration_s": 2.4,
+  "constant_load_start_s": 4.3,
+  "external_ramp_start_s": 4.0,
+  "external_ramp_duration_s": 0.3,
+  "force_frame": "world XYZ; forces in N; visualization conventions stored separately",
+  "scope": "Scripted motion/load demonstration only, not intent inference, force tracking or expert data",
+  "clock": "Samples are same-time post-command/pre-step snapshots at 100 Hz; physics diagnostics at 500 Hz",
+  "hashes": {
+    "phase1b/demos/motion_examples.py": "ee90414d2ecaa033fc1587b0cbd74214e00c48cdd60a3220f4168b9d0514988d",
+    "phase1b/config/dual_panda_v1.json": "54bbaa69c20d498ea3ea6d6eb9d3fb60d0e167302d0334df6bdeb4b80e6952db",
+    "phase1b/models/dual_panda_v1.xml": "e05d03dc53f43e83357fe854ffc03f8dbae21762a71287c2976f111e1b77ae8f",
+    "phase1b/config/hardware_v2.json": "aa9486a4e2fa77ba5ac95b31305524b334d9ce70c14070d4b1ea9f3836b11c00",
+    "phase1b/simulation.py": "330d734930f07b32532897a5fae5630084f8121214b64f5e28190a9a41c71f8a",
+    "phase1b/geometry.py": "46c924883515818583e7eba0ec6ca119591edd8901afa1b28aa82c5e691f2bba"
+  },
+  "metrics": {
+    "human_peak_time_s": 2.18,
+    "human_peak_force_vector_N": [
+      -0.29064711667701115,
+      -0.026846012599282862,
+      4.191275593402174
+    ],
+    "case": "C",
+    "name": "Reposition and resist constant load",
+    "samples": 800,
+    "physics_steps": 4000,
+    "observed_pitch_change_deg": -11.94357952907876,
+    "observed_lift_m": -0.00451584166850727,
+    "max_joint_change_rad": 0.30299331875470414,
+    "max_joint_speed_rad_s": 0.18836034704936794,
+    "min_contacts": [
+      2,
+      3,
+      3,
+      4
+    ],
+    "max_pad_penetration_m": 0.00047057140559658364,
+    "unexpected_penetration_m": 0.0,
+    "min_joint_margin_rad": 0.1480176459678435,
+    "saturated_steps": 0,
+    "max_force_balance_residual_N": 5.70065582650415e-11,
+    "max_human_force_N": 4.201426847473829,
+    "late_human_force_mean_N": [
+      -0.009926941178444976,
+      0.10138965418814286,
+      1.857891673114301
+    ],
+    "late_external_force_N": [
+      0.0,
+      0.0,
+      -20.0
+    ],
+    "hold_pitch_range_deg": 0.0005733586092961929,
+    "hold_z_range_m": 0.00022331088219995632,
+    "ik_max_position_error_m": 2.5035406037836763e-07,
+    "passed": true
+  }
+}

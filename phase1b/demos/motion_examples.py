@@ -8,9 +8,7 @@ from pathlib import Path
 import mujoco
 import numpy as np
 
-from phase0_tactile.scripts.run_experiment import clip_norm, rotate_y, smooth
-from phase0_v2.simulation.dual_gripper import point_wrench
-from phase1b.scripts.build_scene import solve
+from phase1b.geometry import clip_norm, point_wrench, rotate_y, smooth, solve
 from phase1b.simulation import CONFIG, ROOT, PandaWorld
 
 DURATION = 8.0
@@ -290,7 +288,7 @@ def collect(case, output):
                 ROOT / w.config["model"],
                 ROOT / "phase1b/config/hardware_v2.json",
                 ROOT / "phase1b/simulation.py",
-                ROOT / "phase1b/scripts/build_scene.py",
+                ROOT / "phase1b/geometry.py",
             ]
         },
         metrics=metrics,

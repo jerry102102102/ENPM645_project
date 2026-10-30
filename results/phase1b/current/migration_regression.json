@@ -1,0 +1,47 @@
+{
+  "baseline_git_revision": "996a524",
+  "episodes": {
+    "A": {
+      "identical_arrays": 103,
+      "expected_changes": [
+        "desired_assist_torque",
+        "reference_valid",
+        "reference_source",
+        "new contract fields"
+      ]
+    },
+    "B": {
+      "identical_arrays": 103,
+      "expected_changes": [
+        "desired_assist_torque",
+        "reference_valid",
+        "reference_source",
+        "new contract fields"
+      ]
+    },
+    "C": {
+      "identical_arrays": 103,
+      "expected_changes": [
+        "desired_assist_torque",
+        "reference_valid",
+        "reference_source",
+        "new contract fields"
+      ]
+    }
+  },
+  "motion": {
+    "A": {
+      "identical_arrays": 56
+    },
+    "B": {
+      "identical_arrays": 56
+    },
+    "C": {
+      "identical_arrays": 56
+    }
+  },
+  "model_unchanged": true,
+  "hardware_unchanged": true,
+  "render_frame_identical": true,
+  "passed": true
+}

@@ -1,0 +1,267 @@
+{
+  "tests_passed": true,
+  "episodes": {
+    "A": {
+      "data_pipeline_passed": true,
+      "physical_sample_checks_passed": true,
+      "samples": 400,
+      "physics_steps": 2000,
+      "min_contacts_per_pad": [
+        3,
+        4,
+        3,
+        4
+      ],
+      "max_pad_penetration_m": 0.00047564180224836253,
+      "unexpected_penetration_count": 0,
+      "min_joint_limit_margin_rad": 0.1481905802910406,
+      "max_panel_balance_residual_N": 4.619683465118333e-14,
+      "max_joint_speed_rad_s": 0.0022603024979254366,
+      "arm_saturated_steps": 0,
+      "panel_z_range_m": [
+        0.7847839857256239,
+        0.7869729824824653
+      ],
+      "interface_ready": true,
+      "assistance_tracking_validated": false,
+      "expert_labels_validated": false,
+      "controller_status": "adapter supplied; no full motion/force controller certification"
+    },
+    "B": {
+      "data_pipeline_passed": true,
+      "physical_sample_checks_passed": true,
+      "samples": 400,
+      "physics_steps": 2000,
+      "min_contacts_per_pad": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "max_pad_penetration_m": 0.00033968582246127714,
+      "unexpected_penetration_count": 0,
+      "min_joint_limit_margin_rad": 0.14818515098895535,
+      "max_panel_balance_residual_N": 2.6645607100889167e-14,
+      "max_joint_speed_rad_s": 4.6043990717378476e-05,
+      "arm_saturated_steps": 0,
+      "panel_z_range_m": [
+        0.7869728007493048,
+        0.7869731131279598
+      ],
+      "interface_ready": true,
+      "assistance_tracking_validated": false,
+      "expert_labels_validated": false,
+      "controller_status": "adapter supplied; no full motion/force controller certification"
+    },
+    "C": {
+      "data_pipeline_passed": true,
+      "physical_sample_checks_passed": true,
+      "samples": 400,
+      "physics_steps": 2000,
+      "min_contacts_per_pad": [
+        2,
+        2,
+        3,
+        4
+      ],
+      "max_pad_penetration_m": 0.0005234213650920619,
+      "unexpected_penetration_count": 0,
+      "min_joint_limit_margin_rad": 0.14818493418234935,
+      "max_panel_balance_residual_N": 4.6195514352911575e-14,
+      "max_joint_speed_rad_s": 0.0100403583160726,
+      "arm_saturated_steps": 0,
+      "panel_z_range_m": [
+        0.783029239357631,
+        0.7869729824824653
+      ],
+      "interface_ready": true,
+      "assistance_tracking_validated": false,
+      "expert_labels_validated": false,
+      "controller_status": "adapter supplied; no full motion/force controller certification"
+    }
+  },
+  "exact_replay": {
+    "A": 131,
+    "B": 131,
+    "C": 131
+  },
+  "motion": {
+    "A": {
+      "human_peak_time_s": 2.22,
+      "human_peak_force_vector_N": [
+        -0.8385860240069378,
+        -0.04174149876491294,
+        -1.8682284037448724
+      ],
+      "case": "A",
+      "name": "Rotate and hold",
+      "samples": 800,
+      "physics_steps": 4000,
+      "observed_pitch_change_deg": 19.995619441883502,
+      "observed_lift_m": 0.030496116384778116,
+      "max_joint_change_rad": 0.7103490051418813,
+      "max_joint_speed_rad_s": 0.4469737052792743,
+      "min_contacts": [
+        4,
+        4,
+        3,
+        4
+      ],
+      "max_pad_penetration_m": 0.000508699484464434,
+      "unexpected_penetration_m": 0.0,
+      "min_joint_margin_rad": 0.04000290441644472,
+      "saturated_steps": 0,
+      "max_force_balance_residual_N": 8.304960908921803e-09,
+      "max_human_force_N": 2.0482300263735076,
+      "late_human_force_mean_N": [
+        0.15632611033244245,
+        -0.09345385994660632,
+        1.2702568154417786
+      ],
+      "late_external_force_N": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "hold_pitch_range_deg": 0.0004063775203029252,
+      "hold_z_range_m": 0.00017374749288756597,
+      "ik_max_position_error_m": 3.4639265495379733e-07,
+      "passed": true
+    },
+    "B": {
+      "human_peak_time_s": 2.18,
+      "human_peak_force_vector_N": [
+        0.021460685679739896,
+        -0.02451125813865296,
+        5.41296303460065
+      ],
+      "case": "B",
+      "name": "Lift then hold",
+      "samples": 800,
+      "physics_steps": 4000,
+      "observed_pitch_change_deg": 0.027468889894036314,
+      "observed_lift_m": 0.07979878567131293,
+      "max_joint_change_rad": 0.27339836061138034,
+      "max_joint_speed_rad_s": 0.17207799334131463,
+      "min_contacts": [
+        4,
+        3,
+        4,
+        4
+      ],
+      "max_pad_penetration_m": 0.00037755565737423747,
+      "unexpected_penetration_m": 0.0,
+      "min_joint_margin_rad": 0.14794572176743293,
+      "saturated_steps": 0,
+      "max_force_balance_residual_N": 4.506358399249748e-14,
+      "max_human_force_N": 5.413061072698003,
+      "late_human_force_mean_N": [
+        0.014672143659237994,
+        0.018586369894962654,
+        1.3514987773891751
+      ],
+      "late_external_force_N": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "hold_pitch_range_deg": 0.00029417377996932004,
+      "hold_z_range_m": 3.0471733858394856e-07,
+      "ik_max_position_error_m": 3.020940547926162e-07,
+      "passed": true
+    },
+    "C": {
+      "human_peak_time_s": 2.18,
+      "human_peak_force_vector_N": [
+        -0.29064711667701115,
+        -0.026846012599282862,
+        4.191275593402174
+      ],
+      "case": "C",
+      "name": "Reposition and resist constant load",
+      "samples": 800,
+      "physics_steps": 4000,
+      "observed_pitch_change_deg": -11.94357952907876,
+      "observed_lift_m": -0.00451584166850727,
+      "max_joint_change_rad": 0.30299331875470414,
+      "max_joint_speed_rad_s": 0.18836034704936794,
+      "min_contacts": [
+        2,
+        3,
+        3,
+        4
+      ],
+      "max_pad_penetration_m": 0.00047057140559658364,
+      "unexpected_penetration_m": 0.0,
+      "min_joint_margin_rad": 0.1480176459678435,
+      "saturated_steps": 0,
+      "max_force_balance_residual_N": 5.70065582650415e-11,
+      "max_human_force_N": 4.201426847473829,
+      "late_human_force_mean_N": [
+        -0.009926941178444976,
+        0.10138965418814286,
+        1.857891673114301
+      ],
+      "late_external_force_N": [
+        0.0,
+        0.0,
+        -20.0
+      ],
+      "hold_pitch_range_deg": 0.0005733586092961929,
+      "hold_z_range_m": 0.00022331088219995632,
+      "ik_max_position_error_m": 2.5035406037836763e-07,
+      "passed": true
+    }
+  },
+  "interface_ready": true,
+  "controller_implemented": "reference-only and position-hold adapters",
+  "assistance_tracking_validated": false,
+  "expert_labels_validated": false,
+  "negative_controls": {
+    "remove_pad_contacts": {
+      "passed": true,
+      "duration_s": 0.3,
+      "panel_drop_m": 0.32237760100917406,
+      "max_joint_change_rad": 0.0010789175170251575,
+      "tactile_norms": [
+        0.0,
+        0.0
+      ]
+    },
+    "disable_arm_actuators": {
+      "passed": true,
+      "duration_s": 0.3,
+      "panel_drop_m": 0.32273915731489,
+      "max_joint_change_rad": 0.5908102581615662,
+      "tactile_norms": [
+        82.65889213223548,
+        54.78935915509936
+      ]
+    },
+    "robot_support_without_human": {
+      "passed": true,
+      "duration_s": 1.0,
+      "total_robot_vertical_contact_force_N": 9.810000653671866,
+      "panel_weight_N": 9.81,
+      "panel_z_change_m": -0.00028583114445601687
+    }
+  },
+  "fk_readback": {
+    "A": {
+      "passed": true,
+      "frames": 400,
+      "max_pose_component_error": 0.0
+    },
+    "B": {
+      "passed": true,
+      "frames": 400,
+      "max_pose_component_error": 0.0
+    },
+    "C": {
+      "passed": true,
+      "frames": 400,
+      "max_pose_component_error": 0.0
+    }
+  },
+  "passed": true
+}

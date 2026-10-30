@@ -1,32 +1,39 @@
-"""Collect a fresh episode using a baseline or a user-provided position adapter."""
+"""Collect through the single Policy -> Object -> Arm -> MuJoCo pipeline."""
 
 import argparse
 import importlib
 import json
 from pathlib import Path
 
-from phase1b.interfaces import PositionHoldBaseline
 from phase1b.pipeline import run_episode
 
 
 def main():
-    p = argparse.ArgumentParser()
-    p.add_argument("--output", type=Path, required=True)
-    p.add_argument("--scenario", choices=list("ABC"), default="B")
-    p.add_argument("--duration", type=float, default=4.0)
-    p.add_argument("--reference-test", action="store_true")
-    p.add_argument(
-        "--controller",
-        help="module:Class; returns bounded joint-position and pad-force commands",
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--scenario", choices=list("ABC"), default="B")
+    parser.add_argument("--duration", type=float, default=4.0)
+    parser.add_argument(
+        "--profile", choices=("baseline", "with_joint_states"), default="baseline"
     )
-    a = p.parse_args()
-    factory = PositionHoldBaseline
-    if a.controller:
-        module, name = a.controller.split(":")
-        factory = getattr(importlib.import_module(module), name)
+    for role in ("policy", "object-controller", "dual-arm-controller"):
+        parser.add_argument("--" + role, help="module:Class; no-argument constructor")
+    args = parser.parse_args()
+    components = {}
+    for role in ("policy", "object_controller", "dual_arm_controller"):
+        value = getattr(args, role)
+        if value:
+            module, name = value.split(":")
+            components[role] = getattr(importlib.import_module(module), name)()
     print(
         json.dumps(
-            run_episode(a.output, a.scenario, a.duration, factory, a.reference_test),
+            run_episode(
+                args.output,
+                args.scenario,
+                args.duration,
+                profile=args.profile,
+                **components,
+            ),
             indent=2,
         )
     )

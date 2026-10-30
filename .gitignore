@@ -4,18 +4,6 @@ __pycache__/
 .venv/
 .env
 
-# Local development / fresh replay outputs; the reference pilot is versioned.
-phase0_tactile/results/dev*/
-phase0_tactile/results/reproduction*/
-
-# v2 reference pilot is versioned; development and replay output is local.
-phase0_v2/results/dev*/
-phase0_v2/results/reproduction*/
-
-# Phase 1A reference smoke is versioned; development/replays remain local.
-results/phase1a/dev*/
-results/phase1a/reproduction*/
-
-# Articulated dual-Panda development and replay outputs.
+# Keep one reviewed reference run; local development/replays are disposable.
 results/phase1b/dev*/
 results/phase1b/reproduction*/

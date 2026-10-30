@@ -95,7 +95,5 @@
     ],
     "gripper_separation_m": 0.4
   },
-  "source_scenario": "phase1a/config/scenario_v2.json",
-  "source_scenario_hash": "3b62da1deced1309477b49c7175d8968bef3dff6ec0a05b7976fadb346780689",
   "vendor_manifest_hash": "669399d3cf239c1b7be05272c47682c7695a803d27b70341b96638a845b03a85"
 }

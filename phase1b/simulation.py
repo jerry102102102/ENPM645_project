@@ -7,10 +7,9 @@ from pathlib import Path
 import mujoco
 import numpy as np
 
-from phase0_tactile.scripts.run_experiment import clip_norm, rotate_y, smooth
-from phase0_v2.sensing.contacts import observe
-from phase0_v2.simulation.dual_gripper import point_wrench
+from phase1b.geometry import clip_norm, point_wrench, rotate_y, smooth
 from phase1b.hardware import snapshot, verify_vendor
+from phase1b.sensing import observe
 
 ROOT = Path(__file__).resolve().parents[1]
 CONFIG = ROOT / "phase1b/config/dual_panda_v1.json"
@@ -82,7 +81,7 @@ class PandaWorld:
         self.set_commands(self.qtarget, np.array([-40.0, 40.0, -40.0, 40.0]))
         mujoco.mj_forward(m, d)
         hardware = ROOT / "phase1b/config/hardware_v2.json"
-        if hardware.exists() and snapshot(self) != json.loads(hardware.read_text()):
+        if snapshot(self) != json.loads(hardware.read_text()):
             raise ValueError("compiled hardware mismatch")
 
     def set_commands(self, arm_position, pad_force):

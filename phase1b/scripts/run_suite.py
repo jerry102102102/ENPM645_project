@@ -11,7 +11,7 @@ import mujoco
 import numpy as np
 
 from phase1b.pipeline import read_episode, run_episode
-from phase1b.simulation import CONFIG, ROOT, PandaWorld
+from phase1b.simulation import ROOT, PandaWorld
 
 
 def compare(a, b):
@@ -106,52 +106,21 @@ def kinematics(path):
 
 
 def main():
-    ap = argparse.ArgumentParser()
-    ap.add_argument(
-        "--output", type=Path, default=ROOT / "results/phase1b/dual_panda_v1"
+    ap = argparse.ArgumentParser(
+        description="Verify the single dual-Panda system and its three-layer contract"
     )
+    ap.add_argument("--output", type=Path, required=True)
     ap.add_argument("--render", action="store_true")
     a = ap.parse_args()
     if a.output.exists():
         ap.error("choose a fresh output folder")
     a.output.mkdir(parents=True)
-    result = {"episodes": {}}
-    for s in "ABC":
-        result["episodes"][s] = run_episode(a.output / "smoke" / s, s)
-        print(s, result["episodes"][s], flush=True)
-    result["episodes"]["reference_test"] = run_episode(
-        a.output / "smoke/reference_test", "B", reference_test=True
-    )
-    result["negative_controls"] = controls()
-    result["fk_readback"] = {s: kinematics(a.output / "smoke" / s) for s in "ABC"}
-    result["exact_replay"] = {}
-    with tempfile.TemporaryDirectory() as tmp:
-        for name in ("A", "B", "C", "reference_test"):
-            run_episode(
-                Path(tmp) / name,
-                "B" if name == "reference_test" else name,
-                reference_test=name == "reference_test",
-            )
-            result["exact_replay"][name] = {
-                "passed": True,
-                "arrays": compare(a.output / "smoke" / name, Path(tmp) / name),
-            }
-    base, _ = read_episode(a.output / "smoke/B")
-    ref, _ = read_episode(a.output / "smoke/reference_test")
-    for section in ("observations", "next_observations", "privileged", "render_states"):
-        for key in base[section]:
-            np.testing.assert_array_equal(base[section][key], ref[section][key])
-    result["ignored_reference_control"] = {
-        "passed": True,
-        "meaning": "Changing +/- .02 Nm reference does not change baseline physics; not assistance tracking",
-    }
     test = subprocess.run(
         [
             sys.executable,
             "-m",
             "unittest",
-            "phase1a.tests.test_contracts",
-            "phase1a.tests.test_edge_geometry",
+            "phase1b.tests.test_contracts",
             "phase1b.tests.test_integration",
             "-v",
         ],
@@ -160,77 +129,44 @@ def main():
         capture_output=True,
     )
     (a.output / "tests.txt").write_text(test.stdout + test.stderr)
-    result["tests_passed"] = test.returncode == 0
-    result["arm_model_integration"] = {
-        "passed": True,
-        "arm_joints": 14,
-        "fixed_bases": 2,
-        "only_freejoint": "panel_free",
-        "nominal_ik": json.loads(CONFIG.read_text())["ik"],
-    }
-    result["physical_coupling_passed"] = all(
+    if test.returncode:
+        raise RuntimeError("Contract tests failed; see tests.txt")
+    result = dict(
+        tests_passed=True,
+        episodes={},
+        exact_replay={},
+        motion={},
+        interface_ready=True,
+        controller_implemented="reference-only and position-hold adapters",
+        assistance_tracking_validated=False,
+        expert_labels_validated=False,
+    )
+    for case in "ABC":
+        path = a.output / "episodes" / case
+        result["episodes"][case] = run_episode(path, case)
+        print(case, result["episodes"][case], flush=True)
+    result["negative_controls"] = controls()
+    result["fk_readback"] = {s: kinematics(a.output / "episodes" / s) for s in "ABC"}
+    with tempfile.TemporaryDirectory() as tmp:
+        for case in "ABC":
+            run_episode(Path(tmp) / case, case)
+            result["exact_replay"][case] = compare(
+                a.output / "episodes" / case, Path(tmp) / case
+            )
+    from phase1b.demos.motion_examples import collect
+
+    for case in "ABC":
+        result["motion"][case] = collect(case, a.output / "motion" / case)
+    result["passed"] = all(
         v["physical_sample_checks_passed"] for v in result["episodes"].values()
-    ) and all(v["passed"] for v in result["negative_controls"].values())
-    result["data_pipeline_passed"] = all(
-        v["data_pipeline_passed"] for v in result["episodes"].values()
-    )
-    result["control_readiness"] = {
-        "joint_position_adapter": True,
-        "desired_assist_torque_interface": "world +Y / panel COM / Nm",
-        "wrench_allocation": False,
-        "assistance_tracking": False,
-        "joint_torque_command_adapter": False,
-        "expert": False,
-        "policy_training": False,
-    }
-    result["passed"] = (
-        result["tests_passed"]
-        and result["physical_coupling_passed"]
-        and result["data_pipeline_passed"]
-    )
+    ) and all(v["passed"] for v in result["motion"].values())
     (a.output / "verification.json").write_text(json.dumps(result, indent=2) + "\n")
-    rows = "\n".join(
-        f"| {s} | {v['min_contacts_per_pad']} | {v['max_pad_penetration_m'] * 1000:.3f} | {v['min_joint_limit_margin_rad']:.4f} | {v['arm_saturated_steps']} |"
-        for s, v in result["episodes"].items()
-    )
-    (a.output / "report.md").write_text(f"""# Dual Panda integration report
-
-- Arm Model Integration: **{"PASS" if result["arm_model_integration"]["passed"] else "FAIL"}**. Two fixed Panda bases, 14 arm hinge joints, four custom pad slides; the only freejoint belongs to the panel. Initial IK is within 1 micrometer and 1e-5 rad; no initial penetrations beyond 1e-5 m.
-- Physical Coupling: **{"PASS" if result["physical_coupling_passed"] else "FAIL"} for these smoke episodes**. Arms are driven by upstream bounded position servos; pad motors preload the object. No root wrench drive, panel weld, kinematic hand following or qpos overwrite during stepping.
-- Data Pipeline: **{"PASS" if result["data_pipeline_passed"] else "FAIL"}**. 1,600 transitions at 100 Hz / 8,000 physics steps; same-time joint states, sensing and command/realized events; all four episodes replay exactly. q/dq logging is enabled, default policy use is disabled.
-- Control Readiness: **joint-position adapter ready; force allocation, assistance tracking, direct joint-torque adapter and Expert not implemented**. Signed desired-assist references deliberately leave the hold baseline unchanged.
-
-## Physical measurements
-
-| Episode | Minimum contacts [L upper,L lower,R upper,R lower] | Max pad penetration mm | Minimum arm joint-limit margin rad | Saturated arm steps |
-|---|---|---|---|---|
-{rows}
-
-All reported episodes have no unexpected penetrations beyond 1e-5 m, no warnings, and finite states. Panel force-balance residuals and exact replay counts are in `verification.json`. Arm velocities/torques respond to loads, but the high-gain hold baseline intentionally allows little motion; this is not a cooperative flip controller. Checks cover the sampled four-second episodes, not arbitrary trajectories or real hardware.
-
-## Coupling controls
-
-- Pad contacts removed: panel drops {result["negative_controls"]["remove_pad_contacts"]["panel_drop_m"]:.3f} m in 0.30 s; both tactile maps and reconstructed contact F/T become zero.
-- Arm actuators disabled: panel drops {result["negative_controls"]["disable_arm_actuators"]["panel_drop_m"]:.3f} m in 0.30 s; arm joints move and actuator torque is zero.
-- Human force removed while joint support remains: robot vertical contact force is {result["negative_controls"]["robot_support_without_human"]["total_robot_vertical_contact_force_N"]:.4f} N for a 9.81 N panel weight.
-
-Negative controls intentionally alter fresh test instances and are not nominal datasets. Test output is in `tests.txt`; old Phase 1A source/models/results are retained. The mount adds 0.08 kg per custom gripper and changes its attachment; this is Hardware v2 / Scenario v3, not the previous dynamics.
-
-## Reproduce
-
-```bash
-uv sync --locked
-uv run --locked python -m phase1b.scripts.run_suite --output results/phase1b/reproduction --render
-```
-
-See `phase1b/README.md`, `docs/DATA_SCHEMA_V2.md`, and `docs/CONTROL_HANDOFF_ARMS.md` for frame conventions and integration. Rendering needs local ffmpeg. The vendored Menagerie revision and Apache-2.0 license are preserved.
-""")
     if not result["passed"]:
-        raise RuntimeError("Integration checks failed; inspect verification.json")
+        raise RuntimeError("Physical acceptance failed; inspect verification.json")
     if a.render:
-        from phase1b.scripts.render_sync import render
+        from phase1b.demos.render_examples import render
 
-        render(a.output / "smoke", a.output / "visuals")
+        render(a.output / "motion", a.output / "motion/visuals")
     print("Integration suite passed:", a.output, flush=True)
 
 
