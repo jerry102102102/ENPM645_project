@@ -17,3 +17,5 @@ uv run --locked python -m phase1b.scripts.launch_viewer --scenario B
 程式分工：`interfaces.py` 型別／驗證、`control.py` 三層串接、`pipeline.py` 唯一正式資料管線、`simulation.py` 物理、`sensing.py` 感測、`geometry.py` 共用幾何與 demo IK。`models/`、`config/`、`vendor/` 是固定模型與來源。
 
 `demos/` 是同一硬體上的 scripted motion 展示與 renderer；其診斷檔不是 Expert dataset，也不表示三層 adapter 已能執行 assistance。[目前影片與結果](../results/phase1b/current/README.md)。
+
+`expert/` 是同一套系統的純數學 reference 與唯讀離線 annotation/diagnostic 工具，不建立另一套場景；[設計與指令](../docs/EXPERT_DATA_DESIGN.md)。不跑物理的驗證：`uv run --locked python -m unittest phase1b.tests.test_expert -v`。

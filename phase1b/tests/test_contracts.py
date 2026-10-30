@@ -58,8 +58,6 @@ class Contracts(unittest.TestCase):
         self.assertFalse(decision("UNCERTAIN", 0.0, valid=False).valid)
         for m, t, kw in (
             ("C", 0.0, {}),
-            ("ROTATE_NEG", 0.01, {}),
-            ("ROTATE_POS", -0.01, {}),
             ("UNCERTAIN", 0.01, {}),
             ("HOLD", 0.0, {"valid": False}),
             ("HOLD", np.nan, {}),

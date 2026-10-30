@@ -57,3 +57,9 @@ Arm commands 為 `(2,7)` **rad**，pad commands 為 `(4,)` **N**；不能把 obj
 換控制器後須驗證：支撐與 assistance 的責任、requested → allocated → commands → realized、接觸／碰撞／限制／飽和及 tracking error。`assist_reference_executed=True` 只是使用請求的旗標；不是 tracking 或 Expert quality 通過。
 
 [硬體](CURRENT_HARDWARE_HANDOFF.md) · [資料格式與時間事件](DATA_SCHEMA_V2.md) · [測試結果](../results/phase1b/current/verification.json)
+
+## Expert 候選接入
+
+[E0/E1/E2 設計與 API](EXPERT_DATA_DESIGN.md) 已可計算 `candidate.decision`，尚未加入物理 runner。TeacherGoal/DisturbanceTruth 留在上層獨立通道；組員接收的仍只有 AssistanceDecision，不接收 expert reference angle。ROTATE 的反向 torque 可能是煞車，不能直接拒絕；UNCERTAIN 仍為零。三個 expert 與 student 必須共用相同下游邏輯。
+
+ExpertConfig 的 torque_max/rate_max 要由控制器驗證後提供；目前沒有認證值，也沒有因新增 generators 就將 tracking 或 labels 標有效。

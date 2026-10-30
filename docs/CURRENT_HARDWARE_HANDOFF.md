@@ -53,7 +53,7 @@ Wrench 排列統一 `[Fx,Fy,Fz,Tx,Ty,Tz]`。Tactile 使用 `mujoco.sensor.touch_
 - Physics/control：500 Hz；高層 reference/observation：100 Hz；episode 前 settle 2 秒。
 - 正式 transition：`o_t → reference → 5 個 control/physics 子步 → o_next`。
 - 現有命令：`arm_position_target (2,7)`，rad；`pad_force_command (4,)`，N。每臂 joint 1–4 torque bounds ±87 Nm、5–7 ±12 Nm；這是 position-servo 模型，沒有直接 joint-torque adapter。
-- 高層介面：`AssistanceDecision → ObjectCommand → ArmCommand`；額外 assistance 為 scalar、World +Y、instantaneous Panel COM、Nm。**目前只有 reference-only / position-hold adapters，尚無 assistance tracking、allocator 或 Expert。** 詳見 [三層契約](THREE_LAYER_INTERFACE.md)。
+- 高層介面：`AssistanceDecision → ObjectCommand → ArmCommand`；額外 assistance 為 scalar、World +Y、instantaneous Panel COM、Nm。**目前只有 reference-only / position-hold adapters，尚無 assistance tracking 或 allocator；新增的 [E0/E1/E2](EXPERT_DATA_DESIGN.md) 只計算候選參考，未驗證執行。** 詳見 [三層契約](THREE_LAYER_INTERFACE.md)。
 - q/dq 已記錄，policy 預設不使用；`with_joint_states` 可開啟。Privileged truth、commands、render states 不自動成為 policy inputs；Expert labels 仍為 NaN / invalid。
 
 ## 已驗證的動作

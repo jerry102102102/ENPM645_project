@@ -4,13 +4,14 @@
 
 **Policy → Object Controller → Dual-Arm Controller → MuJoCo**
 
-已完成：三層介面、因果資料隔離、雙臂接觸支撐、Joint State Logging，以及 scripted 旋轉／抬升／固定外力展示。完整控制演算法、assistance tracking、Expert 與學習模型尚未實作。
+已完成：三層介面、因果資料隔離、雙臂接觸支撐、Joint State Logging，以及 scripted 旋轉／抬升／固定外力展示。新增 E0/E1/E2 候選參考與離線資料診斷；完整控制、assistance tracking、有效 Expert 示範與學習模型尚未完成。
 
 | 用途 | 文件 |
 |---|---|
 | 硬體與場景 | [目前硬體](docs/CURRENT_HARDWARE_HANDOFF.md) |
 | 三層型別、模式與時鐘 | [Interface Contract](docs/THREE_LAYER_INTERFACE.md) |
 | 組員接入控制器 | [Controller Handoff](docs/CONTROL_HANDOFF_ARMS.md) |
+| Expert 數學、候選標籤與可學性檢查 | [Expert & Data Design](docs/EXPERT_DATA_DESIGN.md) |
 | 感測、命令與標籤記錄 | [Data Schema](docs/DATA_SCHEMA_V2.md) |
 | 測試證據與影片 | [目前結果](results/phase1b/current/README.md) |
 
@@ -23,6 +24,6 @@ uv sync --locked
 uv run --locked python -m phase1b.scripts.run_suite --output results/phase1b/reproduction --render
 ```
 
-`phase1b/` 是唯一程式實作，`results/phase1b/current/` 是目前驗證結果；單段收集與 viewer 見 [執行入口](phase1b/README.md)。
+`phase1b/` 是唯一程式實作，`results/phase1b/current/` 是 `37b8c24` 的物理驗證結果（本次 Expert 更新未重跑模擬）；單段收集與 viewer 見 [執行入口](phase1b/README.md)。
 
 [文獻筆記](01_literature/README.md) · [團隊協作](CONTRIBUTING.md)。歷史實驗已移出目前工作樹，只留在 Git；清理前版本為 `996a524`。

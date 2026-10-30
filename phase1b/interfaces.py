@@ -193,10 +193,7 @@ class AssistanceDecision:
             raise ValueError("invalid decision must be UNCERTAIN")
         if self.mode == "UNCERTAIN" and self.assist_torque_y_nm != 0:
             raise ValueError("UNCERTAIN cannot request active assistance")
-        if (self.mode == "ROTATE_POS" and self.assist_torque_y_nm < 0) or (
-            self.mode == "ROTATE_NEG" and self.assist_torque_y_nm > 0
-        ):
-            raise ValueError("rotation mode and assistance sign disagree")
+        # Intent direction and torque sign differ during braking/disturbance rejection.
 
     def to_legacy(self):
         if self.source == "rule_based":

@@ -1,4 +1,6 @@
-# Current verification — single dual-Panda implementation
+# Physical verification at 37b8c24 — single dual-Panda implementation
+
+以下為 `37b8c24` 留存的物理驗證，不是 Expert 更新後重跑的結果。Expert v1.0 只執行[純數學／資料測試](../expert_math/verification.json)；既有 arrays/hashes 保留。嚴格 source-hash 驗證這些 episodes 須使用 `37b8c24`，或日後在新目錄重跑目前程式，不能直接改舊 provenance。
 
 - **Interface Ready：是。** 15 項 contract／physics tests 通過。
 - **Controller Implemented：只有 reference-only object adapter 與 position-hold dual-arm adapter。**

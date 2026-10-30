@@ -60,3 +60,7 @@
 Source 寫 oracle_expert 也不會讓 supervision 自動有效。所有候選決策與正式標籤分開；沒有配力／追蹤驗證前，仍不產生有效 Expert Labels。
 
 Scripted motion 展示沿用獨立的 render/diagnostic record，含 privileged truth，**不是正式訓練資料格式**。舊 schema 與實驗只留在歷史 Git revision；現行 reader 不保留多版本分支。
+
+## Expert shadow annotation
+
+[Expert Data Contract](EXPERT_DATA_DESIGN.md) 定義 `enpm645-expert-shadow/1.0` sidecar：衍生感測、分開的 E0/E1/E2 candidates、詳細 metadata 與教師內部 state。不新增第二個物理 pipeline，也不覆寫本 schema 的原始檔。Shadow candidates 即使數值有效，正式 torque 仍 NaN、execution_valid/supervision_eligible=false。

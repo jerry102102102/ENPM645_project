@@ -1,4 +1,4 @@
-# Three-Layer Control Interface v1.0
+# Three-Layer Control Interface v1.1
 
 唯一執行鏈：`PolicyObservation → AssistanceDecision → ObjectCommand → ArmCommand → MuJoCo`。Scenario 3.0.0 / Hardware 2.0.0 不變。型別在 `phase1b/interfaces.py`，串接在 `phase1b/control.py`，記錄在 `phase1b/pipeline.py`。
 
@@ -20,7 +20,7 @@
 | source | `scripted_test / rule_based / oracle_expert / learned_policy` |
 | valid | 真正 bool；無效 decision 必須是 UNCERTAIN、torque=0 |
 
-ROTATE_POS torque ≥0，ROTATE_NEG torque ≤0；HOLD 可正、可負、可非零。UNCERTAIN torque 必須為零，不得新增主動旋轉。`HOLD + disturbance` 不是第五種意圖。有效 UNCERTAIN 表示有效的「無法判定」結果；valid=false 表示上游結果不可用。
+ROTATE_POS / ROTATE_NEG 表示意圖方向，torque 可反向煞車，不能用正負號直接推定意圖；HOLD 可正、可負、可非零。UNCERTAIN torque 必須為零，不得新增主動旋轉。`HOLD + disturbance` 不是第五種意圖。有效 UNCERTAIN 表示有效的「無法判定」結果；valid=false 表示上游結果不可用。
 
 保留一個 scalar 資料轉接器：`AssistanceDecision.from_legacy(AssistTorqueReference(...), mode="HOLD")`；mode 必須明示，不能從 torque 正負推定意圖。`to_legacy()` 將 oracle_expert 對應 model_based_expert；舊 enum 無法表達 rule_based，會明確拒絕。這只是單一模組內的資料轉換，不保留舊 pipeline。
 
@@ -63,6 +63,8 @@ DualArmController.step(command, observation: ArmControllerInput) -> ArmCommand
 
 Policy 收到既有白名單的歷史，預設最多 50 筆；q/dq 用 `with_joint_states` 明確開啟。Object/arm controllers 取得更完整的公開 robot/object sensing、名義 q、pad commands 及 limits。每個 callback 前都建立白名單副本；不傳入 simulator handle、human goal、scenario、ground-truth forces 或 future commands。這是模組資料邊界，不是對不受信任 Python 程式的 sandbox。
 
+新增 [Expert & Data Design](EXPERT_DATA_DESIGN.md)：候選 reference 只向下游提供 AssistanceDecision，不傳教師內部目標；本次只跑純數學測試。
+
 ## 測試與執行
 
 ```bash
@@ -71,6 +73,6 @@ uv run --locked python -m phase1b.scripts.collect --duration .12 --output result
 uv run --locked python -m phase1b.scripts.run_suite --output results/phase1b/reproduction --render
 ```
 
-測試涵蓋 modes/sign/confidence、frame/quaternion、白名單與 future rejection、HOLD latch、三層執行、時鐘、invalid masks、scalar adapter、物理無變動及資料損壞拒絕。完整 suite 另檢查支撐負對照、FK、重播與 A/B/C 動作；[本次結果](../results/phase1b/current/verification.json)。
+測試涵蓋 modes/sign/confidence、frame/quaternion、白名單與 future rejection、HOLD latch、三層執行、時鐘、invalid masks、scalar adapter、物理無變動及資料損壞拒絕。完整 suite 另檢查支撐負對照、FK、重播與 A/B/C 動作；[37b8c24 物理結果](../results/phase1b/current/verification.json)。
 
 [資料格式](DATA_SCHEMA_V2.md) · [組員接入](CONTROL_HANDOFF_ARMS.md) · [硬體](CURRENT_HARDWARE_HANDOFF.md)

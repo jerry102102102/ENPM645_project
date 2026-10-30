@@ -1,0 +1,14 @@
+test_amplitude_slew_and_explicit_safety_cancellation (phase1b.tests.test_expert.ExpertMathTests.test_amplitude_slew_and_explicit_safety_cancellation) ... ok
+test_braking_sign_hold_latch_and_gate_release (phase1b.tests.test_expert.ExpertMathTests.test_braking_sign_hold_latch_and_gate_release) ... ok
+test_causal_windows_profiles_and_neighborhood_diagnostics (phase1b.tests.test_expert.ExpertMathTests.test_causal_windows_profiles_and_neighborhood_diagnostics) ... ok
+test_e0_causal_derivative_and_lpf (phase1b.tests.test_expert.ExpertMathTests.test_e0_causal_derivative_and_lpf) ... ok
+test_e1_observable_gate_reference_rate_and_no_mindreading (phase1b.tests.test_expert.ExpertMathTests.test_e1_observable_gate_reference_rate_and_no_mindreading) ... ok
+test_e2_lambda_and_uncertain_precedence (phase1b.tests.test_expert.ExpertMathTests.test_e2_lambda_and_uncertain_precedence) ... ok
+test_public_ft_frame_and_privileged_isolation (phase1b.tests.test_expert.ExpertMathTests.test_public_ft_frame_and_privileged_isolation) ... ok
+test_rigid_body_and_hand_math (phase1b.tests.test_expert.ExpertMathTests.test_rigid_body_and_hand_math) ... ok
+test_shadow_sidecar_metadata_and_invalid_labels (phase1b.tests.test_expert.ExpertMathTests.test_shadow_sidecar_metadata_and_invalid_labels) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.075s
+
+OK

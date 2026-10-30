@@ -1,0 +1,34 @@
+{
+  "scope": "fixed-input analytic and data-contract tests only",
+  "timestamp_utc": "2026-10-30T00:34:07.035855+00:00",
+  "tests_run": 9,
+  "failures": 0,
+  "errors": 0,
+  "mujoco_imported": false,
+  "physics_steps": 0,
+  "training_run": false,
+  "experiment_annotations_generated": 0,
+  "interface_ready": true,
+  "assistance_tracking_validated": false,
+  "expert_labels_validated": false,
+  "learnability_validated": false,
+  "physical_reference_revision": "37b8c24",
+  "unchanged_physical_files": 141,
+  "source_hashes": {
+    "phase1b/expert/learnability.py": "a45cb7d7cbfa8715237ddf963f4933dfb964481f13945763e97348b66479ba95",
+    "phase1b/expert/reference.py": "f583e255d58f0bdf8e2aaa820b1f8c163e151807d288936dc97fda72cbf28c32",
+    "phase1b/expert/data.py": "8b0e196c813ea8ad73272af46282c5e9702225fb716b568bb7445c1156253506",
+    "phase1b/interfaces.py": "a6a62a40c1019011e3326d3961724ff1d39e7054dd0cf4f4a5831a3919e02898",
+    "phase1b/tests/test_expert.py": "cce5f5544cbb695a54f2723998e790ea074399381f257516c00e1ae618c483d5"
+  },
+  "commands": [
+    "uv run --locked python -m unittest phase1b.tests.test_expert -v",
+    "uvx ruff check phase1b --select E4,E7,E9,F,I"
+  ],
+  "limitations": [
+    "No numerical physics simulation or physical regression this turn.",
+    "No source experimental episodes annotated; only temporary analytic fixtures.",
+    "Existing physical evidence and metadata remain tied to 37b8c24.",
+    "Limits/gains not controller-validated; formal supervision unavailable."
+  ]
+}
