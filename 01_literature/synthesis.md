@@ -34,7 +34,7 @@ Compare against vision using only pose/geometric features and measure VLM latenc
 4. Test noise, latency, occlusion, mass changes, and missing modalities.
 5. Use measured benefits to choose the next step: 180° reorientation, regrasping, real human interaction, or more complex prediction.
 
-See the [Current Interface](../docs/THREE_LAYER_INTERFACE.md) for the concrete architecture and metrics. Simulation results support only the tested scenario and human proxy; user experience requires later evidence from real people.
+See the [Current Interface](../docs/REFERENCE.md#interface-contract) for the concrete architecture and metrics. Simulation results support only the tested scenario and human proxy; user experience requires later evidence from real people.
 
 ## Review limitations and AI disclosure
 

@@ -40,7 +40,7 @@ End each paper note with a decision relevant to the project:
 
 > “This paper tells us ___. Therefore, we will use ___. First, we will test ___ in a small experiment; it does not establish ___.”
 
-Do not merely repeat the abstract. See the [Template](templates/paper-note.md) and [Contributing Guide](../CONTRIBUTING.md).
+Do not merely repeat the abstract. See the [Template](templates/paper-note.md) and [Working Agreement](../README.md#working-agreement).
 
 ## Combined design implications
 
