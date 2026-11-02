@@ -14,6 +14,70 @@ The interfaces, sensor logging, and frozen hardware are available. Your control 
 
 [Run the fixtures](#6-run-it-and-hand-back-the-results), then use the API and test requirements below to implement your controller.
 
+## Start here: human control and delayed-follow reference
+
+You can now try the human side before connecting your controller. The hand target accelerates, cruises, brakes to a stop, and brakes before reversing. The physical force comes from the existing spring–damper interacting with the panel; the panel is never teleported. The reference follower knows the human's sampled input and moves the arms through IK and position servos. It is a **debugging baseline**, not the shared assistance controller you are building.
+
+Run from the repository root with Python 3.12 and `uv sync --locked`. Use a fresh output directory each time; no Docker is needed.
+
+```bash
+# Interactive reference: native MuJoCo, human-force arrow and four tactile maps.
+uv run --locked python -m phase1b.scripts.launch_viewer --human \
+  --mode manual --viewer --follow-input --follow-delay-ms 200 \
+  --scene-config phase1b/config/dual_panda_base_candidate.json \
+  --duration 600 --output results/phase1b/dev-swathi-follow200
+
+# Reproduce the matched stop/reversal comparison, without opening a window.
+uv run --locked python -m phase1b.demos.compare_follow_delay \
+  --output results/phase1b/dev-swathi-delay-comparison
+
+# Replay a completed interactive session, including its recorded delay.
+uv run --locked python -m phase1b.human --mode replay \
+  --replay results/phase1b/dev-swathi-follow200 \
+  --output results/phase1b/dev-swathi-follow200-replay
+```
+
+**Keys:** J/L request −/+5 degrees from the current hand-target angle; U/O request −/+1 degree; K brakes and holds; Q saves and exits. Keep focus in the MuJoCo window. The target is limited to 15 deg/s and 60 deg/s². K cannot stop motion instantaneously: at full speed, the target needs 0.25 s and 1.875 degrees to brake. The panel has its own physical response. The preview follower permits ±90 degrees; this range has not been validated for your controller.
+
+Set `--follow-delay-ms 0` for the immediate baseline. The 200 ms setting delays the **sampled human reference** in simulation time, including stop/reversal intent. Human force and robot feedback stay current; physical guards and Q are immediate. It does not delay all sensor data or implement a calibrated human reaction time. The current-reference timestamp remains valid; the older input's source timestamp is separately logged. Do not add 200 ms to the three-layer interface's normal .008 s command-age allowance.
+
+Open the generated `index.html` in a browser for synchronized angle, force, all four tactile maps and signed differences. A [checked offline viewer](../results/phase1b/human_follow_reference/index.html) is also included; open that file locally after pulling. The [reference results](../results/phase1b/human_follow_reference/comparison.json) and [overview](../results/phase1b/human_follow_reference/comparison.png) show approximately 0.2 s extra stop/reversal lag and a largest same-time angle gap of 2.97 degrees. Stop/reversal peak human force rises from 0.72/0.81 N to 2.05/2.12 N. These are one matched simulation's measurements, not acceptance thresholds. Tactile is N/bin, not Pa; large per-bin changes can be redistribution rather than a larger total load. The raw development episodes stay local and can be regenerated with the command above.
+
+### Connect your controller to the same scene
+
+Replace the placeholder module/class names below with your two no-argument classes. Use the candidate MJCF and hardware snapshot listed below for any isolated model calculations. Do not load the original base layout while running the candidate scene.
+
+```bash
+# Your controller, manual human input, initially bounded to ±10 degrees.
+uv run --locked python -m phase1b.scripts.launch_viewer --human \
+  --mode manual --viewer --scene-config phase1b/config/dual_panda_base_candidate.json \
+  --object-controller MODULE:ObjectController \
+  --dual-arm-controller MODULE:DualArmController \
+  --duration 600 --output results/phase1b/dev-swathi-manual
+
+# Your T0–T3 tests on that same candidate hardware.
+uv run --locked python -m phase1b.benchmark \
+  --scene-config phase1b/config/dual_panda_base_candidate.json \
+  --object-controller MODULE:ObjectController \
+  --dual-arm-controller MODULE:DualArmController \
+  --output results/phase1b/dev-swathi-candidate-T0-T3
+```
+
+The manual custom-controller entry sends `UNCERTAIN` / zero assistance; it tests your base support and compliant response to the moving human. Use `--mode demo` without `--viewer` for a repeatable headless human sequence. The benchmark sends scripted nonzero torque for T1–T3. **Do not combine custom controllers with `--follow-input` or its delay option.** The known-input policy/reference are reference-only tools; your controller receives public observations and the normal decision/object command, never the hidden human target. No controller needs to infer intent itself for this milestone.
+
+The candidate's 5-degree joint margin and sampled 10 cm inter-arm separation checks apply to both entry points, as do existing contact, penetration and numerical checks. Failures stop the run and retain evidence. Replay inherits the recorded scene, motion settings, delay and controller imports; use the same code revision for exact replay. New in-repo scene paths are recorded relative to the repository for sharing across machines. Do not edit old recordings to claim they were generated by the new code.
+
+Check these first:
+
+- [ ] Run the reference comparison and inspect stop/reversal timing, human force and tactile redistribution.
+- [ ] Run your controller's T0–T3 on the same chosen scene. Report torque execution separately from stable support.
+- [ ] Try J/L/K and small corrections with your controller; report continued motion after stopping, reversal lag, force, per-pad contact, joint margin and saturation.
+- [ ] Return exact commands, scene version, controller settings, logs/plots and failure reasons. Keep assistance tracking and Expert labels unvalidated until their separate checks pass.
+
+Relevant files: [human.py](../phase1b/human.py), [human_follow.py](../phase1b/human_follow.py), and [comparison runner](../phase1b/demos/compare_follow_delay.py). Session folders contain the existing `episode/` transitions, `events.json`, `session.json`, `initial_state.npz`, private `teacher_inputs.npz`, and, for the follower, `follower_timing.npz`. Human targets/forces, input modes and timing sidecars are debugging/teacher data, not public controller or Student features.
+
+Handoff validation: **50 tests passed**, including custom-controller routing, delayed timing, exact replay and candidate guards. A clean export installed with `uv sync --locked`, ran the delayed demo, and replayed with exactly matching arrays from a different checkout. See [verification and reproduction commands](../results/phase1b/human_follow_reference/verification.json). Re-run the maintained tests with `uv run --locked python -m unittest discover -s phase1b/tests -v` after changing your controller integration.
+
 ## 1. Implement these two interfaces
 
 [interfaces.py](../phase1b/interfaces.py) defines the types and allowlists; [control.py](../phase1b/control.py) schedules them. Implement the two classes in one control module and keep these signatures.
@@ -71,7 +135,7 @@ Canonical names/shapes are `PUBLIC_SHAPES`; the table abbreviates shared prefixe
 
 ### Static model access and calculations
 
-Use the frozen [MJCF](../phase1b/models/dual_panda_v1.xml), its vendor assets, and [hardware contract](../phase1b/config/hardware_v2.json) for robot geometry, inertias, joints, actuator parameters, and limits. These are known model data, available equally to Expert and Student execution. If needed, the controller may load its **own isolated model/data** and calculate FK, Jacobians, mass matrix, gravity/bias terms, and grasp geometry from the public robot/object/gripper state. It must map joint indices and free-body velocity frames correctly and verify its FK against the provided EE poses.
+Match the selected scene: the original [MJCF](../phase1b/models/dual_panda_v1.xml) / [hardware contract](../phase1b/config/hardware_v2.json), or the preview [candidate MJCF](../phase1b/models/dual_panda_base_candidate.xml) / [candidate hardware](../phase1b/config/hardware_base_candidate.json). Their shared vendor assets are already in the repo. These are known model data, available equally to Expert and Student execution. If needed, the controller may load its **own isolated model/data** and calculate FK, Jacobians, mass matrix, gravity/bias terms, and grasp geometry from the public robot/object/gripper state. It must map joint indices and free-body velocity frames correctly and verify its FK against the provided EE poses.
 
 You will need to implement the model calculations your controller uses. ArmControllerInput does not supply these matrices, and the repository does not yet have a controller model helper. Do not pass the live PandaWorld/MjData into either controller or use private-model contact solutions as measured plant truth. Obtain measured feedback from observation only.
 
@@ -84,6 +148,8 @@ Scenario **3.0.0**, Hardware **2.0.0**: 1 kg free panel, .60×.20×.02 m; nomina
 Two 7-DoF Panda bases are fixed at world `[-.45,.65,.25]` and `[.45,.65,.25]` m, yaw −90°. Nominal panel-local grasps: L `[-.20,.10,0]`, R `[.20,.10,0]`; human `[.27,-.10,0]` m on the opposite edge. Four custom sliding pads, nominal commands `[-40,+40,-40,+40]` N; commands are not guaranteed contact forces. Only the panel has a freejoint; no weld or root-wrench support. Retain model collision exclusions and account for their limitations.
 
 Runtime first friction coefficient: `1.0482960672343025`. Arm servo torque bounds: ±87 Nm for joints 1-4, ±12 Nm for joints 5-7. Human spring-damper is approximately 98.21 N/m and 7.30 N·s/m, with 50 N force cap and .35 m/s target-speed cap. Exact nominal state/calibration is in the versioned model/config, not a new hardware design. Actuator changes require a new hardware version and physical revalidation.
+
+The opt-in preview uses Scenario **3.1.0-preview.1** / Hardware **2.1.0-preview.1**, with bases at `[-.25,.45,.05]` and `[.25,.45,.05]` m and yaw −60°/−120°. Panel, grasp locations, pad design and actuator limits are unchanged. The quickstart above selects this layout explicitly; commands without `--scene-config` retain the original scene for historical reproducibility. Keep scene identities consistent across comparisons.
 
 ## 3. What your controller needs to do
 

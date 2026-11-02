@@ -1,0 +1,97 @@
+{
+  "matched_initial_state": true,
+  "matched_human_targets": true,
+  "scope": "One deterministic matched simulated input episode. Forces are recomputed responses, not matched imposed forces. No human-distribution or assistance-tracking claim.",
+  "initial_state_sha256": "8bcd420fa4428cd265d670ed8118dc81a70f0ce1aeaacf5ae2dfaf2f82bbad1b",
+  "config_sha256": "7c599ef56163411b35b16ab9837b2093dac861a6678654255fff7e39c26efa34",
+  "sample_hz": 100,
+  "stop_speed_threshold_deg_s": 0.5,
+  "stop_dwell_s": 0.2,
+  "reverse_speed_threshold_deg_s": -0.5,
+  "reverse_dwell_s": 0.1,
+  "difference_convention": "200 ms minus 0 ms, same simulation timestamp",
+  "windows": {
+    "Stop": {
+      "start_s": 1.8,
+      "end_s": 2.9,
+      "runs": {
+        "0": {
+          "response_time_s": 2.3000000000000003,
+          "response_delay_from_event_s": 0.5000000000000002,
+          "angle_at_event_deg": 8.553753210046057,
+          "continued_positive_motion_deg": 3.4491155325070046,
+          "angle_at_window_end_deg": 12.002868742553062,
+          "peak_human_force_n": 0.723020676433056
+        },
+        "200": {
+          "response_time_s": 2.5,
+          "response_delay_from_event_s": 0.7,
+          "angle_at_event_deg": 5.58832415728228,
+          "continued_positive_motion_deg": 6.4137894681951675,
+          "angle_at_window_end_deg": 12.002113625477447,
+          "peak_human_force_n": 2.0543734397900537
+        }
+      },
+      "max_abs_angle_difference_deg": 2.9678735437077037,
+      "max_abs_force_magnitude_difference_n": 1.3313527633569977,
+      "tactile": {
+        "max_single_bin_difference_n_per_bin": 8.7925676589617,
+        "peak_l1_map_difference_n_by_side": [
+          8.633761359479154,
+          20.68378836965739
+        ],
+        "max_abs_total_normal_load_difference_n_by_side": [
+          0.9580543856229138,
+          0.978933960716871
+        ]
+      },
+      "snapshot": {
+        "time_s": 2.0,
+        "after_event_ms": 200,
+        "angle_difference_deg": -2.49333502388491,
+        "force_magnitude_difference_n": 0.896860219095356
+      }
+    },
+    "Reverse": {
+      "start_s": 3.8,
+      "end_s": 4.9,
+      "runs": {
+        "0": {
+          "response_time_s": 4.17,
+          "response_delay_from_event_s": 0.3700000000000001,
+          "angle_at_event_deg": 20.55393979594225,
+          "continued_positive_motion_deg": 3.1480463643123784,
+          "angle_at_window_end_deg": 14.706633054846657,
+          "peak_human_force_n": 0.8055791282422706
+        },
+        "200": {
+          "response_time_s": 4.37,
+          "response_delay_from_event_s": 0.5700000000000003,
+          "angle_at_event_deg": 17.589479842015507,
+          "continued_positive_motion_deg": 6.096914860107528,
+          "angle_at_window_end_deg": 17.67535200131435,
+          "peak_human_force_n": 2.1170568625166104
+        }
+      },
+      "max_abs_angle_difference_deg": 2.9687189464676944,
+      "max_abs_force_magnitude_difference_n": 1.328259438654395,
+      "tactile": {
+        "max_single_bin_difference_n_per_bin": 13.80970738144747,
+        "peak_l1_map_difference_n_by_side": [
+          8.11631617946987,
+          42.70986702151508
+        ],
+        "max_abs_total_normal_load_difference_n_by_side": [
+          1.0368517171479397,
+          1.2852548927171554
+        ]
+      },
+      "snapshot": {
+        "time_s": 4.0,
+        "after_event_ms": 200,
+        "angle_difference_deg": -2.4910560414928256,
+        "force_magnitude_difference_n": 0.850530783601969
+      }
+    }
+  }
+}

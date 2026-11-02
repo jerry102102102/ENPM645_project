@@ -14,8 +14,8 @@ def sha(path):
 def snapshot(world):
     m = world.m
     return {
-        "hardware_version": "2.0.0",
-        "scenario_version": "3.0.0",
+        "hardware_version": world.config["hardware_version"],
+        "scenario_version": world.config["scenario_version"],
         "description": "Two fixed-base Menagerie Panda arms, upstream position servos, custom two-pad tactile grippers and 0.08 kg adapters",
         "mujoco_version": mujoco.__version__,
         "joint_names": [m.joint(i).name for i in range(m.njnt)],

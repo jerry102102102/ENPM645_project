@@ -6,6 +6,12 @@ import numpy as np
 SIDES = ("left", "right")
 
 
+def cross3(a, b):
+    # Profiled hot path: fixed 3-vectors avoid np.cross's general axis/broadcast setup.
+    return np.array([a[1]*b[2] - a[2]*b[1], a[2]*b[0] - a[0]*b[2],
+                     a[0]*b[1] - a[1]*b[0]])
+
+
 def observe(sim):
     m, d = sim.m, sim.d
     wlocal = np.zeros((2, 6))
@@ -46,9 +52,9 @@ def observe(sim):
         normal[g, k] += force[0]
         copnum[g, k] += force[0] * pos[:2]
         wlocal[g, :3] += rr.T @ f
-        wlocal[g, 3:] += rr.T @ (np.cross(c.pos - d.xpos[root], f) + torque)
+        wlocal[g, 3:] += rr.T @ (cross3(c.pos - d.xpos[root], f) + torque)
         wobject[g, :3] -= f
-        wobject[g, 3:] -= np.cross(c.pos - com, f) + torque
+        wobject[g, 3:] -= cross3(c.pos - com, f) + torque
         mujoco.mj_applyFT(m, d, -f, -torque, c.pos, sim.panel, qcontact)
         j1 = np.zeros((3, m.nv))
         j2 = np.zeros_like(j1)
@@ -97,7 +103,7 @@ def observe(sim):
         Rg = d.xmat[body].reshape(3, 3)
         f = -Rg @ wlocal[g, :3]
         transform.append(
-            np.r_[f, -Rg @ wlocal[g, 3:] + np.cross(d.xpos[body] - com, f)]
+            np.r_[f, -Rg @ wlocal[g, 3:] + cross3(d.xpos[body] - com, f)]
         )
     diag = dict(
         penetration=depth,

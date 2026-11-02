@@ -230,8 +230,10 @@ def run_episode(
         duration_seconds=len(sections["observations"]) / 100,
         requested_duration_seconds=duration,
         model_hash=world.config["model_sha256"],
-        config_hash=sha(CONFIG),
-        hardware_hash=sha(ROOT / "phase1b/config/hardware_v2.json"),
+        config_path=str(world.config_path.relative_to(ROOT)) if world.config_path.is_relative_to(ROOT) else str(world.config_path),
+        hardware_path=str(world.hardware_path.relative_to(ROOT)) if world.hardware_path.is_relative_to(ROOT) else str(world.hardware_path),
+        config_hash=sha(world.config_path),
+        hardware_hash=sha(world.hardware_path),
         source_hashes={
             str(p.relative_to(ROOT)): sha(p)
             for p in sorted(
@@ -294,10 +296,12 @@ def validate_episode(path):
     n = data["next_observations"]
     c = data["controller"]
     d = data["diagnostics"]
-    cfg = json.loads(CONFIG.read_text())
+    config_path = ROOT / meta.get("config_path", CONFIG)
+    cfg = json.loads(config_path.read_text())
     assert meta["model_hash"] == cfg["model_sha256"] == sha(ROOT / cfg["model"])
-    assert meta["config_hash"] == sha(CONFIG)
-    assert meta["hardware_hash"] == sha(ROOT / "phase1b/config/hardware_v2.json")
+    assert meta["config_hash"] == sha(config_path)
+    hardware_path = ROOT / cfg.get("hardware_snapshot", "phase1b/config/hardware_v2.json")
+    assert meta["hardware_hash"] == sha(hardware_path)
     for f, digest in meta["source_hashes"].items():
         assert sha(ROOT / f) == digest, f
     count = len(o["timestamp"])
@@ -328,7 +332,7 @@ def validate_episode(path):
     )  # unit gear, hinge transmission
     assert o["arm_joint_position"].shape == (count, 2, 7)
     assert o["arm_joint_velocity"].shape == (count, 2, 7)
-    world = PandaWorld(meta["scenario"])
+    world = PandaWorld(meta["scenario"], config_path=config_path)
     np.testing.assert_array_equal(
         o["arm_joint_position"], data["render_states"]["qpos"][:, world.qa]
     )

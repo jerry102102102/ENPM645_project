@@ -1,6 +1,7 @@
 """Shared native rendering annotations."""
 
 from pathlib import Path
+from functools import lru_cache
 
 import matplotlib
 import mujoco
@@ -8,6 +9,7 @@ import numpy as np
 from PIL import ImageFont
 
 
+@lru_cache(maxsize=16)
 def font(size):
     path = Path(matplotlib.get_data_path()) / "fonts/ttf/DejaVuSans.ttf"
     return ImageFont.truetype(str(path), size)

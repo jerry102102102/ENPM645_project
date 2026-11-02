@@ -16,10 +16,12 @@ CONFIG = ROOT / "phase1b/config/dual_panda_v1.json"
 
 
 class PandaWorld:
-    def __init__(self, scenario="B"):
+    def __init__(self, scenario="B", config_path=None):
         if scenario not in "ABC" or len(scenario) != 1:
             raise ValueError("scenario must be A, B or C")
-        self.config = json.loads(CONFIG.read_text())
+        self.config_path = CONFIG if config_path is None else Path(config_path).resolve()
+        self.config = json.loads(self.config_path.read_text())
+        self.hardware_path = ROOT / self.config.get("hardware_snapshot", "phase1b/config/hardware_v2.json")
         path = ROOT / self.config["model"]
         if hashlib.sha256(path.read_bytes()).hexdigest() != self.config["model_sha256"]:
             raise ValueError("model hash mismatch")
@@ -80,7 +82,7 @@ class PandaWorld:
         self.tick = 0
         self.set_commands(self.qtarget, np.array([-40.0, 40.0, -40.0, 40.0]))
         mujoco.mj_forward(m, d)
-        hardware = ROOT / "phase1b/config/hardware_v2.json"
+        hardware = self.hardware_path
         if snapshot(self) != json.loads(hardware.read_text()):
             raise ValueError("compiled hardware mismatch")
 

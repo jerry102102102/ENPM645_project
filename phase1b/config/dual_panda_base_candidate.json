@@ -1,0 +1,97 @@
+{
+  "scenario_version": "3.1.0-preview.1",
+  "hardware_version": "2.1.0-preview.1",
+  "model": "phase1b/models/dual_panda_base_candidate.xml",
+  "model_sha256": "952d50cd9a7df0c8ba3af71544ebf22964b4a1d2f6183442e1a5703d0a95d7eb",
+  "qpos": [
+    0.0,
+    0.0,
+    0.8,
+    0.9999956918006859,
+    0.0,
+    0.0029353671095039328,
+    0.0,
+    -0.03378714398926775,
+    -1.1410584044542085,
+    -0.20592979367499073,
+    -2.47365569229039,
+    -1.2251047228956677,
+    2.719605823518145,
+    -0.584703234497671,
+    0.0,
+    0.0,
+    0.8547936759489452,
+    -1.18297128486232,
+    -0.360618721371858,
+    -2.525293091006687,
+    -0.9068670294884711,
+    2.9135233770035,
+    -1.020945600247084,
+    0.0,
+    0.0
+  ],
+  "ik": {
+    "provenance": "results/phase1b/dev-base-placement-reserve-20261102/search.json candidate 10"
+  },
+  "initial_penetrations": [],
+  "arm_joint_names": {
+    "left": [
+      "left_joint1",
+      "left_joint2",
+      "left_joint3",
+      "left_joint4",
+      "left_joint5",
+      "left_joint6",
+      "left_joint7"
+    ],
+    "right": [
+      "right_joint1",
+      "right_joint2",
+      "right_joint3",
+      "right_joint4",
+      "right_joint5",
+      "right_joint6",
+      "right_joint7"
+    ]
+  },
+  "parameters": {
+    "seed": 64600,
+    "block": 0,
+    "kh": 98.21089225920257,
+    "dh": 7.3012286492091985,
+    "friction": 1.0482960672343025,
+    "preload": 40.0,
+    "initial_angle": 0.005870742649786773,
+    "direction": 1,
+    "target_angle": 0.36680278277879985,
+    "ramp_duration": 0.8,
+    "disturbance_magnitude": 18.83430489381801,
+    "disturbance_point": [
+      0.06369127617716655,
+      -0.015330968965703077,
+      0.0
+    ],
+    "disturbance_start": 0.7,
+    "disturbance_end": 2.7,
+    "human_force_limit": 50.0,
+    "human_target_speed_limit": 0.35,
+    "settle_seconds": 2.0,
+    "duration": 4.0,
+    "timestep": 0.002,
+    "sample_hz": 100,
+    "human_offset": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "gripper_separation_m": 0.4
+  },
+  "vendor_manifest_hash": "669399d3cf239c1b7be05272c47682c7695a803d27b70341b96638a845b03a85",
+  "hardware_snapshot": "phase1b/config/hardware_base_candidate.json",
+  "human_follow": {
+    "angle_limit_deg": 90.0,
+    "joint_reserve_deg": 5.0,
+    "min_arm_clearance_m": 0.1
+  },
+  "description": "Validated base candidate: 50 cm spacing, 5 cm pedestals, 30 deg inward yaw; opt-in manual preview."
+}

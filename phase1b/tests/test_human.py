@@ -17,25 +17,39 @@ from phase1b.pipeline import read_episode
 
 
 class HumanTests(unittest.TestCase):
-    def test_goal_is_not_target_hold_cancels_goal_and_future_events_are_hidden(self):
+    def test_acceleration_cruise_braking_and_causal_retarget(self):
         hand = HandTargets()
-        hand.add(1., "ROTATE_POS", 5.)
-        hand.add(1.6, "HOLD")
-        hand.add(3., "ROTATE_NEG", -3.)
+        hand.add(1., "ROTATE_POS", 10.)
+        hand.add(1.5, "HOLD")
+        hand.add(3., "ROTATE_NEG", -10.)
         self.assertEqual(hand.sample(.5), (0., 0., hand.events[0]))
-        angle, speed, event = hand.sample(1.2)
-        self.assertAlmostEqual(angle, 1.)
-        self.assertEqual(speed, 5.)
-        self.assertEqual(event["goal_offset_deg"], 5.)
-        self.assertAlmostEqual(hand.sample(1.6)[0], 3.)
-        self.assertEqual(hand.sample(1.6)[1], 0.)
-        self.assertEqual(hand.sample(2.9)[2]["mode"], "HOLD")
-        self.assertAlmostEqual(hand.sample(3.)[0], 3.)
-        self.assertEqual(hand.sample(3.)[1], -5.)
-        self.assertAlmostEqual(hand.sample(5.)[0], -3.)
-        self.assertEqual(hand.sample(5.)[2]["mode"], "ROTATE_NEG")
-        for t in (1., 1.6, 3.):
-            self.assertLess(abs(hand.sample(t)[0] - hand.sample(t - 1e-7)[0]), 1e-6)
+        self.assertAlmostEqual(hand.state(1.1)[0], .3)
+        self.assertAlmostEqual(hand.state(1.1)[1], 6.)
+        self.assertAlmostEqual(hand.state(1.1)[2], 60.)
+        self.assertEqual(hand.state(1.3)[1:3], (15., 0.))
+        self.assertEqual(hand.sample(1.5)[2]['requested_stop_offset_deg'], 5.625)
+        self.assertEqual(hand.sample(1.5)[2]['goal_offset_deg'], 7.5)
+        self.assertEqual(hand.state(1.5)[1:3], (15., -60.))
+        self.assertEqual(hand.state(1.75)[:3], (7.5, 0., 0.))
+        self.assertEqual(hand.sample(2.9)[2]['mode'], 'HOLD')
+        for t in (1., 1.5, 3.):
+            before, after = hand.state(t-1e-8), hand.state(t+1e-8)
+            self.assertLess(abs(before[0]-after[0]), 1e-6)
+            self.assertLess(abs(before[1]-after[1]), 2e-6)
+        reverse = HandTargets()
+        reverse.add(0., 'ROTATE_POS', 10.)
+        reverse.add(.3, 'ROTATE_NEG', -2.)
+        self.assertEqual(reverse.state(.3)[1], 15.)
+        self.assertAlmostEqual(reverse.state(.55)[1], 0.)
+        self.assertEqual(reverse.state(3.)[:2], (-2., 0.))
+        samples = np.array([reverse.state(t)[:3] for t in np.arange(0,3,.002)])
+        self.assertLessEqual(abs(samples[:,1]).max(), 15.+1e-10)
+        self.assertLessEqual(abs(np.diff(samples[:,1])/.002).max(), 60.+1e-8)
+        self.assertLessEqual(abs(samples[:,0]).max(), 10.)
+        fine = HandTargets()
+        fine.add(0., 'ROTATE_POS', 1.)
+        self.assertEqual(fine.sample(1.)[:2], (1., 0.))
+        self.assertLess(max(fine.sample(t)[1] for t in np.arange(0,1,.002)), 15.)
 
     def test_bad_event_or_limit_is_rejected(self):
         for args in ((-.002, "HOLD"), (.001, "HOLD"), (np.nan, "HOLD"),
@@ -72,10 +86,10 @@ class HumanTests(unittest.TestCase):
         np.testing.assert_array_equal(world.truth["human_target_trajectory"], target)
         self.assertGreater(np.linalg.norm(world.truth["human_applied_force"] - force), .01)
         np.testing.assert_array_equal(world.d.qfrc_applied[world.va], 0.)
-        world.hand = HandTargets(speed_deg_s=1000)
+        world.hand = HandTargets(speed_deg_s=1000, accel_deg_s2=2e6)
         world.hand.add(.004, "ROTATE_POS", 5.)
         with self.assertRaisesRegex(ValueError, "speed limit"):
-            world.refresh(.004)
+            world.refresh(.006)
 
     def test_demo_replay_all_transitions_and_private_teacher_bridge(self):
         with tempfile.TemporaryDirectory() as temp:
@@ -91,9 +105,9 @@ class HumanTests(unittest.TestCase):
                     np.testing.assert_array_equal(a[section][key], b[section][key])
             p = a["privileged"]
             self.assertEqual(set(p["ground_truth_intent"]), {"HOLD", "ROTATE_POS", "ROTATE_NEG"})
-            index = 160
+            index = 200
             np.testing.assert_allclose(p["human_target_trajectory"][index:300],
-                                       np.tile(p["human_target_trajectory"][index], (140, 1)))
+                                       np.tile(p["human_target_trajectory"][index], (300-index, 1)))
             self.assertLessEqual(np.linalg.norm(p["human_applied_force"], axis=1).max(), report["human_force_limit_n"])
             self.assertGreater(np.linalg.norm(p["human_applied_force"], axis=1).max(), .1)
             self.assertFalse(a["supervision"]["expert_label_valid"].any())
@@ -113,9 +127,10 @@ class HumanTests(unittest.TestCase):
     def test_manual_callback_timing_stop_and_replay_use_real_pipeline(self):
         # Only the OS window is replaced; physics, polling, events and logging are real.
         class Viewer:
-            def __init__(self, m, d, key_callback):
+            def __init__(self, m, d, key_callback, **display_options):
                 self.callback, self.frames = key_callback, 0
                 self.cam = SimpleNamespace(lookat=np.zeros(3))
+                self.viewport = mujoco.MjrRect(0, 0, 1000, 900)
                 self.user_scn = mujoco.MjvScene(m, maxgeom=20)
             def __enter__(self):
                 return self
@@ -125,21 +140,31 @@ class HumanTests(unittest.TestCase):
                 return True
             def lock(self):
                 return nullcontext()
+            def set_texts(self, overlay):
+                pass
+            def set_images(self, overlay):
+                rect, pixels = overlay
+                assert pixels.shape == (rect.height, rect.width, 3)
+                assert pixels.dtype == np.uint8
             def sync(self):
                 self.callback(ord("LKJQ"[self.frames]))
                 self.frames += 1
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
             with patch("mujoco.viewer.launch_passive", Viewer), patch("phase1b.human.time.sleep"):
-                report = run_human(root / "manual", mode="manual", show=True, duration=2.)
+                report = run_human(root / "manual", mode="manual", show=True, duration=2., follow_input=True)
             self.assertEqual(report["mode"], "manual")
+            self.assertEqual(report['target_parameters']['limit_deg'], 60.)
             self.assertLess(report["duration_seconds"], 2.)
             events = json.loads((root / "manual/events.json").read_text())
             self.assertEqual([e["mode"] for e in events], ["HOLD", "ROTATE_POS", "HOLD", "ROTATE_NEG"])
             self.assertAlmostEqual(events[1]["timestamp"], .042)
             self.assertTrue(all(e["applied_wall_seconds"] >= e["received_wall_seconds"] for e in events[1:]))
             self.assertEqual(report["raw_inputs"][-1]["status"], "stop_requested")
-            run_human(root / "replay", mode="replay", replay=root / "manual")
+            replayed = run_human(root / "replay", mode="replay", replay=root / "manual")
+            self.assertEqual(replayed['target_parameters']['limit_deg'], 60.)
+            with self.assertRaisesRegex(ValueError, 'preserves recorded'):
+                run_human(root/'override', mode='replay', replay=root/'manual', limit_deg=10.)
             a, _ = read_episode(root / "manual/episode")
             b, _ = read_episode(root / "replay/episode")
             for section in a:

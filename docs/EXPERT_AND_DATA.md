@@ -217,18 +217,23 @@ Operator key / scripted event (private)
     -> public tactile / F/T / object / joint observations
 ```
 
-The first pilot controls one World Y rotation arc around the initial settled panel COM. The pivot stays fixed during the episode; it is a hand-input mapping, not a moving-COM torque definition. Speed is 5 deg/s and the target offset stays within +/-10 deg. These are development input bounds, not validated robot capabilities. The existing 0.35 m/s target-speed and 50 N force limits remain in force.
+The first pilot controls one World Y rotation arc around the initial settled panel COM. The pivot stays fixed during the episode; it is a hand-input mapping, not a moving-COM torque definition. The v2 default caps speed at 15 deg/s and acceleration/deceleration at 60 deg/s^2; the known-input following session defaults to a +/-60 deg target bound. Sessions without `--follow-input` retain +/-10 deg. These are controller-specific development bounds, not global robot limits. The existing 0.35 m/s target-speed and 50 N force limits remain in force.
 
 | Key | Human target operation |
 |---|---|
-| L | Request a goal 5 deg above the current target offset, clipped to +10 deg |
-| J | Request a goal 5 deg below the current target offset, clipped to -10 deg |
-| K | Cancel the pending goal and hold the current hand target immediately |
+| L | Request a goal 5 deg above the current target offset, clipped to the session upper bound |
+| J | Request a goal 5 deg below the current target offset, clipped to the session lower bound |
+| U / O | Request a smaller -1 / +1 deg goal for fine adjustment |
+| K | Cancel the pending goal, brake with bounded acceleration, then hold the resulting stopping target |
 | Q / close window | Finish the current 100 Hz transition, save, and exit |
 
-These are key-press commands, not press-and-release velocity control. Repeated key events can extend the goal. K works during motion; it does not wait for an endpoint. It holds the **hand target**, not the measured panel pose and not the robot's HOLD reference. Actual panel motion remains physical. Arrival at a target does not manufacture a new HOLD annotation; the declared rotation intent remains until another command. Target position is continuous, but target velocity can change abruptly at start, reversal, arrival, or K. The force limiter bounds the resulting spring-damper force. Acceleration smoothing and a biomechanical human model are outside this pilot.
+These are key-press commands, not press-and-release velocity control. Repeated key events can extend the goal. Each command replans from the current target position **and velocity**. Longer moves accelerate, cruise and decelerate; short moves use a triangular speed profile and may never reach the speed cap. The target starts decelerating before its requested endpoint. Reversals brake to zero before moving the other way. Position and velocity are continuous; acceleration is bounded but jerk is not. This is a motion hypothesis for the pilot, not an empirically fitted human behavior model.
 
-The default robot decision is always `UNCERTAIN`, zero additional torque. Human mode is not copied into the robot decision. The current arm adapter holds nominal joints, so expect small panel motion and changing contact force, not cooperative following. The same object/arm controller import options are available when Swathi's implementation is ready. No Expert or Student is running here.
+K starts braking immediately. Its target stopping distance is $\omega^2/(2\alpha_{max})$, or 1.875 deg from 15 deg/s at 60 deg/s^2; target braking time is 0.25 s. The real panel can take longer and move farther because of controller tracking lag. The event records `requested_stop_offset_deg` (target position when K was received) separately from `goal_offset_deg` (feasible planned stopping position). HOLD remains the declared intent while braking. Neither quantity is automatically the person's exact intended pose or the robot's measured pose. Arrival at a rotation goal does not manufacture a new HOLD annotation.
+
+Human force remains $F_h=\operatorname{clip}_{50N}[K_h(x_h^{ref}-x_h)+D_h(v_h^{ref}-v_h)]$, using the frozen stiffness/damping. Acceleration shapes the target trajectory; it is not an independently prescribed force pulse. Constant angular speed does not imply constant hand force: centripetal acceleration, contact loading, gravity/support sharing and robot response still matter. The pilot records reference angular velocity/acceleration and Cartesian target acceleration in the private block. It does not add these private targets to Student inputs.
+
+Without `--follow-input`, the default robot decision is always `UNCERTAIN`, zero additional torque. Human mode is not copied into the robot decision. The current arm adapter holds nominal joints, so expect small panel motion and changing contact force, not cooperative following. The same object/arm controller import options are available when Swathi's implementation is ready. No Expert or Student is running here.
 
 Run from the repository root with a fresh output directory:
 
@@ -245,7 +250,7 @@ uv run --locked python -m phase1b.human --mode replay --replay results/phase1b/d
 uv run --locked python -m unittest phase1b.tests.test_human -v
 ```
 
-On Linux, run the manual command directly with `python -m phase1b.human`. The cyan marker is the desired hand target; red marks the panel's human grasp and the human force arrow (0.03 m of display length per N). The display uses a separate model/data copy so mouse interaction cannot change the recorded physics. Physics remains 500 Hz in simulation time, observations 100 Hz, and display updates 25 Hz. Wall-clock pacing is best effort; a slow computer can run below real time.
+On Linux, run the manual command directly with `python -m phase1b.human`. The cyan marker is the desired hand target; red marks the panel's human grasp and the human force arrow (0.03 m of display length per N). The display uses a separate model/data copy so mouse interaction cannot change the recorded physics. The native debug sidebars are hidden by default. The bottom overlay shows all four pad normal-force grids (0-40 N/bin) and signed changes from the settled starting sample (-5 to +5 N/bin, red increase / blue decrease). Color values clip at these fixed bounds; printed values do not. Both rows use the same current physics sample as the scene. These are normal forces per bin, not pressure in Pa; shear channels remain recorded but are not shown in this overlay. Physics remains 500 Hz in simulation time, observations 100 Hz, and display updates 25 Hz. Wall-clock pacing is best effort; a slow computer can run below real time.
 
 Each session saves:
 
@@ -255,13 +260,58 @@ Each session saves:
 - `initial_state.npz`: the settled checkpoint used by both the original run and replay.
 - `teacher_inputs.npz`: timestamp-aligned `ground_truth_intent`, `human_goal_angle`, and disturbance wrench for private shadow analysis. The legacy field name `ground_truth_intent` means **reported operator intent / scripted instruction** in this pilot, not an inferred human mental state.
 
-Private transition fields additionally distinguish `human_goal_angle` (declared goal), `human_target_angle` / `human_target_trajectory` / `human_target_velocity` (moving reference), `human_event_timestamp`, and `human_input_source`. Angles are radians; goals are initial measured pitch plus the requested World Y offset, a single-axis pilot convention. Existing `human_goal` retains the instantaneous-target meaning. Neither goal nor target is the measured panel pose. Events are applied only when their simulation timestamp arrives and never enter the public observation allowlist.
+The v2 contract (`virtual-human-input/2.0`) rejects v1 event replay because the stopping/velocity semantics changed. Prior results are retained; the pre-change local source snapshot is in `results/phase1b/dev-human-smooth-audit/source_before/`. Override speed/acceleration for a new session with `--speed-deg-s` / `--accel-deg-s2`; replay preserves its recorded parameters, including the angle bound. `--limit-deg` can reduce the new-session bound (maximum 60 with `--follow-input`, otherwise 10). Existing v2 recordings retain their original bounds.
+
+Private transition fields additionally distinguish `human_goal_angle` (declared goal), `human_target_angle` / `human_target_trajectory` / `human_target_velocity` (moving reference), `human_event_timestamp`, and `human_input_source`. New fields include `human_target_angular_velocity_y` (rad/s), `human_target_angular_acceleration_y` (rad/s^2), `human_target_acceleration` (world m/s^2), and `human_stop_requested_angle` with a validity mask (NaN when not a HOLD event). Angles are radians; goals are initial measured pitch plus the requested World Y offset, a single-axis pilot convention. Existing `human_goal` retains the instantaneous-target meaning. Neither goal nor target is the measured panel pose. Events are applied only when their simulation timestamp arrives and never enter the public observation allowlist.
 
 Replay checks saved event/checkpoint hashes and model/config identity. With the same code, controller and configuration, tests require identical recorded arrays. Changing the controller deliberately changes the physical response and human force; replay is of the input targets, not a fixed force trace. Physical failures preserve events and partial evidence and do not export a successful teacher stream.
 
-Validation for this implementation: 38 tests passed across human input, interface contracts, physics integration, Expert arithmetic/data, and T0-T8 fixtures. The 5 s human-input demo completed 2,500 physics steps with all pads in contact, maximum pad penetration 0.000511 m, no unexpected penetrating contacts or MuJoCo warnings, and peak human force 1.53 N. Panel orientation changed only about 0.042 deg under the fixed-joint adapter. Tests checked exact replay arrays, intermediate HOLD, direction changes, private-field isolation, keyboard callback timing with a substituted window, graceful saving, and failure preservation. Native macOS viewer startup was checked separately; this is not a human usability study.
+The v2 implementation passed 42 tests across input profiles, continuity, speed/acceleration bounds, stop/reverse, exact replay, keyboard callback flow, causal interfaces, physics, Expert arithmetic and benchmark regressions. This is not a human usability study. The human pilot's timestamp-only test policies now use a one-sample online history; the complete 100 Hz observation stream remains logged, and the shared `ControlChain` default for future learned policies remains 201 samples. A profiled three-second v1 comparison dropped from 9.595 s to 4.275 s after removing unused pilot-history work and optimizing fixed-size contact cross products; every recorded array remained exactly equal. This timing includes startup/I/O and profiling overhead, so it is not a real-time guarantee. Fonts are cached for the live overlay.
 
 Before the controller is available, use these sessions to check sensor responses, input/target timing, stop semantics, logging, and private candidate generation. Do not use them to claim assistance tracking, reduced effort, representative human data, or eligible training demonstrations. Once the controller is ready, compare the same input protocol under support-only and assistance, then evaluate manual sessions separately.
+
+### Known-input following baseline
+
+Add `--follow-input` to the human runner to make both arms follow the current hand target. This is an explicitly privileged input-following test, not intent inference, an Expert, or a torque-tracking controller. The ordinary policy/sensor allowlists are unchanged.
+
+The test policy reports the current input mode. A known-input object-reference adapter rotates the initial panel pose about World Y using the **current** hand-target offset, never the future goal or schedule. A separate arm adapter receives only `ObjectCommand` and public observations. It rotates both nominal gripper poses together about the initial COM, solves IK on its own model at 100 Hz, and sends position-servo commands at 500 Hz with a 0.5 rad/s per-joint command-rate limit. It reuses the existing IK solver and fixed pad commands. No execution qpos writes, panel welds, or virtual arm-root forces are introduced.
+
+K brakes the hand target and corresponding object reference to a planned stop. The real panel follows and settles after its tracking lag. J/L reverse or extend the target from its current position. Contact/joint/numerical guards remain active. This position-following baseline is useful for operating the virtual hand; it does not provide the compliant force allocation required by the eventual shared controller. It rejects nonzero assistance-wrench requests rather than treating Nm as joint positions. `assist_reference_executed` and all formal label/tracking validity flags remain false.
+
+```bash
+# Visible human/robot following, with the same keyboard and live tactile overlay:
+uv run --locked python -m phase1b.scripts.launch_viewer --human --mode manual --viewer --follow-input --duration 180 --output results/phase1b/dev-human-follow-manual
+
+# Reproducible positive rotation, intermediate stop, reversal and final hold:
+uv run --locked python -m phase1b.human --mode demo --follow-input --duration 6 --output results/phase1b/dev-human-follow-demo
+
+uv run --locked python -m unittest phase1b.tests.test_human_follow -v
+```
+
+Replay inherits the source session's `follow_input` setting. Use `--no-follow-input` explicitly for a matched fixed-joint comparison. The runner rejects mixing this baseline with external object/arm controller imports. Session metadata records `known_input_position_follow`, and transition metadata marks `known_human_input_baseline=true`; this input-access privilege must remain visible in any comparison.
+
+The v2 six-second check brakes at intermediate targets +7.5/-7.5 deg. Actual panel rotation settled at +7.491/-7.490 deg; peak moving-reference pitch error was 1.589 deg and peak simulated hand force was 0.779 N. All four pads retained contact, maximum penetration was 0.354 mm, with no unexpected penetrating contacts or numerical warnings. The faster setting has more tracking lag than the earlier 5 deg/s pilot; target acceleration bounds alone do not make the robot a perfectly tracking or biomechanical system.
+
+### Pitch range: three different limits
+
+All angles below are World Y rotation **offsets from the settled start**, with the initial COM fixed and the existing two-grasp geometry. This is pitch-like reorientation, not yaw about vertical Z. These limits do not describe arbitrary arm poses or translations.
+
+| Evidence | Result | Interpretation |
+|---|---|---|
+| Manual operating bound | +/-60 deg with known-input following; +/-10 deg otherwise | 15 deg/s and 60 deg/s^2; the selected bound is recorded and shown in the viewer |
+| Earlier sampled local IK path, 0.5 deg increments | Last pass +110.0 deg; right-arm IK fails at +110.5 deg. Last pass -140.5 deg; arm-arm collisions appear at -141.0 deg | One seeded branch and enabled MJCF collision pairs, not a global workspace or continuous collision-free proof. The solver uses a 0.01 rad joint margin. |
+| Two independent physical probes | +90 and -90 deg targets both passed; actual offsets +90.074/-89.884 deg | Each starts from nominal and holds its endpoint. Not a validated +90-to-90 reversal or a maximum physical limit. |
+
+At the positive IK boundary, `right_joint6` reaches the solver's joint margin. At the negative collision boundary, `left_link4`/`left_link5` intersect `right_link6`. For the physical +90 probe, the closest observed joint margin is only 0.00846 rad (about 0.49 deg); this is not unique to +90 deg: the newer +/-60 deg round-trip also reaches a 0.00860 rad minimum margin (about 0.49 deg). The +/-60 deg UI is an experimental simulation envelope with runtime guards, not a claim of comfortable joint clearance. Joint velocity, servo response, friction/contact constraints, collision geometry and the chosen controller all affect the usable range. A different IK branch or base placement would require a new analysis.
+
+Reproduce with fresh directories:
+
+```bash
+uv run --locked python -m phase1b.human_follow --extent-deg 180 --output results/phase1b/dev-pitch-geometry
+uv run --locked python -m phase1b.human_follow --physics --extent-deg 90 --output results/phase1b/dev-pitch-physics
+```
+
+Local evidence is in `results/phase1b/dev-human-smooth-final/validation_summary.json` and `motion_profile.png`, with detailed source-bound episodes in `dev-human-pitch-physical-final/` and sampled configurations in `dev-human-pitch-scan-final/`. Physical probes preserve failures and partial evidence instead of advancing the accepted limit. No geometry, actuation mode, force-allocation algorithm or formal label eligibility was changed.
 
 ## 7. Implementation status and decisions still needed
 
@@ -273,9 +323,128 @@ Before the controller is available, use these sessions to check sensor responses
 | Teacher intent/goal/trajectory bridge | Implemented for the human-input pilot; T0-T8 bridge pending |
 | Online E1/E2 adapter | Pending; `ReferenceGenerator.step` is not a ready `predict(history)` policy |
 | Manual input and timing | Keyboard target control, event replay, explicit reported intent, receipt/application clocks implemented; human-intent detection and end-to-end sensor/control latency remain pending |
+| Known-input position-follow pilot | Implemented for manual input testing; explicitly privileged, not a torque controller |
 | Full shared controller, allocation, incremental torque tracking | Pending validation/implementation |
 | Formal label promotion, Student training, RL | Not implemented |
 
 Next design decisions are: the teacher goal/intent/event mapping; start/stop/reversal cues and their delays; the torque-only execution behavior and startup/memory policy; unified sensor profiles and single-axis validity criteria; and the sampling plan, tracking estimator, and acceptance thresholds. HOLD-at-any-reachable-pose and the other accepted requirements above do not by themselves resolve these implementation choices.
 
 This document clarifies the design. It does not promote existing candidates, certify controller performance, or claim that scripted behavior matches measured human behavior.
+
+The expanded-range check runs 25 simulated seconds: 0 -> +60 (hold) -> -60 (hold), then brakes during positive rotation at -30, reverses again during motion, and returns to 0. Measured offsets at the check points were +60.054, -59.935, -29.955 and +0.00018 deg. All four pads retained at least two contacts; peak penetration was 0.528 mm, with no unexpected penetration, servo saturation or numerical warnings. The minimum joint margin was only 0.493 deg (`right_joint7`). These results pass the existing hard-limit/contact checks but **fail a separate proposed 5-degree clearance criterion**. A planning-only 5-degree reserve was tried and failed IK; it was not adopted. Hardware joint ranges, bases, grasps and the existing following algorithm remain unchanged.
+
+Evidence and the reproducible input sequence are in `results/phase1b/dev-human-wide-20261102/`; `acceptance.json` separates the passing physical checks from the failed extra-clearance criterion. The failed reserve experiment retains partial data in `dev-human-wide-reserve-20261102/`. These are simulation development trials, not assistance tracking validation or formal demonstrations.
+
+The expanded-envelope revision passed 43 automated tests, including the 25-second stop/reverse trajectory, controller-specific angle validation and replay-bound preservation. Reproduce the physical check with a fresh output directory:
+
+```bash
+uv run --locked python -m results.phase1b.dev-human-wide-20261102.reproduce results/phase1b/dev-human-wide-repeat
+uv run --locked python -m unittest phase1b.tests.test_human phase1b.tests.test_human_follow phase1b.tests.test_contracts phase1b.tests.test_integration phase1b.tests.test_expert phase1b.tests.test_benchmark -v
+```
+
+The first command uses the locally retained validation script; the unit-test entry is part of the maintained source tree. The proposed five-degree clearance check remains separately reported as failed.
+
+### Candidate base placement for larger rotations (not the active scene)
+
+The placement study keeps the panel, all three grasp locations, gripper geometry, tactile sensors, actuator gains and hardware joint limits unchanged. It changes the fixed base transforms, matching pedestal cylinders and the initial IK solution. The candidate is stored separately; the manual runner still uses Hardware 2.0.0 / Scenario 3.0.0 and its +/-60 deg experimental envelope.
+
+| Setting | Active scene | Recommended candidate |
+|---|---|---|
+| Left base XYZ, world m | (-0.45, 0.65, 0.25) | (-0.25, 0.45, 0.05) |
+| Right base XYZ, world m | (+0.45, 0.65, 0.25) | (+0.25, 0.45, 0.05) |
+| Base yaw, world Z | -90 deg on both | Left -60 deg; right -120 deg |
+| Base spacing | 0.90 m | 0.50 m |
+| Panel starting height | approximately 0.80 m | unchanged |
+| IK planning reserve | 0.01 rad solver margin | additional 5 deg inside each physical joint limit |
+
+The final coarse search compared 73 placements, including the current base coordinates, with multiple deterministic nominal IK seeds and a 5-degree planning reserve. A promising nominal pose alone was insufficient: some candidates lost reachability or collided during rotation. Candidate 10 was selected for a finer 2-degree scan and physical trials. This is a sampled search over local IK branches, not a global optimum or continuous collision-clearance proof.
+
+Base relocation alone did not solve the margin issue. With the original unrestricted IK, the candidate completed a +/-90 deg trial but its minimum joint margin fell to 0.639 deg. The successful candidate trial therefore also reserves 5 deg **in the planner's model only**. This uses the existing IK algorithm and position-following adapter; the execution model's actual joint limits are unchanged. It is a combined layout/initial-posture/planning-constraint result, not an isolated causal claim about base position.
+
+The combined candidate completed a 38-second physical trial at 15 deg/s and 60 deg/s^2: +100, -100, an intermediate braking hold at -70, reversal during motion, and return to zero. Recorded endpoint offsets were +100.066, -99.938, -70.027 and +0.006 deg. Across 19,000 physics steps, the minimum joint margin was **5.630 deg**, pad contact counts never fell below [2, 2, 2, 3], maximum pad penetration was 0.530 mm, and the physical guard detected no unexpected penetrating contacts, hard-limit violations or numerical warnings. The refined geometric path also passed. These checks establish this simulation trajectory, not unrestricted human operation or assistance-torque tracking.
+
+Candidate artifacts use provisional `+base-study` identities and their actual XML/hardware hashes; they are not relabeled as frozen production inputs. The capture is a dedicated diagnostic trace, not the formal learning pipeline or an eligible Expert demonstration. It saves the input events, initial checkpoint, joint states, commands, tactile data, contact counts, model snapshots and pass/failure report. The current formal data pipeline is unchanged.
+
+Reproduce with fresh output directories:
+
+```bash
+uv run --locked python -m phase1b.base_placement --wide --reserve-deg 5 --extent-deg 90 --output results/phase1b/base-search
+uv run --locked python -m phase1b.base_placement --search-result results/phase1b/base-search/search.json --candidate-id 10 --extent-deg 100 --step-deg 2 --reserve-deg 5 --output results/phase1b/base-candidate
+uv run --locked python -m unittest phase1b.tests.test_base_placement -v
+```
+
+The export regression passed and the physical runner independently asserts that all compiled hardware arrays are unchanged except the two base transforms and pedestal positions/sizes. Local evidence: `results/phase1b/dev-base-candidate10-reserved100-20261102/` contains `scene.xml`, `hardware.json`, `report.json`, `trace.npz`, `poses.png` and `tracking_and_margin.png`. The candidate scene must be driven through the supplied runner to reproduce the human forces and motion; opening the XML alone does not reproduce the experiment. Earlier failed-clearance trials are retained separately.
+
+Recommendation: use this configuration for the next scene revision, with a conservative initial interactive bound of +/-90 deg and the tested 5-degree planning reserve. The extra +/-100 deg trial provides evidence beyond that proposed UI range. Adoption still requires versioning the canonical hardware/config snapshots and checking the manual/replay pipeline against the new geometry; that migration was not performed during the placement study.
+
+A subsequent inter-arm clearance audit covered all 3,800 recorded poses (100 Hz) and 192 enabled cross-arm collision-geometry pairs. Bounding spheres and explicit mesh/box vertex support projections establish a conservative **0.11794 m separation lower bound** for those samples. This is not an exact minimum-distance measurement, a swept-volume proof, or a clearance guarantee for arbitrary manual input. The pair producing the weakest bound is `left_link2` / `right_link5`, near the +100 deg hold. This supports keeping a proposed 0.10 m sampled inter-arm clearance criterion alongside the separate 5-degree joint-limit reserve.
+
+The first raw `mj_geomDistance` result was inconsistent with its witness points and is explicitly marked invalid in `arm_clearance.json`; a cross-version query also had inconsistent witnesses. A related issue is tracked in the [MuJoCo repository](https://github.com/google-deepmind/mujoco/issues/3383). The accepted audit uses separating-plane lower bounds from compiled geometry vertices, not the native scalar distance. Its method, source/trajectory hashes and limits are in `arm_clearance_projection_bounds.json`, with `clearance_check.py` retained beside the trace. The temporary distance cross-check environment did not change the project's MuJoCo version or lockfile.
+
+### Trying the candidate with the manual controller
+
+The candidate is now an opt-in configuration of the **same** human runner and transition pipeline, with Hardware `2.1.0-preview.1` / Scenario `3.1.0-preview.1`. The original configuration remains the default so historical experiments are not silently rebound to new geometry. Start the candidate on macOS with:
+
+```bash
+uv run --locked python -m phase1b.scripts.launch_viewer --human --mode manual --viewer --follow-input --scene-config phase1b/config/dual_panda_base_candidate.json --duration 600 --output results/phase1b/candidate-manual
+```
+
+The header displays `BASE CANDIDATE`, and the reference stays within +/-90 deg. J/L request -/+5 deg, U/O request -/+1 deg, K brakes to a hold, and Q saves and closes. Maximum speed remains 15 deg/s with 60 deg/s^2 acceleration/deceleration. This is the known-input position-following baseline, not the shared compliant assistance controller.
+
+The planner reserves 5 deg inside the actual joint bounds; hardware limits remain unchanged. In addition to existing 500 Hz physical guards, the runner checks actual joint clearance at 500 Hz and certifies the 10 cm inter-arm separation bound at 100 Hz. If a check fails or clearance cannot be certified, the runner stops and preserves failure/partial evidence. These sampled development guards do not certify continuous clearance or arbitrary real-world operation. The separation calculation uses explicit convex vertex projections; the unreliable native scalar distance is not used as a clearance value.
+
+Sessions record the selected scene configuration and following settings. The formal transition schema now includes `config_path` and `hardware_path`; model/config/hardware hashes bind to the selected scene. Validation reconstructs that scene instead of incorrectly checking every run against the original hardware. Replay inherits the scene and recorded motion parameters; it rejects a scene override. Expert supervision and assistance-tracking validity remain false.
+
+The candidate manual model was checked for exact compiled-hardware equality with the successful +/-100 deg study model. Its runtime separation checker also passed all 3,800 recorded study poses. A new six-second run checks actual dynamics through the normal pipeline; regression tests require exact replay arrays, correct scene identities, unchanged physical joint bounds, and rejection of overlapping arms by the clearance checker.
+
+Manual-preview integration validation: **46 tests passed**, covering the new candidate identity/replay/clearance checks and existing human, following, interface, physics, Expert arithmetic and benchmark regressions. The native viewer also received L, J and K successfully; the applied events were recorded in `dev-candidate-live-20261102-01`. Verification output is retained in `dev-candidate-manual-preflight-20261102/tests.log`.
+
+### Configurable follower delay
+
+The known-input follower now accepts `--follow-delay-ms 200`. This is an explicit **200 ms delay in sampled human-reference availability**, measured in simulation time. It is not a calibrated human reaction model, camera latency, motor transport delay, or a promise about wall-clock frame rate. The ordinary default remains 0 ms, and replay inherits the recorded value. Delay must be nonnegative and a multiple of the 10 ms reference period.
+
+The virtual human's target and spring-damper force respond immediately. At 100 Hz, an immutable sample of that target's angle, velocity and reported mode enters a FIFO. The known-input policy and object-reference adapter use a sample only after its configured delay has elapsed. The arm controller still receives current robot observations and current command timestamps. During startup, before a delayed sample is available, it holds the initial reference; source timestamp/age are NaN with `reference_available=false`. K's intended braking/hold reference and reversals are delayed just like rotation. Q/close and physical/joint/clearance checks are not queued.
+
+`follower_timing.npz` records current input/decision time, source sample and input-event times, availability, reference age, human versus follower target angles/velocities/modes, the actual five arm-command timestamps per transition, and their source-reference ages. This private diagnostic sidecar is not a policy feature or formal label. It is row-aligned with the standard transitions; the episode context and session metadata record the configured delay. Failure keeps `partial_follower_timing.npz` rather than claiming a complete alignment.
+
+For 200 ms, valid high-level reference age is exactly 200 ms; the five 500 Hz command substeps use ages 200–208 ms. An input event between reference ticks first waits until the next 100 Hz sample: for example, an event at 0.102 s is sampled at 0.110 s and delivered at 0.310 s. Physical panel tracking adds its own lag. The two-second Student history requirement is unrelated to this injected delay.
+
+```bash
+uv run --locked python -m phase1b.scripts.launch_viewer --human --mode manual --viewer --follow-input --scene-config phase1b/config/dual_panda_base_candidate.json --follow-delay-ms 200 --duration 600 --output results/phase1b/candidate-delay200-manual
+uv run --locked python -m phase1b.human --mode replay --replay results/phase1b/candidate-delay200-manual --output results/phase1b/candidate-delay200-replay
+```
+
+The viewer header shows the configured delay. The tactile overlay shows immediate hand/panel angular speeds, the follower angle reference and its age. An unavailable startup age is shown as `nan`, not a fabricated measurement. The speed and acceleration limits are unchanged.
+
+Validation includes zero-delay equivalence at the reference boundary, causal FIFO sampling, startup masks, a between-tick input, delayed stop/reverse modes, 200–208 ms actuator-source ages and exact recorded-array replay. A separate 36-second +/-90 deg delayed physical trial passed the standard physical checks plus the 5-degree joint-margin and 10 cm sampled arm-clearance guards. Minimum joint margin was approximately 5.64 deg, peak pad penetration 0.487 mm, and peak simulated human force 2.77 N, with no unexpected penetrating contacts or numerical warnings. This validates the test trajectory, not all possible manual inputs or assistance tracking. Evidence is retained in `dev-follow-delay200-20261102/` (including `delay_response.png`) and `dev-follow-delay200-range-20261102/`.
+
+This revision passed 2 delay-specific tests and 26 selected regression tests. The live header was verified as `follow delay 200 ms`. Because the overlay is drawn after a physics step and just before the next 100 Hz reference refresh, it can show a source age of 210 ms; this is distinct from the configured 200 ms FIFO delay and the recorded 200–208 ms command-source ages.
+
+### Matched stop/reversal comparison: 0 vs 200 ms
+
+`phase1b.demos.compare_follow_delay` runs both delays from the same saved integration state, using the candidate scene and identical immediate human target trajectories. Only follower-reference delay changes; the spring–damper human force is recomputed from each physical response. The input starts positive rotation at 1.00 s, requests braking HOLD at 1.80 s, resumes at 3.00 s, and requests negative rotation at 3.80 s while still moving positively. Speed/acceleration limits remain 15 deg/s and 60 deg/s².
+
+| Measurement | 0 ms | 200 ms |
+|---|---:|---:|
+| Stop response after the 1.80 s request | 0.50 s | 0.70 s |
+| Continued positive motion after stop request | 3.45 deg | 6.41 deg |
+| Peak human force in stop window | 0.72 N | 2.05 N |
+| Negative-motion response after the 3.80 s request | 0.37 s | 0.57 s |
+| Continued positive motion after reversal request | 3.15 deg | 6.10 deg |
+| Peak human force in reversal window | 0.81 N | 2.12 N |
+
+Response detection uses 100 Hz samples: stop requires angular speed magnitude ≤0.5 deg/s for 0.20 s; reversal requires speed ≤−0.5 deg/s for 0.10 s. Windows are 1.80–2.90 s and 3.80–4.90 s. Both windows have a maximum same-time angle gap of approximately 2.97 deg. Both runs settle near 12 deg after the first stop: the gap is transient, not a final angle error. Continued positive motion is measured from each run's angle at the input event, not from the final target.
+
+The maximum absolute per-bin tactile difference is 8.79 N/bin during stopping and 13.81 N/bin during reversal. At 4.00 s, right-upper pad totals are almost equal (34.42 vs 34.39 N), while individual bins differ by +13.77 and −11.78 N/bin. This shows spatial redistribution that a pad-total scalar hides. These are coarse 4×4 sensor-local normal-force bins, not pressure in Pa; contact crossing a bin boundary can create abrupt changes. Pad-normal sums measure clamping load, not net object force or executed assistance torque.
+
+Both 8.5-second episodes pass the existing pipeline/physical checks, 500 Hz joint-margin checks and 100 Hz inter-arm clearance certification. Each contains 850 transitions / 4,250 physics steps, with at least four contacts per pad, maximum pad penetration below 0.257 mm, minimum joint margin above 20.5 deg, no unexpected penetration, no actuator saturation and no numerical warnings. Exact initial q/qdot and human target arrays are asserted equal across conditions. This is one deterministic known-input baseline comparison; assistance tracking and Expert-label validity remain false.
+
+```bash
+uv run --locked python -m phase1b.demos.compare_follow_delay --output results/phase1b/delay-comparison
+# Rebuild the visuals from retained episodes without running physics again:
+uv run --locked python -m phase1b.demos.compare_follow_delay --render-only --output results/phase1b/delay-comparison
+```
+
+The first command requires a fresh output directory. Local evidence is in `results/phase1b/dev-delay-comparison-20261102/`: standard episodes and timing sidecars, `comparison.json`, `comparison.csv`, overview/heatmap PNGs, and self-contained `index.html`. The HTML synchronizes both traces and all four tactile maps, with playback, event shortcuts and a shared time slider. It can be opened offline; no external libraries or network service are required.
+
+The maintained [controller quickstart](CONTROLLER.md#start-here-human-control-and-delayed-follow-reference) now includes this reference and custom-controller entry points on the same candidate scene. Custom manual controllers start with a ±10-degree human target bound and `UNCERTAIN` / zero assistance; the 200 ms option belongs only to the known-input follower. T0–T3 can select that same scene through `--scene-config`. Both runners share the physical/joint/clearance guard. New session and episode metadata record in-repo scene paths relative to the repository; replay preserves controller imports as well as scene/input settings. These changes make the pilot transferable without changing policy permissions or promoting demonstration labels.

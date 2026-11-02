@@ -4,7 +4,7 @@
 
 A human and two Franka Panda arms hold a rigid panel. The policy requests additional assistance about World Y; the shared controller must turn that request into real joint motion and contact forces while maintaining support.
 
-Project design: [Expert and data contract](docs/EXPERT_AND_DATA.md) explains the teachers, Student inputs, label eligibility, collection/evaluation plan, and open decisions. Jerry can now run the [human-input pilot](docs/EXPERT_AND_DATA.md#human-side-work-before-the-shared-controller-is-ready): keyboard control, replay, and sensor logging while the shared controller is being developed.
+Project design: [Expert and data contract](docs/EXPERT_AND_DATA.md) explains the teachers, Student inputs, label eligibility, collection/evaluation plan, and open decisions. Jerry can now run the [human-input pilot](docs/EXPERT_AND_DATA.md#human-side-work-before-the-shared-controller-is-ready): keyboard control, replay, and sensor logging while the shared controller is being developed. The [candidate-base manual preview](docs/EXPERT_AND_DATA.md#trying-the-candidate-with-the-manual-controller) supports +/-90 deg with joint-clearance and inter-arm separation checks.
 
 ## Swathi's controller assignment
 
@@ -29,7 +29,7 @@ Changing Expert to Student must change only the upstream decision source. Contro
 | Physical support, scripted motion evidence, and executable T0-T8 fixtures/input runner | Calibrated controller thresholds and validated cooperation with an Expert |
 | E0/E1/E2 candidate formulas and offline diagnostics | Closed-loop Expert integration, valid demonstrations, trained Student |
 
-The current adapters only forward references and hold nominal joint positions. They are not the requested controller. Existing evidence: [physical checks and videos](results/phase1b/current/README.md) at `37b8c24`, [9 Expert arithmetic/data tests](results/phase1b/expert_math/verification.json). The [fixture verification](results/phase1b/controller_fixtures/verification.json) records input transport, reset, and regression checks; assistance tracking remains unverified.
+The default adapters only forward references and hold nominal joint positions. The optional known-input follower now moves the arms with the human target, with configurable 0/200 ms reference delay. It is a position-following test baseline, not the requested assistance controller. Start with the [human-control and delay quickstart](docs/CONTROLLER.md#start-here-human-control-and-delayed-follow-reference); it also shows how to plug your controller into the same scene. Existing evidence: [physical checks and videos](results/phase1b/current/README.md) at `37b8c24`, [9 Expert arithmetic/data tests](results/phase1b/expert_math/verification.json), and [matched delay comparison](results/phase1b/human_follow_reference/comparison.png). The [fixture verification](results/phase1b/controller_fixtures/verification.json) records input transport, reset, and regression checks; assistance tracking remains unverified.
 
 ## Who prepares what
 

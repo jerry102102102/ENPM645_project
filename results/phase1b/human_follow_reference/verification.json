@@ -1,0 +1,394 @@
+{
+  "created_utc": "2026-11-02T21:43:58.554478+00:00",
+  "scope": "Human-input and known-input delayed-follow handoff; custom-controller entry uses existing no-op adapters in routing tests.",
+  "scenario_version": "3.1.0-preview.1",
+  "hardware_version": "2.1.0-preview.1",
+  "model_hash": "952d50cd9a7df0c8ba3af71544ebf22964b4a1d2f6183442e1a5703d0a95d7eb",
+  "config_hash": "7c599ef56163411b35b16ab9837b2093dac861a6678654255fff7e39c26efa34",
+  "hardware_hash": "a05b86a962e07b1b0ab3043f07d6d29f148254f8bffccd7b4b0cf35b374b21fc",
+  "source_hashes": {
+    "phase1b/simulation.py": "5f0f0b5bbcf76ceec26b2ffd36eeb9b81364e78845050e29da8db35d7d14fb8e",
+    "phase1b/interfaces.py": "a6a62a40c1019011e3326d3961724ff1d39e7054dd0cf4f4a5831a3919e02898",
+    "phase1b/benchmark.py": "224b77de4613ac2ee80974aff6c2d84126baf31a3e87617e377e0a16c6edbc4f",
+    "phase1b/base_placement.py": "32015f3259560d4632c14ec2949eb98fbd8ee8f8cd35a07cb8d837e04de940c7",
+    "phase1b/human_follow.py": "5b455c355bc2475ba587d2b73b25b2f0ba2c522c1c97228cdaf16081dbf8f2b5",
+    "phase1b/sensing.py": "6324d9c9c95f940bd6e8824ca64ea2d98e19d50fb8802daf1a373e84e7b29cab",
+    "phase1b/control.py": "a3eed3aaa9bde719ac7abf6dda8b5dcae9f4ac92bd63903f9a116ab20288a7cb",
+    "phase1b/human.py": "0abc04e08a6441b3db496865a0257d1238a2ec70594994e9e1c94c1fabc661f5",
+    "phase1b/pipeline.py": "12784e2aeb7a88b440a3aad1652e738614ce9f099ca185f282048a4a3d8fb55f",
+    "phase1b/geometry.py": "46c924883515818583e7eba0ec6ca119591edd8901afa1b28aa82c5e691f2bba",
+    "phase1b/hardware.py": "0cb2d65ce0057252942f8ebb408302e4dc034a5bad296f35ee875ce264ab4e4e",
+    "phase1b/tests/test_contracts.py": "1cbeed368db54ae228ab5d1205ae55771a6df1b4c5ceaeb61fc0a60c751435ec",
+    "phase1b/tests/test_benchmark.py": "99e02f894183c323d29c29b15886ee53d5afa1d2eff3e326f00378cd280d673a",
+    "phase1b/tests/test_expert.py": "cce5f5544cbb695a54f2723998e790ea074399381f257516c00e1ae618c483d5",
+    "phase1b/tests/test_integration.py": "c9a71251a65c9c8bc5237136b0305c9c5a6ffde56bac843261e246cc97aa221a",
+    "phase1b/tests/test_human_follow.py": "da50390c28f3a25918dc5f3287071224635ad6bf7b7f752c47ccb6fc0bb13198",
+    "phase1b/tests/test_human.py": "e4f016f689599040355523b36a7a9c6987fef8eaaf6c7b1dc8857ce181001f90",
+    "phase1b/tests/test_base_placement.py": "7bf36e2acc10da9e14a460002fea968058cf94605f8faa7b688550ed8e47adc1",
+    "phase1b/demos/compare_follow_delay.py": "ddf18ad0432c20a469de68383e63a33f9f32ecba8d64e290c2e229459d60dad7",
+    "phase1b/demos/follow_delay_view.html": "fc4b0ee0898bc501e7ec8f3aedd7551c910300841bda70c2a01d5bdaa8fdd2fd",
+    "uv.lock": "8c02dc16394bef11077c96f518b84cc8252837fcdc2888a558316e0a929e9757"
+  },
+  "tests": {
+    "command": "uv run --locked python -m unittest discover -s phase1b/tests -v",
+    "passed": 50,
+    "failed": 0
+  },
+  "clean_export_and_cross_checkout_replay": {
+    "clean_export_uv_sync_passed": true,
+    "delayed_demo_seconds": 6,
+    "cross_checkout_replay_exact": true,
+    "verification": {
+      "data_pipeline_passed": true,
+      "physical_sample_checks_passed": true,
+      "samples": 600,
+      "physics_steps": 3000,
+      "min_contacts_per_pad": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "max_pad_penetration_m": 0.00025463845902090517,
+      "unexpected_penetration_count": 0,
+      "min_joint_limit_margin_rad": 0.47516438643526815,
+      "max_panel_balance_residual_N": 1.7068423468950863e-13,
+      "max_joint_speed_rad_s": 0.3558484652907985,
+      "arm_saturated_steps": 0,
+      "panel_z_range_m": [
+        0.7883855173031319,
+        0.7892796600881063
+      ],
+      "interface_ready": true,
+      "assistance_tracking_validated": false,
+      "expert_labels_validated": false,
+      "controller_status": "adapter supplied; no full motion/force controller certification"
+    }
+  },
+  "matched_comparison": {
+    "command": "uv run --locked python -m phase1b.demos.compare_follow_delay --output results/phase1b/dev-delay-comparison",
+    "matched_initial_state": true,
+    "matched_human_targets": true,
+    "metrics_identical_to_previous_local_comparison": true,
+    "checks": {
+      "0": {
+        "verification": {
+          "data_pipeline_passed": true,
+          "physical_sample_checks_passed": true,
+          "samples": 850,
+          "physics_steps": 4250,
+          "min_contacts_per_pad": [
+            4,
+            4,
+            4,
+            4
+          ],
+          "max_pad_penetration_m": 0.00025621184758649345,
+          "unexpected_penetration_count": 0,
+          "min_joint_limit_margin_rad": 0.35919333461234926,
+          "max_panel_balance_residual_N": 2.1512129118355947e-13,
+          "max_joint_speed_rad_s": 0.3897231173167807,
+          "arm_saturated_steps": 0,
+          "panel_z_range_m": [
+            0.7885748384818906,
+            0.7889782721274848
+          ],
+          "interface_ready": true,
+          "assistance_tracking_validated": false,
+          "expert_labels_validated": false,
+          "controller_status": "adapter supplied; no full motion/force controller certification"
+        },
+        "clearance_checks": 850,
+        "metrics": {
+          "max_orientation_change_rad": 0.41368481503299354,
+          "max_height_change_m": 0.00021395643406962872,
+          "min_contacts_per_pad": [
+            4,
+            4,
+            4,
+            4
+          ],
+          "max_penetration_m": 0.00025621184758649345,
+          "max_unexpected_penetration_m": 0.0,
+          "min_joint_margin_rad": 0.35919333461234926,
+          "servo_saturation_fraction": 0.0,
+          "warning_count": 0,
+          "max_human_force_n": 0.8055791282422706,
+          "max_abs_requested_assist_nm": 0.0,
+          "any_assistance_execution_reported": false,
+          "assistance_tracking_validated": false,
+          "expert_labels_validated": false
+        }
+      },
+      "200": {
+        "verification": {
+          "data_pipeline_passed": true,
+          "physical_sample_checks_passed": true,
+          "samples": 850,
+          "physics_steps": 4250,
+          "min_contacts_per_pad": [
+            4,
+            4,
+            4,
+            4
+          ],
+          "max_pad_penetration_m": 0.00025613163071306217,
+          "unexpected_penetration_count": 0,
+          "min_joint_limit_margin_rad": 0.35927356031811186,
+          "max_panel_balance_residual_N": 2.0626234071733167e-13,
+          "max_joint_speed_rad_s": 0.38948169756147843,
+          "arm_saturated_steps": 0,
+          "panel_z_range_m": [
+            0.7883737738098198,
+            0.789275315844393
+          ],
+          "interface_ready": true,
+          "assistance_tracking_validated": false,
+          "expert_labels_validated": false,
+          "controller_status": "adapter supplied; no full motion/force controller certification"
+        },
+        "clearance_checks": 850,
+        "metrics": {
+          "max_orientation_change_rad": 0.4134142430291247,
+          "max_height_change_m": 0.00048690698097786367,
+          "min_contacts_per_pad": [
+            4,
+            4,
+            4,
+            4
+          ],
+          "max_penetration_m": 0.00025613163071306217,
+          "max_unexpected_penetration_m": 0.0,
+          "min_joint_margin_rad": 0.35927356031811186,
+          "servo_saturation_fraction": 0.0,
+          "warning_count": 0,
+          "max_human_force_n": 2.1170568625166104,
+          "max_abs_requested_assist_nm": 0.0,
+          "any_assistance_execution_reported": false,
+          "assistance_tracking_validated": false,
+          "expert_labels_validated": false
+        }
+      }
+    }
+  },
+  "original_scene_regression": {
+    "episodes": {
+      "A": {
+        "data_pipeline_passed": true,
+        "physical_sample_checks_passed": true,
+        "samples": 400,
+        "physics_steps": 2000,
+        "min_contacts_per_pad": [
+          3,
+          4,
+          3,
+          4
+        ],
+        "max_pad_penetration_m": 0.00047564180224836253,
+        "unexpected_penetration_count": 0,
+        "min_joint_limit_margin_rad": 0.1481905802910406,
+        "max_panel_balance_residual_N": 4.619683465118333e-14,
+        "max_joint_speed_rad_s": 0.0022603024979254366,
+        "arm_saturated_steps": 0,
+        "panel_z_range_m": [
+          0.7847839857256239,
+          0.7869729824824653
+        ],
+        "interface_ready": true,
+        "assistance_tracking_validated": false,
+        "expert_labels_validated": false,
+        "controller_status": "adapter supplied; no full motion/force controller certification"
+      },
+      "B": {
+        "data_pipeline_passed": true,
+        "physical_sample_checks_passed": true,
+        "samples": 400,
+        "physics_steps": 2000,
+        "min_contacts_per_pad": [
+          4,
+          4,
+          4,
+          4
+        ],
+        "max_pad_penetration_m": 0.00033968582246127714,
+        "unexpected_penetration_count": 0,
+        "min_joint_limit_margin_rad": 0.14818515098895535,
+        "max_panel_balance_residual_N": 2.6645607100889167e-14,
+        "max_joint_speed_rad_s": 4.6043990717378476e-05,
+        "arm_saturated_steps": 0,
+        "panel_z_range_m": [
+          0.7869728007493048,
+          0.7869731131279598
+        ],
+        "interface_ready": true,
+        "assistance_tracking_validated": false,
+        "expert_labels_validated": false,
+        "controller_status": "adapter supplied; no full motion/force controller certification"
+      },
+      "C": {
+        "data_pipeline_passed": true,
+        "physical_sample_checks_passed": true,
+        "samples": 400,
+        "physics_steps": 2000,
+        "min_contacts_per_pad": [
+          2,
+          2,
+          3,
+          4
+        ],
+        "max_pad_penetration_m": 0.0005234213650920619,
+        "unexpected_penetration_count": 0,
+        "min_joint_limit_margin_rad": 0.14818493418234935,
+        "max_panel_balance_residual_N": 4.6195514352911575e-14,
+        "max_joint_speed_rad_s": 0.0100403583160726,
+        "arm_saturated_steps": 0,
+        "panel_z_range_m": [
+          0.783029239357631,
+          0.7869729824824653
+        ],
+        "interface_ready": true,
+        "assistance_tracking_validated": false,
+        "expert_labels_validated": false,
+        "controller_status": "adapter supplied; no full motion/force controller certification"
+      }
+    },
+    "motion": {
+      "A": {
+        "human_peak_time_s": 2.22,
+        "human_peak_force_vector_N": [
+          -0.8385860240069378,
+          -0.04174149876491294,
+          -1.8682284037448724
+        ],
+        "case": "A",
+        "name": "Rotate and hold",
+        "samples": 800,
+        "physics_steps": 4000,
+        "observed_pitch_change_deg": 19.995619441883502,
+        "observed_lift_m": 0.030496116384778116,
+        "max_joint_change_rad": 0.7103490051418813,
+        "max_joint_speed_rad_s": 0.4469737052792743,
+        "min_contacts": [
+          4,
+          4,
+          3,
+          4
+        ],
+        "max_pad_penetration_m": 0.000508699484464434,
+        "unexpected_penetration_m": 0.0,
+        "min_joint_margin_rad": 0.04000290441644472,
+        "saturated_steps": 0,
+        "max_force_balance_residual_N": 8.304960908921803e-09,
+        "max_human_force_N": 2.0482300263735076,
+        "late_human_force_mean_N": [
+          0.15632611033244245,
+          -0.09345385994660632,
+          1.2702568154417786
+        ],
+        "late_external_force_N": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "hold_pitch_range_deg": 0.0004063775203029252,
+        "hold_z_range_m": 0.00017374749288756597,
+        "ik_max_position_error_m": 3.4639265495379733e-07,
+        "passed": true
+      },
+      "B": {
+        "human_peak_time_s": 2.18,
+        "human_peak_force_vector_N": [
+          0.021460685679739896,
+          -0.02451125813865296,
+          5.41296303460065
+        ],
+        "case": "B",
+        "name": "Lift then hold",
+        "samples": 800,
+        "physics_steps": 4000,
+        "observed_pitch_change_deg": 0.027468889894036314,
+        "observed_lift_m": 0.07979878567131293,
+        "max_joint_change_rad": 0.27339836061138034,
+        "max_joint_speed_rad_s": 0.17207799334131463,
+        "min_contacts": [
+          4,
+          3,
+          4,
+          4
+        ],
+        "max_pad_penetration_m": 0.00037755565737423747,
+        "unexpected_penetration_m": 0.0,
+        "min_joint_margin_rad": 0.14794572176743293,
+        "saturated_steps": 0,
+        "max_force_balance_residual_N": 4.506358399249748e-14,
+        "max_human_force_N": 5.413061072698003,
+        "late_human_force_mean_N": [
+          0.014672143659237994,
+          0.018586369894962654,
+          1.3514987773891751
+        ],
+        "late_external_force_N": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "hold_pitch_range_deg": 0.00029417377996932004,
+        "hold_z_range_m": 3.0471733858394856e-07,
+        "ik_max_position_error_m": 3.020940547926162e-07,
+        "passed": true
+      },
+      "C": {
+        "human_peak_time_s": 2.18,
+        "human_peak_force_vector_N": [
+          -0.29064711667701115,
+          -0.026846012599282862,
+          4.191275593402174
+        ],
+        "case": "C",
+        "name": "Reposition and resist constant load",
+        "samples": 800,
+        "physics_steps": 4000,
+        "observed_pitch_change_deg": -11.94357952907876,
+        "observed_lift_m": -0.00451584166850727,
+        "max_joint_change_rad": 0.30299331875470414,
+        "max_joint_speed_rad_s": 0.18836034704936794,
+        "min_contacts": [
+          2,
+          3,
+          3,
+          4
+        ],
+        "max_pad_penetration_m": 0.00047057140559658364,
+        "unexpected_penetration_m": 0.0,
+        "min_joint_margin_rad": 0.1480176459678435,
+        "saturated_steps": 0,
+        "max_force_balance_residual_N": 5.70065582650415e-11,
+        "max_human_force_N": 4.201426847473829,
+        "late_human_force_mean_N": [
+          -0.009926941178444976,
+          0.10138965418814286,
+          1.857891673114301
+        ],
+        "late_external_force_N": [
+          0.0,
+          0.0,
+          -20.0
+        ],
+        "hold_pitch_range_deg": 0.0005733586092961929,
+        "hold_z_range_m": 0.00022331088219995632,
+        "ik_max_position_error_m": 2.5035406037836763e-07,
+        "passed": true
+      }
+    },
+    "passed": true
+  },
+  "regression_reproduction": "uv run --locked python -m phase1b.scripts.run_suite --output results/phase1b/reproduction-handoff",
+  "notes": [
+    "Original-scene A/B/C episodes and motion collections executed directly; run_suite also repeats contract and negative-control checks.",
+    "Large raw episodes are not included in this compact reference. Generate them with the commands above.",
+    "0/200 ms is injected sampled-reference delay in simulation time, not a measured wall-clock or sensor delay."
+  ],
+  "shared_assistance_controller_implemented": false,
+  "assistance_tracking_validated": false,
+  "expert_labels_validated": false
+}

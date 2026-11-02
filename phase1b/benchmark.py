@@ -19,7 +19,7 @@ from phase1b.geometry import rotate_y
 from phase1b.hardware import sha
 from phase1b.interfaces import AssistanceDecision
 from phase1b.pipeline import read_episode, run_episode
-from phase1b.simulation import PandaWorld
+from phase1b.simulation import PandaWorld, ROOT
 
 
 @dataclass(frozen=True)
@@ -100,12 +100,17 @@ class BenchmarkWorld(PandaWorld):
                          joint_speed_rad_s=0.01, penetration_m=0.001,
                          consecutive_steps=100, timeout_seconds=10.0)
 
-    def __init__(self):
+    def __init__(self, config_path=None):
         self.fixed_target = None
         self.case = "T0"
         self.spec = InputSpec()
         self.reverse_after_pause = False
-        super().__init__("B")
+        super().__init__("B", config_path=config_path)
+        self.clearance = None
+        self.clearance_checks = 0
+        if self.config.get('human_follow', {}).get('min_arm_clearance_m'):
+            from phase1b.human_follow import InterArmClearance
+            self.clearance = InterArmClearance(self.m)
 
     def environment_targets(self, t, scenario):
         if self.fixed_target is None:
@@ -188,6 +193,7 @@ class BenchmarkWorld(PandaWorld):
         self.qtarget = saved["nominal_arm_position"].copy()
         self.origin = float(saved["origin"])
         self.tick = 0
+        self.clearance_checks = 0
         mujoco.mj_resetData(self.m, self.d)
         mujoco.mj_setState(self.m, self.d, saved["integration_state"], self.state_kind)
         self.refresh(0)
@@ -219,6 +225,14 @@ def physical_guard(world):
     bounds = world.m.jnt_range[world.arm_joints]
     if np.any(q <= bounds[..., 0]) or np.any(q >= bounds[..., 1]):
         raise RuntimeError("arm joint limit reached")
+    settings = world.config.get('human_follow', {})
+    if settings and np.minimum(q-bounds[..., 0], bounds[..., 1]-q).min() < np.deg2rad(settings['joint_reserve_deg']):
+        raise RuntimeError('joint clearance fell below the candidate 5-degree criterion')
+    if world.clearance is not None and world.tick % 5 == 0:
+        world.clearance_checks += 1
+        required = settings['min_arm_clearance_m']
+        if world.clearance.lower_bound(world.d, required) < required:
+            raise RuntimeError('cannot certify the candidate 10-cm inter-arm clearance; stopped')
     pads = sum(world.pad_g, [])
     for c in world.d.contact:
         expected = world.pg in (c.geom1, c.geom2) and (c.geom1 in pads or c.geom2 in pads)
@@ -253,7 +267,7 @@ def summarize(path):
 
 def run_benchmark(output, spec=None, cases=("T0", "T1", "T2", "T3"),
                   object_controller=None, dual_arm_controller=None, policy=None,
-                  reverse_after_pause=False):
+                  reverse_after_pause=False, scene_config=None):
     """Class import paths create fresh controller/filter state for every run."""
     spec = InputSpec() if spec is None else spec
     cases = tuple(cases)
@@ -275,7 +289,8 @@ def run_benchmark(output, spec=None, cases=("T0", "T1", "T2", "T3"),
     write_json(output / "report.json", report)
     world = None
     try:
-        world = BenchmarkWorld()
+        world = BenchmarkWorld(config_path=scene_config)
+        report['scene_config'] = str(world.config_path.relative_to(ROOT)) if world.config_path.is_relative_to(ROOT) else str(world.config_path)
         world.spec = spec
         world.reverse_after_pause = reverse_after_pause
         saved = world.prepare()
@@ -330,6 +345,7 @@ def run_benchmark(output, spec=None, cases=("T0", "T1", "T2", "T3"),
                 max_assist_torque_nm=spec.max_assist_torque_nm, **components)
             report["runs"][name] = dict(
                 verification=verification, metrics=summarize(output / name),
+                clearance_checks=world.clearance_checks,
                 controller_source_hashes=hashes, initial_observation_equal=True,
                 baseline=baseline_names.get(name),
                 verdict="tracking_unverified" if not cooperation else "cooperation_unverified")
@@ -372,12 +388,13 @@ def main():
     for key, value in asdict(InputSpec()).items():
         parser.add_argument("--" + key.replace("_", "-"), type=float, default=value)
     parser.add_argument("--policy", help="module:Class for T4-T8; default is zero assistance")
+    parser.add_argument("--scene-config", type=Path, help="select the same versioned scene used by the human pilot")
     parser.add_argument("--reverse-after-pause", action="store_true", help="T8 reverses to its starting target instead of resuming")
     parser.add_argument("--object-controller", help="module:Class, fresh no-argument instance per run")
     parser.add_argument("--dual-arm-controller", help="module:Class, fresh no-argument instance per run")
     args = parser.parse_args()
     spec = InputSpec(**{key: getattr(args, key) for key in asdict(InputSpec())})
-    report = run_benchmark(args.output, spec, args.cases, args.object_controller, args.dual_arm_controller, args.policy, args.reverse_after_pause)
+    report = run_benchmark(args.output, spec, args.cases, args.object_controller, args.dual_arm_controller, args.policy, args.reverse_after_pause, args.scene_config)
     print(json.dumps({"output": str(args.output), "status": report["status"],
                       "controller_acceptance": report["controller_acceptance"]}, indent=2))
 
