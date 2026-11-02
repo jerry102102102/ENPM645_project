@@ -4,6 +4,8 @@
 
 A human and two Franka Panda arms hold a rigid panel. The policy requests additional assistance about World Y; the shared controller must turn that request into real joint motion and contact forces while maintaining support.
 
+Project design: [Expert and data contract](docs/EXPERT_AND_DATA.md) explains the teachers, Student inputs, label eligibility, collection/evaluation plan, and open decisions.
+
 ## Swathi's controller assignment
 
 Implement the **Object-Level Controller + Dual-Arm Controller as one shared control implementation**, using the existing two `step()` interfaces. This is one controller stack, not separate controllers for Expert and Student and not a new fourth interface.
@@ -13,7 +15,7 @@ Implement the **Object-Level Controller + Dual-Arm Controller as one shared cont
 3. Demonstrate **T0–T3**: support, positive torque, negative torque, and continuous command changes.
 4. Integrate **T4–T7** together with Jerry; **T8** is optional. T9 is not defined.
 
-The Expert decides the additional pitch torque; the controller uses public state and a consistent compliant response to realize it, without tracking a hidden human goal. Panel state is assumed known for the first pilot, and policy history defaults to two elapsed seconds (201 samples at 100 Hz).
+The Expert decides the additional pitch torque; the controller uses public state and a consistent compliant response to realize it, without tracking a hidden human goal.
 
 Changing Expert to Student must change only the upstream decision source. Controller code, parameters, observations, and safety behavior remain the same for a matched comparison.
 

@@ -45,7 +45,8 @@ ArmCommand contains `arm_position_target (2,7)` **rad**, `pad_force_command (4,)
 
 Both callbacks receive `ArmControllerInput`. Its observation is a public, read-only snapshot. This is richer than Student inputs; choosing the Student profile does not remove joint states from the controller.
 
-For the first pilot, panel pose and velocity are assumed known from MuJoCo and available to both Expert and Student. Camera estimation is a later sensing stage. These public state measurements do not include the human's intended target, future trajectory, or disturbance truth. Policy history now defaults to 201 samples at 100 Hz, covering two elapsed seconds once filled. During startup it contains only the available prefix, without padding or invented prehistory. A future Student must define and report its startup policy; changing the history buffer does not implement that behavior. A two-second history is a rolling input window, not a two-second response delay. Shorter explicit overrides are for tests or declared ablations, not the primary learning configuration.
+Panel pose and velocity are available from MuJoCo under the pilot's known-state assumption. Student history, teacher information permissions, and learning/evaluation decisions are defined in [Expert and data contract](EXPERT_AND_DATA.md). The controller still receives the current public snapshot.
+
 
 | Input | Shape / meaning |
 |---|---|
@@ -132,7 +133,9 @@ Use development runs to calibrate amplitudes/rates and noise, then lock criteria
 
 ## 5. Then test cooperation with Jerry
 
-You can run these fixtures now with zero assistance to check their inputs. After T0 through T3 pass, use `--policy MODULE:Policy` to connect Expert decisions to the same controller. HOLD must be available during an ongoing motion at any reachable pose, rather than only at a scheduled endpoint. For the initial contract, latch the measured pose when a stop request is accepted and keep that reference until a new accepted movement request. Allow bounded braking while settling; do not relatch a drifting pose on every sample. Record the intended stop time/pose separately from detection, command application, and physical settling, so response delay and stopping displacement remain visible. The current reference adapters latch on entry to HOLD, but observable stop detection and a physical stopping controller remain unimplemented. That option applies only to T4 through T8; T0 through T3 always use the scripted torque tests. Human target motion creates real spring-damper force; it does not teleport the panel or prescribe arm trajectories. All strategies share human goals/impedance/disturbances while actual human force changes with feedback.
+You can run these fixtures now with zero assistance to check their inputs. After T0 through T3 pass, use `--policy MODULE:Policy` to connect Expert decisions to the same controller. That option applies only to T4 through T8; T0 through T3 always use scripted torque tests. Human target motion creates spring-damper force; it does not teleport the panel or prescribe arm trajectories. All strategies share human goals/impedance/disturbances while actual human force changes with feedback.
+
+Support HOLD requests during motion at any reachable pose and record stopping behavior. The project-level stopping semantics, latency questions, and manual evaluation plan live in [Expert and data contract](EXPERT_AND_DATA.md#3-human-intent-teacher-state-and-robot-mode).
 
 | Case | Human / environment | Check |
 |---|---|---|
@@ -147,22 +150,6 @@ T9 is not defined. These are human-target angles, not guaranteed panel angles. T
 Use `--human-angle-deg`, `--correction-angle-deg`, `--disturbance-force-n`, and the shared timing options to vary the inputs. Requests that exceed the frozen human target-speed limit stop the run. All current fixtures start from the same nominal S0. Testing T6 at other starting poses still needs a reachable, validated reset state. ±10° are development targets subject to controller reachability checks. A paused human target still resists panel deviation. Off-COM vertical disturbance also creates vertical load/other torques; Y assistance alone cannot satisfy all constraints.
 
 **Control GO:** T0-T3 pass locked physical/tracking criteria. **Expert GO:** T4-T7 show closed-loop cooperation benefits versus support_only (and E0 where useful). **Learning-Data GO:** execution/teacher quality, causal synchronized labels and observation-label consistency pass separately. Human `∫||F_h||²dt` measures force burden, not metabolic energy. Retain failures; no demonstrations or training claims from scripted trajectories/shadow annotations.
-
-### Data and evaluation decisions
-
-For the first pilot, we assume the scripted virtual human produces a useful approximation of the intended human-interaction distribution. This is a working assumption to check with manual trials. The virtual human produces behavior; the Expert produces robot-assistance labels. Representativeness does not certify the labels or their execution.
-
-Keep three meanings separate: human intent is the teacher-only rotate/stop/hold request; the human target trajectory generates physical spring-damper forces; the assistance decision describes what the robot should do given the available evidence. A pause or stop can occur before the original target is reached. HOLD may need nonzero torque, ROTATE may need opposite-signed braking torque, and UNCERTAIN cancels active assistance while base support remains available.
-
-The Student does not necessarily need a mode classification output. A torque-only model is a candidate first design, but the current execution contract still uses mode to latch HOLD and enforce UNCERTAIN behavior. Before deploying that model, define a causal public-state supervisor for those behaviors or revise the execution contract explicitly. Never infer mode from torque sign or use a hidden teacher mode for the Student without labeling it as an oracle-mode ablation. This interface decision is still open.
-
-Manual trials should drive the virtual human target through the spring-damper, rather than teleport the panel or command robot joints. Record the input device/mapping, intent and goal annotations, event timestamps, and annotation uncertainty. These labels establish what the operator requested; they do not establish the optimal robot torque. Keep raw input, private annotations, public observations, decisions, and actuator outcomes synchronized. The manual-input UI and event logger are not implemented yet.
-
-Evaluate three things separately: physical execution and extra-torque tracking; cooperation (human force burden, task error, stop delay/drift, false starts, reversals, contacts and saturation); and imitation of eligible Expert labels on held-out data. Manual closed-loop trials complement the scripted tests and require a functioning controller. Keep separate sessions or trials for evaluation, and compare against support_only and E0 under matched task conditions. Report intent-event time, sensor acquisition/availability, decision time, command application, and observed response; simulation control rates alone do not validate perception or interaction latency.
-
-Before collecting training data, specify ranges and held-out conditions for motion direction/size/speed, onset, intermediate stop positions, pauses, reversals, human impedance, and disturbance timing/magnitude. Preserve the frozen grasp geometry. Separate splits by episode and condition/session, not overlapping windows; fit normalization on training data only. Standardize the F/T source/frame and compare F/T+object, +joints, +tactile, and +both. Only three of these diagnostic profiles currently exist; the independent tactile-only addition and unified online profiles still need work. Define the valid domain of the single-axis approximation before promoting labels; off-axis diagnostics alone are not an acceptance rule.
-
-RL refinement is a later possibility after a shared controller, task metrics, and an initial policy are validated. It is not part of Swathi's current assignment, and no RL implementation or reward has been selected.
 
 ## 6. Run it and hand back the results
 
