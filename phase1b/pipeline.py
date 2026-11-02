@@ -41,6 +41,7 @@ def run_episode(
     world=None,
     step_guard=None,
     episode_context=None,
+    stop_requested=None,
     **components,
 ):
     output = Path(output)
@@ -72,6 +73,9 @@ def run_episode(
     commands = []
     try:
         for i in range(count):
+            # An operator stop preserves only complete 100 Hz transitions.
+            if i and stop_requested is not None and stop_requested():
+                break
             before, _ = world.snapshot()
             truth = {k: np.array(v, copy=True) for k, v in world.truth.items()}
             policy_observation(before)  # Assert the default profile can be built.
@@ -223,7 +227,8 @@ def run_episode(
         logging_hz=100,
         steps_per_transition=5,
         engine_time_origin=world.origin,
-        duration_seconds=duration,
+        duration_seconds=len(sections["observations"]) / 100,
+        requested_duration_seconds=duration,
         model_hash=world.config["model_sha256"],
         config_hash=sha(CONFIG),
         hardware_hash=sha(ROOT / "phase1b/config/hardware_v2.json"),

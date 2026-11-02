@@ -92,7 +92,7 @@ These are three different records:
 
 A moving hand target is not the same as a final goal angle. A task ID is not a moment-by-moment intent label. Declining human force alone does not prove a stop request: the person may simply need less force because assistance is working.
 
-The existing teacher generator requires timestamp-aligned `TeacherGoal(timestamp, mode, angle)` and, for E2, `DisturbanceTruth(timestamp, torque_y)`. Offline annotation requires explicit `ground_truth_intent`, `human_goal_angle`, and `external_disturbance_wrench` arrays. The bridge from the T0-T8 fixtures or manual events to these fields is not complete. In particular, the distinction between final goal and instantaneous target angle, pause semantics, and stop/reversal event timing must be finalized before collecting labels.
+The existing teacher generator requires timestamp-aligned `TeacherGoal(timestamp, mode, angle)` and, for E2, `DisturbanceTruth(timestamp, torque_y)`. Offline annotation requires explicit `ground_truth_intent`, `human_goal_angle`, and `external_disturbance_wrench` arrays. The human-input pilot now exports these fields from explicit operator/script events, separately from the moving hand target. The T0-T8 fixture bridge is still pending. Pilot annotations describe a declared command; they do not measure unexpressed human intent or establish label eligibility.
 
 The execution modes currently mean:
 
@@ -110,7 +110,7 @@ The agreed requirement is that stopping is available throughout the motion, with
 
 Evaluation needs the intended stop time/pose, observable detection time, command application time, and settling time/pose. Report both detection delay and physical stopping displacement. Manual annotation timestamps are observations of an operator's report, not exact measurements of an unexpressed mental event; record annotation uncertainty.
 
-Acquisition time, observation availability, decision time, and actuator time must also be distinguished when sensor/processing delays are introduced. The current 100/500 Hz scheduling contract does not establish camera or human-interaction latency. Delay instrumentation and the criteria for accepted start/stop/reversal cues are pending.
+Acquisition time, observation availability, decision time, and actuator time must also be distinguished when sensor/processing delays are introduced. The current 100/500 Hz scheduling contract does not establish camera or human-interaction latency. The human-input pilot records keyboard receipt and application times, but sensor availability, controller detection delay, and the criteria for accepted start/stop/reversal cues are still pending.
 
 ### Does the Student need mode?
 
@@ -189,7 +189,7 @@ Start with shadow candidates on recorded interactions. E0/E1/E2 can inspect the 
 
 After controller tracking is validated, run each strategy in closed loop with the same initial conditions, human goals/impedance, and disturbance conditions. Let actual human force change with panel response. Replaying an identical human-force trace across strategies would remove the interaction effect we want to measure.
 
-Manual pilot trials should control the virtual hand target through its spring-damper, not teleport the panel or prescribe Panda trajectories. Record the input device/mapping, raw input, requested intent/goal, event timestamps, and annotation uncertainty alongside the standard data. This can reveal how scripted and manual behavior differ and how a person uses the assistance. It does not directly label the optimal robot torque. The manual input UI and event logger are not implemented.
+Manual pilot trials should control the virtual hand target through its spring-damper, not teleport the panel or prescribe Panda trajectories. Record the input device/mapping, raw input, requested intent/goal, event timestamps, and annotation uncertainty alongside the standard data. This can reveal how scripted and manual behavior differ and how a person uses the assistance. It does not directly label the optimal robot torque. The keyboard pilot and event logger below implement this first step. They do not provide force feedback to the operator or establish that keyboard interaction matches physical human manipulation.
 
 Before training collection, specify ranges and sampling rules for direction, angle, speed, onset, intermediate stops, pause length, reversals, human impedance, and disturbance timing/magnitude. Keep the frozen hardware and grasp geometry. Choose held-out conditions and manual sessions in advance; split by episode and condition/session, not overlapping windows. Fit normalization on training data only. Sampling ranges, dataset sizes, and thresholds are still pending; repeating the fixed benchmark scripts is not sufficient distribution coverage.
 
@@ -205,6 +205,64 @@ Before training, examine whether similar public histories require conflicting te
 
 RL refinement remains a future option. Define cooperation metrics and verify a controller and initial policy first. Any later reward must address task accuracy and stopping behavior as well as human effort. No reward, learning algorithm, or training implementation is agreed here.
 
+### Human-side work before the shared controller is ready
+
+Use [`phase1b.human`](../phase1b/human.py) to operate the existing Virtual Human Hand. It reuses the frozen hardware, settled fixture, spring-damper force law, physical guards, and standard transition logger. It never assigns panel poses or robot joint trajectories.
+
+```text
+Operator key / scripted event (private)
+    -> bounded hand target position and velocity (private)
+    -> existing spring-damper force at the human grasp
+    -> panel + gripper contacts
+    -> public tactile / F/T / object / joint observations
+```
+
+The first pilot controls one World Y rotation arc around the initial settled panel COM. The pivot stays fixed during the episode; it is a hand-input mapping, not a moving-COM torque definition. Speed is 5 deg/s and the target offset stays within +/-10 deg. These are development input bounds, not validated robot capabilities. The existing 0.35 m/s target-speed and 50 N force limits remain in force.
+
+| Key | Human target operation |
+|---|---|
+| L | Request a goal 5 deg above the current target offset, clipped to +10 deg |
+| J | Request a goal 5 deg below the current target offset, clipped to -10 deg |
+| K | Cancel the pending goal and hold the current hand target immediately |
+| Q / close window | Finish the current 100 Hz transition, save, and exit |
+
+These are key-press commands, not press-and-release velocity control. Repeated key events can extend the goal. K works during motion; it does not wait for an endpoint. It holds the **hand target**, not the measured panel pose and not the robot's HOLD reference. Actual panel motion remains physical. Arrival at a target does not manufacture a new HOLD annotation; the declared rotation intent remains until another command. Target position is continuous, but target velocity can change abruptly at start, reversal, arrival, or K. The force limiter bounds the resulting spring-damper force. Acceleration smoothing and a biomechanical human model are outside this pilot.
+
+The default robot decision is always `UNCERTAIN`, zero additional torque. Human mode is not copied into the robot decision. The current arm adapter holds nominal joints, so expect small panel motion and changing contact force, not cooperative following. The same object/arm controller import options are available when Swathi's implementation is ready. No Expert or Student is running here.
+
+Run from the repository root with a fresh output directory:
+
+```bash
+# Headless, reproducible start / intermediate stop / reversal / hold:
+uv run --locked python -m phase1b.human --mode demo --duration 5 --output results/phase1b/dev-human-demo
+
+# macOS native viewer with keyboard input; maximum 60 simulated seconds:
+uv run --locked python -m phase1b.scripts.launch_viewer --human --mode manual --viewer --duration 60 --output results/phase1b/dev-human-manual
+
+# Replay the saved input events and initial state with recomputed physical forces:
+uv run --locked python -m phase1b.human --mode replay --replay results/phase1b/dev-human-manual --output results/phase1b/dev-human-replay
+
+uv run --locked python -m unittest phase1b.tests.test_human -v
+```
+
+On Linux, run the manual command directly with `python -m phase1b.human`. The cyan marker is the desired hand target; red marks the panel's human grasp and the human force arrow (0.03 m of display length per N). The display uses a separate model/data copy so mouse interaction cannot change the recorded physics. Physics remains 500 Hz in simulation time, observations 100 Hz, and display updates 25 Hz. Wall-clock pacing is best effort; a slow computer can run below real time.
+
+Each session saves:
+
+- `episode/`: the existing synchronized sensor, command, private-truth, diagnostic, and render-state files. Formal Expert labels remain NaN/false.
+- `events.json`: applied simulation timestamps, declared mode and goal offset; manual events also retain key receipt/application wall times.
+- `session.json`: input mapping, limits, provenance, raw handled key events, verification and actual duration. Manual timing is an input-callback delay measurement, not a measurement of mental intention.
+- `initial_state.npz`: the settled checkpoint used by both the original run and replay.
+- `teacher_inputs.npz`: timestamp-aligned `ground_truth_intent`, `human_goal_angle`, and disturbance wrench for private shadow analysis. The legacy field name `ground_truth_intent` means **reported operator intent / scripted instruction** in this pilot, not an inferred human mental state.
+
+Private transition fields additionally distinguish `human_goal_angle` (declared goal), `human_target_angle` / `human_target_trajectory` / `human_target_velocity` (moving reference), `human_event_timestamp`, and `human_input_source`. Angles are radians; goals are initial measured pitch plus the requested World Y offset, a single-axis pilot convention. Existing `human_goal` retains the instantaneous-target meaning. Neither goal nor target is the measured panel pose. Events are applied only when their simulation timestamp arrives and never enter the public observation allowlist.
+
+Replay checks saved event/checkpoint hashes and model/config identity. With the same code, controller and configuration, tests require identical recorded arrays. Changing the controller deliberately changes the physical response and human force; replay is of the input targets, not a fixed force trace. Physical failures preserve events and partial evidence and do not export a successful teacher stream.
+
+Validation for this implementation: 38 tests passed across human input, interface contracts, physics integration, Expert arithmetic/data, and T0-T8 fixtures. The 5 s human-input demo completed 2,500 physics steps with all pads in contact, maximum pad penetration 0.000511 m, no unexpected penetrating contacts or MuJoCo warnings, and peak human force 1.53 N. Panel orientation changed only about 0.042 deg under the fixed-joint adapter. Tests checked exact replay arrays, intermediate HOLD, direction changes, private-field isolation, keyboard callback timing with a substituted window, graceful saving, and failure preservation. Native macOS viewer startup was checked separately; this is not a human usability study.
+
+Before the controller is available, use these sessions to check sensor responses, input/target timing, stop semantics, logging, and private candidate generation. Do not use them to claim assistance tracking, reduced effort, representative human data, or eligible training demonstrations. Once the controller is ready, compare the same input protocol under support-only and assistance, then evaluate manual sessions separately.
+
 ## 7. Implementation status and decisions still needed
 
 | Item | Status |
@@ -212,8 +270,9 @@ RL refinement remains a future option. Define cooperation metrics and verify a c
 | E0/E1/E2 reference math, private candidate traces, causal-window diagnostics | Implemented for candidate analysis |
 | Three-layer transport, joint/sensor logging, T0-T8 fixture inputs | Implemented; default adapters do not execute assistance |
 | Two-second default history | Implemented at `d73de9e`; its 32-test run covered history and existing contract/integration tests |
-| Teacher intent/goal/trajectory bridge and online E1/E2 adapter | Pending; `ReferenceGenerator.step` is not a ready `predict(history)` policy |
-| Manual input, annotations, latency instrumentation | Pending |
+| Teacher intent/goal/trajectory bridge | Implemented for the human-input pilot; T0-T8 bridge pending |
+| Online E1/E2 adapter | Pending; `ReferenceGenerator.step` is not a ready `predict(history)` policy |
+| Manual input and timing | Keyboard target control, event replay, explicit reported intent, receipt/application clocks implemented; human-intent detection and end-to-end sensor/control latency remain pending |
 | Full shared controller, allocation, incremental torque tracking | Pending validation/implementation |
 | Formal label promotion, Student training, RL | Not implemented |
 

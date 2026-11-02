@@ -9,6 +9,10 @@ from pathlib import Path
 
 
 def main():
+    args = sys.argv[1:]
+    module = "phase1b.scripts.view_scene"
+    if args[:1] == ["--human"]:
+        module, args = "phase1b.human", args[1:]
     env = os.environ.copy()
     if platform.system() == "Darwin":
         executable = shutil.which("mjpython")
@@ -22,7 +26,7 @@ def main():
         executable = sys.executable
     raise SystemExit(
         subprocess.call(
-            [executable, "-m", "phase1b.scripts.view_scene", *sys.argv[1:]], env=env
+            [executable, "-m", module, *args], env=env
         )
     )
 

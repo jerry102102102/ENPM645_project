@@ -4,7 +4,7 @@
 
 A human and two Franka Panda arms hold a rigid panel. The policy requests additional assistance about World Y; the shared controller must turn that request into real joint motion and contact forces while maintaining support.
 
-Project design: [Expert and data contract](docs/EXPERT_AND_DATA.md) explains the teachers, Student inputs, label eligibility, collection/evaluation plan, and open decisions.
+Project design: [Expert and data contract](docs/EXPERT_AND_DATA.md) explains the teachers, Student inputs, label eligibility, collection/evaluation plan, and open decisions. Jerry can now run the [human-input pilot](docs/EXPERT_AND_DATA.md#human-side-work-before-the-shared-controller-is-ready): keyboard control, replay, and sensor logging while the shared controller is being developed.
 
 ## Swathi's controller assignment
 
