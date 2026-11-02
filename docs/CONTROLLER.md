@@ -1,6 +1,6 @@
 # Swathi's controller implementation and tests
 
-Swathi, your part is to build the controller that turns a requested panel assistance torque into motion and contact forces from the two Panda arms. The Expert and the future Student will both use your controller. Keep the existing object and arm interfaces so Jerry can change the policy without changing your implementation.
+Swathi, your part is to build the controller that turns a requested panel assistance torque into motion and contact forces from the two Panda arms. The Expert and the future Student will both use your controller. Keep the existing object and arm interfaces so Jerry can change the policy without changing your implementation. The Expert owns the additional pitch-assistance decision. Your controller realizes that request using public state, basic support, and one consistent compliant response. Do not add an independent pitch loop that tracks a hidden human goal or the Expert's private reference angle.
 
 Start with **T0 through T3**. The repository now has a runner, a repeatable initial state, a fixed human target, and scripted torque inputs for these tests. You can run the full input path before writing your controller. The default adapters hold the arms and leave assistance unexecuted, so a completed run does not mean torque tracking passed.
 
@@ -35,7 +35,7 @@ AssistanceDecision has timestamp, mode, assist_torque_y_nm, confidence, source, 
 
 ObjectCommand carries timestamp/mode/valid, pose_ref_world `(7,)` = world COM xyz + unit quaternion **wxyz**, twist_ref_world `(6,)` = **angular→linear** in rad/s and m/s, and assist_wrench_world `(6,)` = **force→torque** in N/Nm. Current MVP requires `[0,0,0,0,decision.assist_torque_y_nm,0]`, frame_id=`world`, reference_point=`panel_com`. Preserve the requested scalar; report unrealizable execution separately, not by silently rewriting the request.
 
-Optional stiffness/damping each have six nonnegative angular→linear entries (Nm/rad, Nm·s/rad; N/m, N·s/m). Empty means unspecified. The current contract rejects nonzero assistance combined with explicitly nonzero pitch stiffness. Coordinate motion and assistance through one compliant law; do not create competing high-stiffness pitch and torque loops. UNCERTAIN must use current measured pose, zero twist/wrench, and no executed-assistance flag. Support/damping remains a lower-level responsibility.
+Optional stiffness/damping each have six nonnegative angular→linear entries (Nm/rad, Nm·s/rad; N/m, N·s/m). Empty means unspecified. The current contract rejects nonzero assistance combined with explicitly nonzero pitch stiffness. Use pose/twist references for a consistent compliant realization and for the other supported degrees of freedom. Pitch references must agree with the requested assistance; they must not create a second goal-tracking law that duplicates the Expert's pitch feedback. Document the base pitch contribution and assistance contribution separately. UNCERTAIN must use current measured pose, zero twist/wrench, and no executed-assistance flag. Support/damping remains a lower-level responsibility.
 
 ### What you send to MuJoCo
 
@@ -44,6 +44,8 @@ ArmCommand contains `arm_position_target (2,7)` **rad**, `pad_force_command (4,)
 ## 2. What the controller receives
 
 Both callbacks receive `ArmControllerInput`. Its observation is a public, read-only snapshot. This is richer than Student inputs; choosing the Student profile does not remove joint states from the controller.
+
+For the first pilot, panel pose and velocity are assumed known from MuJoCo and available to both Expert and Student. Camera estimation is a later sensing stage. These public state measurements do not include the human's intended target, future trajectory, or disturbance truth. Policy history now defaults to 201 samples at 100 Hz, covering two elapsed seconds once filled. During startup it contains only the available prefix, without padding or invented prehistory. A future Student must define and report its startup policy; changing the history buffer does not implement that behavior. A two-second history is a rolling input window, not a two-second response delay. Shorter explicit overrides are for tests or declared ablations, not the primary learning configuration.
 
 | Input | Shape / meaning |
 |---|---|
@@ -130,7 +132,7 @@ Use development runs to calibrate amplitudes/rates and noise, then lock criteria
 
 ## 5. Then test cooperation with Jerry
 
-You can run these fixtures now with zero assistance to check their inputs. After T0 through T3 pass, use `--policy MODULE:Policy` to connect Expert decisions to the same controller. That option applies only to T4 through T8; T0 through T3 always use the scripted torque tests. Human target motion creates real spring-damper force; it does not teleport the panel or prescribe arm trajectories. All strategies share human goals/impedance/disturbances while actual human force changes with feedback.
+You can run these fixtures now with zero assistance to check their inputs. After T0 through T3 pass, use `--policy MODULE:Policy` to connect Expert decisions to the same controller. HOLD must be available during an ongoing motion at any reachable pose, rather than only at a scheduled endpoint. For the initial contract, latch the measured pose when a stop request is accepted and keep that reference until a new accepted movement request. Allow bounded braking while settling; do not relatch a drifting pose on every sample. Record the intended stop time/pose separately from detection, command application, and physical settling, so response delay and stopping displacement remain visible. The current reference adapters latch on entry to HOLD, but observable stop detection and a physical stopping controller remain unimplemented. That option applies only to T4 through T8; T0 through T3 always use the scripted torque tests. Human target motion creates real spring-damper force; it does not teleport the panel or prescribe arm trajectories. All strategies share human goals/impedance/disturbances while actual human force changes with feedback.
 
 | Case | Human / environment | Check |
 |---|---|---|
@@ -146,9 +148,25 @@ Use `--human-angle-deg`, `--correction-angle-deg`, `--disturbance-force-n`, and 
 
 **Control GO:** T0-T3 pass locked physical/tracking criteria. **Expert GO:** T4-T7 show closed-loop cooperation benefits versus support_only (and E0 where useful). **Learning-Data GO:** execution/teacher quality, causal synchronized labels and observation-label consistency pass separately. Human `∫||F_h||²dt` measures force burden, not metabolic energy. Retain failures; no demonstrations or training claims from scripted trajectories/shadow annotations.
 
+### Data and evaluation decisions
+
+For the first pilot, we assume the scripted virtual human produces a useful approximation of the intended human-interaction distribution. This is a working assumption to check with manual trials. The virtual human produces behavior; the Expert produces robot-assistance labels. Representativeness does not certify the labels or their execution.
+
+Keep three meanings separate: human intent is the teacher-only rotate/stop/hold request; the human target trajectory generates physical spring-damper forces; the assistance decision describes what the robot should do given the available evidence. A pause or stop can occur before the original target is reached. HOLD may need nonzero torque, ROTATE may need opposite-signed braking torque, and UNCERTAIN cancels active assistance while base support remains available.
+
+The Student does not necessarily need a mode classification output. A torque-only model is a candidate first design, but the current execution contract still uses mode to latch HOLD and enforce UNCERTAIN behavior. Before deploying that model, define a causal public-state supervisor for those behaviors or revise the execution contract explicitly. Never infer mode from torque sign or use a hidden teacher mode for the Student without labeling it as an oracle-mode ablation. This interface decision is still open.
+
+Manual trials should drive the virtual human target through the spring-damper, rather than teleport the panel or command robot joints. Record the input device/mapping, intent and goal annotations, event timestamps, and annotation uncertainty. These labels establish what the operator requested; they do not establish the optimal robot torque. Keep raw input, private annotations, public observations, decisions, and actuator outcomes synchronized. The manual-input UI and event logger are not implemented yet.
+
+Evaluate three things separately: physical execution and extra-torque tracking; cooperation (human force burden, task error, stop delay/drift, false starts, reversals, contacts and saturation); and imitation of eligible Expert labels on held-out data. Manual closed-loop trials complement the scripted tests and require a functioning controller. Keep separate sessions or trials for evaluation, and compare against support_only and E0 under matched task conditions. Report intent-event time, sensor acquisition/availability, decision time, command application, and observed response; simulation control rates alone do not validate perception or interaction latency.
+
+Before collecting training data, specify ranges and held-out conditions for motion direction/size/speed, onset, intermediate stop positions, pauses, reversals, human impedance, and disturbance timing/magnitude. Preserve the frozen grasp geometry. Separate splits by episode and condition/session, not overlapping windows; fit normalization on training data only. Standardize the F/T source/frame and compare F/T+object, +joints, +tactile, and +both. Only three of these diagnostic profiles currently exist; the independent tactile-only addition and unified online profiles still need work. Define the valid domain of the single-axis approximation before promoting labels; off-axis diagnostics alone are not an acceptance rule.
+
+RL refinement is a later possibility after a shared controller, task metrics, and an initial policy are validated. It is not part of Swathi's current assignment, and no RL implementation or reward has been selected.
+
 ## 6. Run it and hand back the results
 
-[Fixture verification](../results/phase1b/controller_fixtures/verification.json) records 31 passing tests and a full T0 through T8 input run plus the extra T3 zero baseline: 10 episodes and 23,000 physics steps. Contact and basic physical checks passed with the default adapters. The existing A/B/C support, replay, and scripted motion regressions also passed. This verifies the test setup and data path; it does not certify assistance tracking or Expert cooperation. T8 reversal has an input unit test; the full recorded fixture run uses resume.
+The historical [fixture verification](../results/phase1b/controller_fixtures/verification.json), produced at `e8693cd`, records 31 passing tests and a full T0 through T8 input run plus the extra T3 zero baseline: 10 episodes and 23,000 physics steps. Contact and basic physical checks passed with the default adapters. The existing A/B/C support, replay, and scripted motion regressions also passed. This verifies the test setup and data path; it does not certify assistance tracking or Expert cooperation. T8 reversal has an input unit test; the full recorded fixture run uses resume.
 
 Record `observation_t → decision_t → object_command_t → five arm/physics steps → observation_t+.01`. At each substep save command time, decision/object source time and post-step realized time. Current files are observations, next_observations, decisions, object_commands, controller, diagnostics, privileged, supervision, render_states, and metadata. Unavailable quantities use NaN + false masks. Physical warnings/contact/collision audits remain runner-owned, not fabricated controller reports.
 

@@ -235,6 +235,34 @@ class Contracts(unittest.TestCase):
             with self.assertRaises(AssertionError):
                 validate_episode(p)
 
+    def test_default_history_spans_two_seconds_without_future_or_padding(self):
+        class RecordingPolicy:
+            def __init__(self):
+                self.times = []
+
+            def predict(self, history):
+                self.times.append(history.timestamps.copy())
+                return decision("HOLD", 0.0, timestamp=float(history.timestamps[-1]))
+
+        policy = RecordingPolicy()
+        chain = ControlChain(policy=policy)
+        # Exercise 2.1 s of callback clocks without changing the physical fixture.
+        for tick in range(1051):
+            t = tick * 0.002
+            inp = replace(self.inp, timestamp=t,
+                          observation=dict(self.observation, timestamp=t))
+            chain.step(inp)
+        self.assertEqual(chain.history_length, 201)
+        np.testing.assert_array_equal(policy.times[0], [0.0])
+        for i, times in enumerate(policy.times):
+            np.testing.assert_allclose(times, np.arange(max(0, i - 200), i + 1) * .01,
+                                       atol=1e-12, rtol=0)
+        self.assertEqual(len(policy.times[199]), 200)
+        self.assertAlmostEqual(np.ptp(policy.times[200]), 2.0)
+        self.assertEqual(len(policy.times[-1]), 201)
+        self.assertAlmostEqual(policy.times[-1][0], .1)
+        self.assertAlmostEqual(policy.times[-1][-1], 2.1)
+
     def test_adapters_leave_physics_unchanged(self):
         class UncertainPolicy:
             def predict(self, h):

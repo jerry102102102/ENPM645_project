@@ -72,7 +72,7 @@ class ControlChain:
         object_controller=None,
         dual_arm_controller=None,
         profile="baseline",
-        history_length=50,
+        history_length=201,  # Current sample + 200 past intervals = 2 s at 100 Hz.
         max_assist_torque_nm=0.02,
         max_rotation_rate_rad_s=0.5,
     ):

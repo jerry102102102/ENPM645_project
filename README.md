@@ -13,6 +13,8 @@ Implement the **Object-Level Controller + Dual-Arm Controller as one shared cont
 3. Demonstrate **T0–T3**: support, positive torque, negative torque, and continuous command changes.
 4. Integrate **T4–T7** together with Jerry; **T8** is optional. T9 is not defined.
 
+The Expert decides the additional pitch torque; the controller uses public state and a consistent compliant response to realize it, without tracking a hidden human goal. Panel state is assumed known for the first pilot, and policy history defaults to two elapsed seconds (201 samples at 100 Hz).
+
 Changing Expert to Student must change only the upstream decision source. Controller code, parameters, observations, and safety behavior remain the same for a matched comparison.
 
 ![Architecture: one shared controller for test references, Expert, and Student](docs/architecture.svg)
